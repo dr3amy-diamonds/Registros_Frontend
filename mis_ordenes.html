@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AiresFlow - Agenda de Mantenimiento</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        uccDark: '#132740',
+                        uccLight: '#00acc9',
+                    },
+                    fontFamily: {
+                        sans: ['Inter', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+
+    <script src="js/auth_guard.js"></script>
+
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+</head>
+
+<body class="bg-slate-50 flex h-screen overflow-hidden font-sans">
+
+    <div id="sidebar-overlay" class="fixed inset-0 bg-slate-900/50 z-40 hidden backdrop-blur-sm transition-opacity"></div>
+
+    <aside id="main-sidebar" class="w-64 bg-white flex flex-col shadow-2xl overflow-y-auto fixed inset-y-0 left-0 z-50 transform -translate-x-full transition-transform duration-300 ease-in-out">
+        <div class="p-6 relative flex flex-col items-center justify-center border-b border-slate-200 min-h-40">
+            <button id="btn-close-sidebar" class="absolute top-4 right-4 text-slate-400 hover:text-red-500 transition"><i class="fas fa-times text-xl"></i></button>
+            <img src="img/ucc.png" alt="UCC Logo" class="h-24 object-contain mb-2">
+            <h2 class="text-center text-sm font-black text-uccDark tracking-tighter">Sistema de Gestión de Aires</h2>
+        </div>
+
+        <nav class="flex-1 px-4 py-8 space-y-1">
+            <a href="analytics_dashboard.html" class="flex items-center gap-3 px-4 py-3 text-slate-700 hover:bg-slate-100 rounded-xl transition font-medium text-sm">
+                <i class="fas fa-chart-line w-5"></i><span>Dashboard</span>
+            </a>
+            <a href="asset_inventory.html" class="flex items-center gap-3 px-4 py-3 text-slate-700 hover:bg-slate-100 rounded-xl transition font-medium text-sm">
+                <i class="fas fa-snowflake w-5"></i><span>Inventario</span>
+            </a>
+            <a href="maintenance_scheduler.html" class="flex items-center gap-3 px-4 py-3 text-slate-700 hover:bg-slate-100 rounded-xl transition font-medium text-sm">
+                <i class="fas fa-calendar-check w-5"></i><span>Programación</span>
+            </a>
+            <a href="maintenance_audit_logs.html" class="flex items-center gap-3 px-4 py-3 text-slate-700 hover:bg-slate-100 rounded-xl transition font-medium text-sm">
+                <i class="fas fa-history w-5"></i><span>Auditoría</span>
+            </a>
+            <a href="mis_ordenes.html" class="flex items-center gap-3 px-4 py-3 bg-uccLight text-uccDark rounded-xl shadow-lg font-bold text-sm">
+                <i class="fas fa-clipboard-list w-5"></i><span>Agenda de Mantenimiento</span>
+            </a>
+            <a href="data_export_center.html" class="flex items-center gap-3 px-4 py-3 text-slate-700 hover:bg-slate-100 rounded-xl transition font-medium text-sm">
+                <i class="fas fa-download w-5"></i><span>Exportar Datos</span>
+            </a>
+            <a href="admin_access_control.html" class="flex items-center gap-3 px-4 py-3 text-slate-700 hover:bg-slate-100 rounded-xl transition font-medium text-sm">
+                <i class="fas fa-shield-alt w-5"></i><span>Control de Acceso</span>
+            </a>
+        </nav>
+
+        <div class="p-4 border-t border-slate-200">
+            <button id="btn-cerrar-sesion" class="w-full flex items-center gap-3 px-4 py-3 text-slate-700 hover:bg-slate-100 rounded-xl transition font-medium text-sm justify-center">
+                <i class="fas fa-sign-out-alt w-5"></i><span>Cerrar Sesión</span>
+            </button>
+        </div>
+    </aside>
+
+    <main class="flex-1 flex flex-col h-screen overflow-hidden">
+        <header class="bg-white border-b border-slate-200 px-10 py-5 flex items-center justify-between shadow-sm">
+            <div class="flex items-center gap-4">
+                <button id="btn-menu-toggle" type="button" class="text-slate-500 hover:text-[#00acc9] transition focus:outline-none bg-slate-100 hover:bg-slate-200 p-2 rounded-lg">
+                    <i class="fas fa-bars text-2xl"></i>
+                </button>
+                <img src="img/ucc.png" alt="UCC Logo" class="h-10 md:h-12 object-contain hidden sm:block">
+            </div>
+            <div>
+                <p class="text-xs font-black uppercase tracking-widest text-slate-500 text-right">Infraestructura Campus Montería</p>
+                <p class="text-sm font-bold text-uccDark text-right">Agenda Operativa de Trabajo en Campo</p>
+            </div>
+        </header>
+
+        <div class="flex-1 overflow-y-auto p-10">
+            <div class="max-w-7xl mx-auto">
+                <div class="mb-8">
+                    <h1 class="text-2xl font-black text-uccDark">Mis Órdenes Asignadas</h1>
+                    <p class="text-sm text-slate-500 font-medium mt-1">Seleccione una orden activa para abrir el formulario de reporte técnico.</p>
+                </div>
+
+                <div id="contenedor-agenda" class="relative min-h-[200px]">
+                    <div id="loader-agenda" class="flex flex-col items-center justify-center py-16">
+                        <div class="w-10 h-10 border-4 border-slate-200 border-t-[#00acc9] rounded-full animate-spin"></div>
+                        <p class="text-sm text-slate-500 font-medium mt-4">Cargando órdenes asignadas...</p>
+                    </div>
+
+                    <div id="grid-ordenes" class="hidden grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script src="js/config.js"></script>
+    <script src="js/sidebar.js"></script>
+    <script src="js/mis_ordenes.js"></script>
+
+</body>
+</html>
