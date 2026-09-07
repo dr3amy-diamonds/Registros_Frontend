@@ -83,7 +83,7 @@ function crearTarjetaOrden(orden) {
                 </div>
             </div>
         </div>
-        <a href="service_report_form.html?orden_id=${encodeURIComponent(orden.id)}"
+        <a href="/reporte-tecnico?orden_id=${encodeURIComponent(orden.id)}"
            class="mt-auto w-full bg-uccLight hover:bg-opacity-90 text-white text-sm font-bold py-2.5 rounded-xl transition duration-300 flex items-center justify-center gap-2">
             <i class="fas fa-wrench"></i>
             <span>Abrir Reporte Técnico</span>
@@ -130,7 +130,7 @@ async function cargarMisOrdenesAsignadas() {
     const token = localStorage.getItem('token');
 
     if (!token) {
-        window.location.href = 'auth_login.html';
+        window.location.href = '/login';
         return;
     }
 
@@ -145,7 +145,7 @@ async function cargarMisOrdenesAsignadas() {
 
         if (respuesta.status === 401) {
             localStorage.clear();
-            window.location.href = 'auth_login.html';
+            window.location.href = '/login';
             return;
         }
 

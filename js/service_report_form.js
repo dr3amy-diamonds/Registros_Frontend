@@ -189,7 +189,7 @@ async function precargarOrdenDesdeBackend(idOrden) {
             banner.innerHTML = `
                 <i class="fas fa-exclamation-circle text-red-400 text-3xl mb-4"></i>
                 <p class="leading-relaxed">No se pudo cargar la orden #${escaparHtml(String(idOrden))}: ${escaparHtml(extraerMensajeError(error))}</p>
-                <a href="mis_ordenes.html" class="inline-block mt-4 text-uccLight font-bold hover:underline">Volver a la Agenda de Mantenimiento</a>
+                <a href="/mis-ordenes" class="inline-block mt-4 text-uccLight font-bold hover:underline">Volver a la Agenda de Mantenimiento</a>
             `;
         }
         return null;
@@ -547,27 +547,33 @@ function inicializarFormularioReporte() {
         crearFilaInsumoAdicional();
     });
 
-    document.getElementById('btn-limpiar-formulario')?.addEventListener('click', () => {
+    document.getElementById('btn-limpiar-formulario')?.addEventListener('click', async () => {
         if (ordenCongelada) return;
-        if (confirm('¿Está seguro de limpiar los campos editables? Los datos del equipo no se modificarán.')) {
-            const camposPreservar = ['codigoActivo', 'marcaActivo', 'modeloActivo', 'bloqueEquipo', 'equipoId', 'ordenId', 'nombreTecnico', 'fechaMantenimiento'];
-            const valores = {};
-            camposPreservar.forEach((id) => {
-                const el = document.getElementById(id);
-                if (el) valores[id] = el.value;
-            });
+        const confirmar = await solicitarConfirmacion({
+            titulo: 'Limpiar formulario',
+            mensaje: '¿Está seguro de limpiar los campos editables? Los datos del equipo no se modificarán.',
+            textoAceptar: 'Sí, limpiar',
+            esPeligroso: false
+        });
+        if (!confirmar) return;
 
-            document.getElementById('reporteForm')?.reset();
+        const camposPreservar = ['codigoActivo', 'marcaActivo', 'modeloActivo', 'bloqueEquipo', 'equipoId', 'ordenId', 'nombreTecnico', 'fechaMantenimiento'];
+        const valores = {};
+        camposPreservar.forEach((id) => {
+            const el = document.getElementById(id);
+            if (el) valores[id] = el.value;
+        });
 
-            camposPreservar.forEach((id) => setValorCampo(id, valores[id]));
-            if (inputFecha && valores.fechaMantenimiento) inputFecha.value = valores.fechaMantenimiento;
+        document.getElementById('reporteForm')?.reset();
 
-            if (tipoMantenimientoId) {
-                cargarCatalogoTiposMantenimiento(tipoMantenimientoId);
-            }
+        camposPreservar.forEach((id) => setValorCampo(id, valores[id]));
+        if (inputFecha && valores.fechaMantenimiento) inputFecha.value = valores.fechaMantenimiento;
 
-            reiniciarFormularioEditable();
+        if (tipoMantenimientoId) {
+            cargarCatalogoTiposMantenimiento(tipoMantenimientoId);
         }
+
+        reiniciarFormularioEditable();
     });
 }
 

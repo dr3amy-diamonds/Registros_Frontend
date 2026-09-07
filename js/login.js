@@ -55,7 +55,7 @@ function initializeLoginForm() {
                 console.log('✅ Autenticación exitosa para:', resultado.email);
                 const rutaDestino = getRedirectUrlByRole(resultado.rol);
                 // Redirigir según el rol del usuario
-                globalThis.location.href = rutaDestino || 'user_profile_settings.html';
+                globalThis.location.href = rutaDestino || '/perfil';
             }
         } catch (error) {
             console.error('❌ Fallo en el inicio de sesión:', error.message || error);

@@ -7,6 +7,7 @@ const API_BASE_URL = "http://127.0.0.1:8000/api/v1";
 let paginaActual = 1;
 const registrosPorPagina = 10;
 let equiposCargadosGlobal = [];
+let equiposCompletosGlobal = []; // Catálogo completo sin filtrar
 let espaciosCatalogGlobal = [];
 let bloquesCatalogGlobal = [];
 let modoEdicionEquipo = false;
@@ -171,15 +172,8 @@ function cargarInventarioCompleto() {
         return;
     }
 
-    // Mostrar indicador de carga
-    tablaBody.innerHTML = `
-        <tr>
-            <td colspan="5" class="text-center py-12 text-slate-400">
-                <i class="fas fa-spinner text-2xl animate-spin mb-3 block"></i>
-                <p class="text-sm">Cargando equipos desde la base de datos...</p>
-            </td>
-        </tr>
-    `;
+    // Mostrar estado inicial vacío con mensaje guía
+    mostrarEstadoInicialVacio();
 
     // Realizar petición GET al backend
     fetch(`${API_BASE_URL}/equipos/?limit=100`)
@@ -196,10 +190,9 @@ function cargarInventarioCompleto() {
                 throw new Error("La respuesta del servidor no es un array válido");
             }
 
-            equiposCargadosGlobal = equipos;
+            equiposCompletosGlobal = equipos; // Guardar catálogo completo
+            equiposCargadosGlobal = []; // Iniciar con lista vacía
             paginaActual = 1;
-            actualizarOpcionesPisoFiltro();
-            renderizarTablaPaginada();
 
             console.log(`✅ Cargados ${equipos.length} equipos exitosamente`);
         })
@@ -226,6 +219,38 @@ function cargarInventarioCompleto() {
                 </tr>
             `;
         });
+}
+
+/**
+ * Muestra el estado inicial vacío con mensaje guía
+ */
+function mostrarEstadoInicialVacio() {
+    const tablaBody = document.getElementById("tablaEquiposBody");
+    if (!tablaBody) return;
+
+    tablaBody.innerHTML = `
+        <tr>
+            <td colspan="5" class="px-8 py-16">
+                <div class="flex flex-col items-center justify-center text-center">
+                    <div class="mb-4 flex items-center justify-center w-16 h-16 rounded-2xl bg-[#00acc9]/10">
+                        <i class="fas fa-layer-group text-3xl text-[#00acc9]"></i>
+                    </div>
+                    <h3 class="text-lg font-bold text-slate-700 mb-2">Navegación Espacial por Ubicación</h3>
+                    <p class="text-sm text-slate-500 max-w-md">
+                        Seleccione un <strong>Bloque</strong>, <strong>Piso</strong> y <strong>Aula/Espacio</strong> para consultar los equipos de climatización instalados en la ubicación específica.
+                    </p>
+                </div>
+            </td>
+        </tr>
+    `;
+
+    // Limpiar paginación
+    const textoPaginacion = document.getElementById("texto-paginacion-equipos");
+    if (textoPaginacion) {
+        textoPaginacion.innerHTML = "Seleccione una ubicación para visualizar equipos";
+    }
+
+    actualizarBotonesPaginacion(0);
 }
 
 /**
@@ -984,10 +1009,16 @@ async function decommissionTechnicalSheet() {
         mostrarNotificacion("error", "No hay equipo seleccionado");
         return;
     }
-    
-    const confirmar = confirm("⚠️  ¿Deseas desactivar este equipo? Se marcará como Inactivo en el sistema.");
+
+    const confirmar = await solicitarConfirmacion({
+        titulo: 'Dar de Baja Equipo',
+        mensaje: '¿Está seguro de que desea dar de baja este equipo? Se marcará como Inactivo en el sistema y dejará de estar disponible para programación de mantenimientos.',
+        textoAceptar: 'Dar de Baja',
+        esPeligroso: true
+    });
+
     if (!confirmar) return;
-    
+
     try {
         console.log("🔄 Desactivando equipo ID:", window.currentEquipoId);
         
@@ -1024,10 +1055,16 @@ async function activateTechnicalSheet() {
         mostrarNotificacion("error", "No hay equipo seleccionado");
         return;
     }
-    
-    const confirmar = confirm("⚠️  ¿Deseas activar este equipo? Se marcará como Operativo en el sistema.");
+
+    const confirmar = await solicitarConfirmacion({
+        titulo: 'Activar Equipo',
+        mensaje: '¿Está seguro de que desea activar este equipo? Se marcará como Operativo en el sistema y estará disponible para programación de mantenimientos.',
+        textoAceptar: 'Activar',
+        esPeligroso: false
+    });
+
     if (!confirmar) return;
-    
+
     try {
         console.log("🔄 Activando equipo ID:", window.currentEquipoId);
         
@@ -1057,50 +1094,87 @@ async function activateTechnicalSheet() {
 }
 
 /**
- * Filtra la tabla aplicando todos los filtros simultáneamente (AND lógico)
+ * Renderiza equipos filtrados por ubicación específica (Bloque, Piso, Aula)
+ * Solo se ejecuta cuando se selecciona un Aula/Espacio
  */
-function filtrarTabla() {
-    const inputPiso = document.getElementById("filterPiso");
-    const selectEstado = document.getElementById("assetStateFilter");
+function renderizarEquiposPorUbicacion() {
     const selectBloque = document.getElementById("assetBlockFilter");
+    const selectPiso = document.getElementById("filterPiso");
     const selectAula = document.getElementById("assetAulaFilter");
     const tablaBody = document.getElementById("tablaEquiposBody");
+
     if (!tablaBody) return;
 
-    const valorPiso = (inputPiso?.value || "").trim();
-    const valorEstado = selectEstado?.value || "";
-    const valorBloque = selectBloque?.value || "";
-    const valorAula = selectAula?.value || "";
+    const bloqueId = selectBloque?.value || "";
+    const piso = selectPiso?.value || "";
+    const aulaId = selectAula?.value || "";
 
-    tablaBody.querySelectorAll("tr[data-equipo-id]").forEach(fila => {
-        const pisoFila = fila.getAttribute("data-piso") || "";
-        const bloqueFila = fila.getAttribute("data-bloque-id") || "";
-        const espacioFila = fila.getAttribute("data-espacio-id") || "";
-        const estadoFila = fila.getAttribute("data-estado") || "";
+    // Si no hay aula seleccionada, mostrar estado inicial vacío
+    if (!aulaId) {
+        mostrarEstadoInicialVacio();
+        return;
+    }
 
-        const coincidePiso = !valorPiso || pisoFila === valorPiso;
-        const coincideEstado = !valorEstado || estadoFila === valorEstado;
-        const coincideBloque = !valorBloque || bloqueFila === valorBloque;
-        const coincideAula = !valorAula || espacioFila === valorAula;
-
-        fila.style.display = (coincidePiso && coincideEstado && coincideBloque && coincideAula) ? "" : "none";
+    // Filtrar equipos por el espacio seleccionado desde el catálogo completo
+    const equiposFiltrados = equiposCompletosGlobal.filter(equipo => {
+        const espacioId = equipo.espacio && typeof equipo.espacio === "object"
+            ? equipo.espacio.id
+            : equipo.espacio_id;
+        return String(espacioId) === String(aulaId);
     });
+
+    // Limpiar tabla
+    tablaBody.innerHTML = "";
+
+    if (equiposFiltrados.length === 0) {
+        tablaBody.innerHTML = `
+            <tr>
+                <td colspan="5" class="px-8 py-12 text-center">
+                    <div class="flex flex-col items-center justify-center">
+                        <i class="fas fa-inbox text-4xl text-slate-300 mb-3"></i>
+                        <p class="text-sm text-slate-500">No hay equipos de climatización instalados en esta ubicación</p>
+                    </div>
+                </td>
+            </tr>
+        `;
+        actualizarTextoPaginacion(0, 0, 0);
+        actualizarBotonesPaginacion(0);
+        return;
+    }
+
+    // Renderizar equipos filtrados con paginación
+    equiposCargadosGlobal = equiposFiltrados;
+    paginaActual = 1;
+    renderizarTablaPaginada();
 }
 
+/**
+ * Limpia todos los filtros y retorna la tabla al estado inicial vacío
+ */
 function limpiarFiltrosInventario() {
-    const inputPiso = document.getElementById("filterPiso");
-    const selectEstado = document.getElementById("assetStateFilter");
     const selectBloque = document.getElementById("assetBlockFilter");
+    const selectPiso = document.getElementById("filterPiso");
     const selectAula = document.getElementById("assetAulaFilter");
 
-    if (inputPiso) inputPiso.value = "";
-    if (selectEstado) selectEstado.value = "";
-    if (selectBloque) selectBloque.value = "";
+    // Resetear selector de Bloque
+    if (selectBloque) {
+        selectBloque.value = "";
+    }
+
+    // Resetear y deshabilitar selector de Piso
+    if (selectPiso) {
+        selectPiso.innerHTML = '<option value="">Seleccionar piso...</option>';
+        selectPiso.disabled = true;
+    }
+
+    // Resetear y deshabilitar selector de Aula
     if (selectAula) {
-        selectAula.innerHTML = '<option value="">Todos</option>';
+        selectAula.innerHTML = '<option value="">Seleccionar espacio...</option>';
         selectAula.disabled = true;
     }
-    filtrarTabla();
+
+    // Recargar equipos completos y mostrar estado inicial vacío
+    cargarInventarioCompleto();
 }
 
 function actualizarOpcionesPisoFiltro() {
@@ -1133,7 +1207,7 @@ async function cargarFiltrosInventario() {
             bloquesCatalogGlobal = Array.isArray(bloquesData) ? bloquesData : (bloquesData.items || []);
             const selectBloque = document.getElementById("assetBlockFilter");
             if (selectBloque) {
-                selectBloque.innerHTML = '<option value="">Todos</option>';
+                selectBloque.innerHTML = '<option value="">Seleccionar bloque...</option>';
                 bloquesCatalogGlobal.forEach(bloque => {
                     const option = document.createElement("option");
                     option.value = bloque.id;
@@ -1152,24 +1226,82 @@ async function cargarFiltrosInventario() {
     }
 }
 
-function poblarAulasPorBloque(bloqueId) {
+/**
+ * Pobla el selector de pisos basándose en el bloque seleccionado
+ * @param {string} bloqueId - ID del bloque seleccionado
+ */
+function poblarPisosPorBloque(bloqueId) {
+    const selectPiso = document.getElementById("filterPiso");
     const selectAula = document.getElementById("assetAulaFilter");
-    if (!selectAula) return;
 
-    selectAula.innerHTML = '<option value="">Todos</option>';
+    if (!selectPiso) return;
+
+    // Limpiar y deshabilitar selector de pisos
+    selectPiso.innerHTML = '<option value="">Seleccionar piso...</option>';
+    selectPiso.disabled = true;
+
+    // Limpiar y deshabilitar selector de aulas
+    if (selectAula) {
+        selectAula.innerHTML = '<option value="">Seleccionar espacio...</option>';
+        selectAula.disabled = true;
+    }
 
     if (!bloqueId) {
-        selectAula.disabled = true;
         return;
     }
 
-    const espaciosFiltrados = espaciosCatalogGlobal.filter(e => String(e.bloque_id) === String(bloqueId));
+    // Extraer pisos únicos del bloque seleccionado
+    const espaciosDelBloque = espaciosCatalogGlobal.filter(e => String(e.bloque_id) === String(bloqueId));
+    const pisosUnicos = [...new Set(espaciosDelBloque.map(e => e.piso))].sort((a, b) => a - b);
+
+    if (pisosUnicos.length === 0) {
+        selectPiso.disabled = true;
+        return;
+    }
+
+    // Poblar selector de pisos
+    pisosUnicos.forEach(piso => {
+        const option = document.createElement("option");
+        option.value = piso;
+        option.textContent = `Piso ${piso}`;
+        selectPiso.appendChild(option);
+    });
+
+    selectPiso.disabled = false;
+}
+
+/**
+ * Pobla el selector de aulas basándose en el bloque y piso seleccionados
+ * @param {string} bloqueId - ID del bloque seleccionado
+ * @param {string} piso - Número de piso seleccionado
+ */
+function poblarAulasPorBloquePiso(bloqueId, piso) {
+    const selectAula = document.getElementById("assetAulaFilter");
+    if (!selectAula) return;
+
+    selectAula.innerHTML = '<option value="">Seleccionar espacio...</option>';
+    selectAula.disabled = true;
+
+    if (!bloqueId || !piso) {
+        return;
+    }
+
+    // Filtrar espacios por bloque Y piso
+    const espaciosFiltrados = espaciosCatalogGlobal.filter(e =>
+        String(e.bloque_id) === String(bloqueId) && String(e.piso) === String(piso)
+    );
+
+    if (espaciosFiltrados.length === 0) {
+        return;
+    }
+
     espaciosFiltrados.forEach(espacio => {
         const option = document.createElement("option");
         option.value = espacio.id;
         option.textContent = espacio.nombre;
         selectAula.appendChild(option);
     });
+
     selectAula.disabled = false;
 }
 
@@ -1377,7 +1509,14 @@ async function guardarEdicionMarca(id) {
 }
 
 async function eliminarMarca(id) {
-    if (!confirm("¿Eliminar esta marca del catálogo?")) return;
+    const confirmar = await solicitarConfirmacion({
+        titulo: 'Eliminar Marca',
+        mensaje: '¿Está seguro de que desea eliminar esta marca del catálogo? Esta acción no se puede deshacer.',
+        textoAceptar: 'Eliminar',
+        esPeligroso: true
+    });
+
+    if (!confirmar) return;
 
     try {
         const response = await fetch(`${API_BASE_URL}/marcas/${id}`, { method: "DELETE" });
@@ -1572,7 +1711,14 @@ async function guardarEdicionEspacio(id) {
 }
 
 async function eliminarEspacio(id) {
-    if (!confirm("¿Eliminar este espacio del catálogo?")) return;
+    const confirmar = await solicitarConfirmacion({
+        titulo: 'Eliminar Espacio',
+        mensaje: '¿Está seguro de que desea eliminar este espacio del catálogo? Esta acción no se puede deshacer.',
+        textoAceptar: 'Eliminar',
+        esPeligroso: true
+    });
+
+    if (!confirmar) return;
 
     try {
         const response = await fetch(`${API_BASE_URL}/espacios/${id}`, { method: "DELETE" });
@@ -1731,7 +1877,14 @@ async function guardarEdicionBloque(id) {
 }
 
 async function eliminarBloque(id) {
-    if (!confirm("¿Eliminar este bloque del catálogo?")) return;
+    const confirmar = await solicitarConfirmacion({
+        titulo: 'Eliminar Bloque',
+        mensaje: '¿Está seguro de que desea eliminar este bloque del catálogo? Esta acción no se puede deshacer.',
+        textoAceptar: 'Eliminar',
+        esPeligroso: true
+    });
+
+    if (!confirmar) return;
 
     try {
         const response = await fetch(`${API_BASE_URL}/bloques/${id}`, { method: "DELETE" });
@@ -1902,7 +2055,14 @@ async function guardarEdicionTipoEquipo(id) {
 }
 
 async function eliminarTipoEquipo(id) {
-    if (!confirm("¿Eliminar este tipo de equipo del catálogo?")) return;
+    const confirmar = await solicitarConfirmacion({
+        titulo: 'Eliminar Tipo de Equipo',
+        mensaje: '¿Está seguro de que desea eliminar este tipo de equipo del catálogo? Esta acción no se puede deshacer.',
+        textoAceptar: 'Eliminar',
+        esPeligroso: true
+    });
+
+    if (!confirmar) return;
 
     try {
         const response = await fetch(`${API_BASE_URL}/tipos-equipo/${id}`, {
@@ -2059,7 +2219,14 @@ async function guardarEdicionRefrigerante(id) {
 }
 
 async function eliminarRefrigerante(id) {
-    if (!confirm("¿Eliminar este refrigerante del catálogo?")) return;
+    const confirmar = await solicitarConfirmacion({
+        titulo: 'Eliminar Refrigerante',
+        mensaje: '¿Está seguro de que desea eliminar este refrigerante del catálogo? Esta acción no se puede deshacer.',
+        textoAceptar: 'Eliminar',
+        esPeligroso: true
+    });
+
+    if (!confirmar) return;
 
     try {
         const response = await fetch(`${API_BASE_URL}/tipos-gas-refrigerante/${id}`, {
@@ -2213,7 +2380,14 @@ async function guardarEdicionTipoComponente(id) {
 }
 
 async function eliminarTipoComponente(id) {
-    if (!confirm("¿Eliminar este insumo del catálogo?")) return;
+    const confirmar = await solicitarConfirmacion({
+        titulo: 'Eliminar Insumo',
+        mensaje: '¿Está seguro de que desea eliminar este insumo del catálogo? Esta acción no se puede deshacer.',
+        textoAceptar: 'Eliminar',
+        esPeligroso: true
+    });
+
+    if (!confirmar) return;
 
     try {
         const response = await fetch(`${API_BASE_URL}/tipo_componentes/${id}`, {
@@ -2248,28 +2422,27 @@ document.addEventListener("DOMContentLoaded", () => {
         formCrearActivo.addEventListener("submit", submitCrearActivoFormulario);
     }
 
-    const inputPiso = document.getElementById("filterPiso");
-    if (inputPiso) {
-        inputPiso.addEventListener("input", filtrarTabla);
-        inputPiso.addEventListener("change", filtrarTabla);
-    }
-
-    const selectEstado = document.getElementById("assetStateFilter");
-    if (selectEstado) {
-        selectEstado.addEventListener("change", filtrarTabla);
-    }
-
+    // Event listeners para filtros encadenados
     const selectBloque = document.getElementById("assetBlockFilter");
     if (selectBloque) {
         selectBloque.addEventListener("change", () => {
-            poblarAulasPorBloque(selectBloque.value);
-            filtrarTabla();
+            poblarPisosPorBloque(selectBloque.value);
+        });
+    }
+
+    const selectPiso = document.getElementById("filterPiso");
+    if (selectPiso) {
+        selectPiso.addEventListener("change", () => {
+            const bloqueId = selectBloque?.value || "";
+            poblarAulasPorBloquePiso(bloqueId, selectPiso.value);
         });
     }
 
     const selectAula = document.getElementById("assetAulaFilter");
     if (selectAula) {
-        selectAula.addEventListener("change", filtrarTabla);
+        selectAula.addEventListener("change", () => {
+            renderizarEquiposPorUbicacion();
+        });
     }
 });
 

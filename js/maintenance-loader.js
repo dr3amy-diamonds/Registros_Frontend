@@ -14,8 +14,6 @@ let usuariosPorId = {};
 let programacionesPorId = {};
 
 let ordenSeleccionada = null;
-let cancelacionPendiente = false;
-
 let tiposMantenimientoPorId = {};
 
 /* ── Utilidades ───────────────────────────────────────────────────────────── */
@@ -584,7 +582,6 @@ function openDetalleOrdenModal(idReferencia) {
     }
 
     ordenSeleccionada = orden;
-    cancelacionPendiente = false;
     resetearBotonCancelar();
     restablecerControlesModalDetalle();
 
@@ -630,7 +627,6 @@ function closeDetalleOrdenModal() {
     modal?.classList.add('hidden');
     modal?.classList.remove('flex');
     ordenSeleccionada = null;
-    cancelacionPendiente = false;
     resetearBotonCancelar();
 }
 
@@ -686,18 +682,16 @@ async function guardarCambiosOrden() {
 async function cancelarMantenimiento() {
     if (!ordenSeleccionada) return;
 
+    const confirmar = await solicitarConfirmacion({
+        titulo: 'Cancelar orden de mantenimiento',
+        mensaje: '¿Está seguro de cancelar esta orden? Esta acción no se puede deshacer.',
+        textoAceptar: 'Sí, cancelar',
+        esPeligroso: true
+    });
+
+    if (!confirmar) return;
+
     const btn = document.getElementById('btn-cancelar-mantenimiento');
-
-    if (!cancelacionPendiente) {
-        cancelacionPendiente = true;
-        if (btn) {
-            btn.textContent = '¿Confirmar Cancelación?';
-            btn.classList.add('bg-red-600', 'animate-pulse', 'ring-2', 'ring-red-300');
-        }
-        mostrarNotificacion('error', 'Pulse de nuevo para confirmar la cancelación.');
-        return;
-    }
-
     if (btn) btn.disabled = true;
 
     try {
@@ -948,7 +942,13 @@ async function guardarEdicionTipoMantenimiento(id) {
 }
 
 async function eliminarTipoMantenimiento(id) {
-    if (!confirm('¿Eliminar este tipo de mantenimiento del catálogo?')) return;
+    const confirmar = await solicitarConfirmacion({
+        titulo: 'Eliminar tipo de mantenimiento',
+        mensaje: '¿Eliminar este tipo de mantenimiento del catálogo? Esta acción no se puede deshacer.',
+        textoAceptar: 'Sí, eliminar',
+        esPeligroso: true
+    });
+    if (!confirmar) return;
 
     try {
         await API.delete(`/tipos-mantenimiento/${id}`);

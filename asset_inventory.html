@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="es">
 <head>
     <script src="js/auth_guard.js"></script>
@@ -40,31 +40,31 @@
         </div>
 
         <nav class="flex-1 px-4 py-8 space-y-1">
-            <a href="analytics_dashboard.html" class="flex items-center gap-3 px-4 py-3 text-slate-700 hover:bg-slate-100 rounded-xl transition font-medium text-sm">
+            <a href="/dashboard" class="flex items-center gap-3 px-4 py-3 text-slate-700 hover:bg-slate-100 rounded-xl transition font-medium text-sm">
                 <i class="fas fa-chart-line w-5"></i>
                 <span>Dashboard</span>
             </a>
-            <a href="asset_inventory.html" class="flex items-center gap-3 px-4 py-3 bg-uccLight text-uccDark rounded-xl shadow-lg font-bold text-sm">
+            <a href="/inventario" class="flex items-center gap-3 px-4 py-3 bg-uccLight text-uccDark rounded-xl shadow-lg font-bold text-sm">
                 <i class="fas fa-snowflake w-5"></i>
                 <span>Inventario</span>
             </a>
-            <a href="maintenance_scheduler.html" class="flex items-center gap-3 px-4 py-3 text-slate-700 hover:bg-slate-100 rounded-xl transition font-medium text-sm">
+            <a href="/programacion" class="flex items-center gap-3 px-4 py-3 text-slate-700 hover:bg-slate-100 rounded-xl transition font-medium text-sm">
                 <i class="fas fa-calendar-check w-5"></i>
                 <span>Programación</span>
             </a>
-            <a href="maintenance_audit_logs.html" class="flex items-center gap-3 px-4 py-3 text-slate-700 hover:bg-slate-100 rounded-xl transition font-medium text-sm">
+            <a href="/auditoria" class="flex items-center gap-3 px-4 py-3 text-slate-700 hover:bg-slate-100 rounded-xl transition font-medium text-sm">
                 <i class="fas fa-history w-5"></i>
                 <span>Auditoría</span>
             </a>
-            <a href="service_report_form.html" class="flex items-center gap-3 px-4 py-3 text-slate-700 hover:bg-slate-100 rounded-xl transition font-medium text-sm">
+            <a href="/reporte-tecnico" class="flex items-center gap-3 px-4 py-3 text-slate-700 hover:bg-slate-100 rounded-xl transition font-medium text-sm">
                 <i class="fas fa-clipboard-list w-5"></i>
                 <span>Reporte Servicio</span>
             </a>
-            <a href="data_export_center.html" class="flex items-center gap-3 px-4 py-3 text-slate-700 hover:bg-slate-100 rounded-xl transition font-medium text-sm">
+            <a href="/exportar" class="flex items-center gap-3 px-4 py-3 text-slate-700 hover:bg-slate-100 rounded-xl transition font-medium text-sm">
                 <i class="fas fa-download w-5"></i>
                 <span>Exportar Datos</span>
             </a>
-            <a href="admin_access_control.html" class="flex items-center gap-3 px-4 py-3 text-slate-700 hover:bg-slate-100 rounded-xl transition font-medium text-sm">
+            <a href="/usuarios" class="flex items-center gap-3 px-4 py-3 text-slate-700 hover:bg-slate-100 rounded-xl transition font-medium text-sm">
                 <i class="fas fa-shield-alt w-5"></i>
                 <span>Control de Acceso</span>
             </a>
@@ -118,32 +118,23 @@
                     </div>
                     <!-- Tarjeta de Filtros Integrada -->
                     <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
-                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 items-end">
-                            <div>
-                                <label for="filterPiso" class="block text-xs font-black uppercase tracking-widest text-slate-600 mb-2">Piso</label>
-                                <input id="filterPiso" type="text" list="lista-pisos-filtro" placeholder="Ej: 2" class="w-full px-5 py-3 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-uccLight">
-                                <datalist id="lista-pisos-filtro"></datalist>
-                            </div>
+                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 items-end">
                             <div>
                                 <label for="assetBlockFilter" class="block text-xs font-black uppercase tracking-widest text-slate-600 mb-2">Bloque</label>
                                 <select id="assetBlockFilter" class="w-full px-5 py-3 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-uccLight bg-white appearance-none">
-                                    <option value="">Todos</option>
+                                    <option value="">Seleccionar bloque...</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label for="filterPiso" class="block text-xs font-black uppercase tracking-widest text-slate-600 mb-2">Piso</label>
+                                <select id="filterPiso" class="w-full px-5 py-3 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-uccLight bg-white appearance-none" disabled>
+                                    <option value="">Seleccionar piso...</option>
                                 </select>
                             </div>
                             <div>
                                 <label for="assetAulaFilter" class="block text-xs font-black uppercase tracking-widest text-slate-600 mb-2">Aula / Espacio</label>
                                 <select id="assetAulaFilter" class="w-full px-5 py-3 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-uccLight bg-white appearance-none" disabled>
-                                    <option value="">Todos</option>
-                                </select>
-                            </div>
-                            <div>
-                                <label for="assetStateFilter" class="block text-xs font-black uppercase tracking-widest text-slate-600 mb-2">Estado Operativo</label>
-                                <select id="assetStateFilter" class="w-full px-5 py-3 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-uccLight bg-white appearance-none">
-                                    <option value="">Todos</option>
-                                    <option value="Operativo">Operativo</option>
-                                    <option value="En reparación">En reparación</option>
-                                    <option value="Inactivo">Inactivo</option>
-                                    <option value="Dado de baja">Dado de baja</option>
+                                    <option value="">Seleccionar espacio...</option>
                                 </select>
                             </div>
                             <div>
@@ -817,6 +808,7 @@
     </div>
 
 <script src="js/config.js"></script>
+<script src="js/confirmation-modal.js"></script>
 <script src="js/observaciones-utils.js"></script>
 <script src="js/sidebar.js"></script>
 <script src="js/inventory-loader.js"></script>

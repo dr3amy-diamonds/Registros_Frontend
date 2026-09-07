@@ -44,13 +44,13 @@
             const botones = [
                 {
                     id: "nav-mis-ordenes",
-                    href: "mis_ordenes.html",
+                    href: "/mis-ordenes",
                     label: "Agenda de Mantenimiento",
                     icono: "fas fa-calendar-check"
                 },
                 {
                     id: "nav-inventario",
-                    href: "asset_inventory.html",
+                    href: "/inventario",
                     label: "Historial de Activos",
                     icono: "fas fa-history"
                 }
@@ -91,11 +91,11 @@
                 }
             }
 
-            if (currentPath.includes("mis_ordenes.html")) {
+            if (currentPath.includes("mis-ordenes") || currentPath.includes("mis_ordenes")) {
                 marcarNavActivo("nav-mis-ordenes");
-            } else if (currentPath.includes("asset_inventory.html")) {
+            } else if (currentPath.includes("inventario") || currentPath.includes("asset_inventory")) {
                 marcarNavActivo("nav-inventario");
-            } else if (currentPath.includes("service_report_form.html")) {
+            } else if (currentPath.includes("reporte-tecnico") || currentPath.includes("service_report_form")) {
                 marcarNavActivo("nav-mis-ordenes");
             }
         }
@@ -131,7 +131,7 @@
                     return;
                 }
                 localStorage.clear();
-                window.location.href = "/";
+                window.location.href = "/login";
             };
 
             document.querySelectorAll("#btn-cerrar-sesion, button[onclick*='logout']").forEach((boton) => {

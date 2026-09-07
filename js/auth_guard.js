@@ -20,11 +20,13 @@
     const reglasRutas = [
         { nivel: 1, fragmentos: ["reporte-tecnico", "service_report_form"] },
         { nivel: 1, fragmentos: ["inventario", "asset_inventory"] },
+        { nivel: 1, fragmentos: ["mis-ordenes", "mis_ordenes"] },
+        { nivel: 1, fragmentos: ["perfil", "user_profile_settings"] },
         { nivel: 2, fragmentos: ["programacion", "maintenance_scheduler"] },
-        { nivel: 2, fragmentos: ["gestion-usuarios", "admin_access_control"] },
+        { nivel: 2, fragmentos: ["usuarios", "gestion-usuarios", "admin_access_control"] },
         { nivel: 3, fragmentos: ["dashboard", "analytics_dashboard"] },
-        { nivel: 3, fragmentos: ["exportar-datos", "data_export_center"] },
-        { nivel: 3, fragmentos: ["auditoria-sistema", "maintenance_audit_logs"] }
+        { nivel: 3, fragmentos: ["exportar", "exportar-datos", "data_export_center"] },
+        { nivel: 3, fragmentos: ["auditoria", "auditoria-sistema", "maintenance_audit_logs"] }
     ];
 
     function normalizarRol(rol) {
@@ -42,12 +44,12 @@
     }
 
     function redirigirPorNivel(nivelUsuario) {
-        globalThis.location.href = nivelUsuario === 1 ? "service_report_form.html" : "analytics_dashboard.html";
+        globalThis.location.href = nivelUsuario === 1 ? "/reporte-tecnico" : "/dashboard";
     }
 
     const nivelUsuario = obtenerNivelUsuario(rolUsuario);
     const nivelRequerido = obtenerNivelRequerido(rutaActual);
-    const estaEnEntradaPublica = rutaActual === "" || rutaActual === "/" || rutaActual.endsWith("auth_login.html");
+    const estaEnEntradaPublica = rutaActual === "" || rutaActual === "/" || rutaActual.includes("login") || rutaActual.endsWith("auth_login.html");
 
     console.debug("[auth_guard] rol:", rolUsuario, "-> nivel:", nivelUsuario, "-> ruta:", rutaActual);
 
@@ -59,6 +61,6 @@
     }
 
     if (!estaEnEntradaPublica) {
-        globalThis.location.href = "auth_login.html";
+        globalThis.location.href = "/login";
     }
 })();

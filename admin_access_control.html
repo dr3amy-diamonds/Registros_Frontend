@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
@@ -40,13 +40,13 @@
             <h2 class="text-center text-sm font-black text-uccDark tracking-tighter">Sistema de Gestión de Aires</h2>
         </div>
         <nav class="flex-1 px-4 py-8 space-y-1">
-            <a href="analytics_dashboard.html" class="flex items-center gap-3 px-4 py-3 text-slate-700 hover:bg-slate-100 rounded-xl transition font-medium text-sm"><i class="fas fa-chart-line w-5"></i><span>Dashboard</span></a>
-            <a href="asset_inventory.html" class="flex items-center gap-3 px-4 py-3 text-slate-700 hover:bg-slate-100 rounded-xl transition font-medium text-sm"><i class="fas fa-snowflake w-5"></i><span>Inventario</span></a>
-            <a href="maintenance_scheduler.html" class="flex items-center gap-3 px-4 py-3 text-slate-700 hover:bg-slate-100 rounded-xl transition font-medium text-sm"><i class="fas fa-calendar-check w-5"></i><span>Programación</span></a>
-            <a href="maintenance_audit_logs.html" class="flex items-center gap-3 px-4 py-3 text-slate-700 hover:bg-slate-100 rounded-xl transition font-medium text-sm"><i class="fas fa-history w-5"></i><span>Auditoría</span></a>
-            <a href="service_report_form.html" class="flex items-center gap-3 px-4 py-3 text-slate-700 hover:bg-slate-100 rounded-xl transition font-medium text-sm"><i class="fas fa-clipboard-list w-5"></i><span>Reporte Servicio</span></a>
-            <a href="data_export_center.html" class="flex items-center gap-3 px-4 py-3 text-slate-700 hover:bg-slate-100 rounded-xl transition font-medium text-sm"><i class="fas fa-download w-5"></i><span>Exportar Datos</span></a>
-            <a href="admin_access_control.html" class="flex items-center gap-3 px-4 py-3 bg-uccLight text-uccDark rounded-xl shadow-lg font-bold text-sm"><i class="fas fa-shield-alt w-5"></i><span>Control de Acceso</span></a>
+            <a href="/dashboard" class="flex items-center gap-3 px-4 py-3 text-slate-700 hover:bg-slate-100 rounded-xl transition font-medium text-sm"><i class="fas fa-chart-line w-5"></i><span>Dashboard</span></a>
+            <a href="/inventario" class="flex items-center gap-3 px-4 py-3 text-slate-700 hover:bg-slate-100 rounded-xl transition font-medium text-sm"><i class="fas fa-snowflake w-5"></i><span>Inventario</span></a>
+            <a href="/programacion" class="flex items-center gap-3 px-4 py-3 text-slate-700 hover:bg-slate-100 rounded-xl transition font-medium text-sm"><i class="fas fa-calendar-check w-5"></i><span>Programación</span></a>
+            <a href="/auditoria" class="flex items-center gap-3 px-4 py-3 text-slate-700 hover:bg-slate-100 rounded-xl transition font-medium text-sm"><i class="fas fa-history w-5"></i><span>Auditoría</span></a>
+            <a href="/reporte-tecnico" class="flex items-center gap-3 px-4 py-3 text-slate-700 hover:bg-slate-100 rounded-xl transition font-medium text-sm"><i class="fas fa-clipboard-list w-5"></i><span>Reporte Servicio</span></a>
+            <a href="/exportar" class="flex items-center gap-3 px-4 py-3 text-slate-700 hover:bg-slate-100 rounded-xl transition font-medium text-sm"><i class="fas fa-download w-5"></i><span>Exportar Datos</span></a>
+            <a href="/usuarios" class="flex items-center gap-3 px-4 py-3 bg-uccLight text-uccDark rounded-xl shadow-lg font-bold text-sm"><i class="fas fa-shield-alt w-5"></i><span>Control de Acceso</span></a>
         </nav>
         <div class="p-4 border-t border-slate-200">
             <button onclick="logout()" class="w-full flex items-center gap-3 px-4 py-3 text-slate-700 hover:bg-slate-100 rounded-xl transition font-medium text-sm justify-center"><i class="fas fa-sign-out-alt w-5"></i><span>Cerrar Sesión</span></button>
@@ -398,7 +398,37 @@
         </div>
     </div>
 
+    <script src="js/confirmation-modal.js"></script>
     <script>
+        function mostrarNotificacion(tipo, mensaje) {
+            let contenedor = document.getElementById('toast-container');
+            if (!contenedor) {
+                contenedor = document.createElement('div');
+                contenedor.id = 'toast-container';
+                contenedor.className = 'fixed top-6 right-6 z-[100] flex flex-col gap-3 pointer-events-none';
+                contenedor.setAttribute('aria-live', 'polite');
+                document.body.appendChild(contenedor);
+            }
+
+            const esExito = tipo === 'exito' || tipo === 'success';
+            const clases = esExito
+                ? 'bg-uccLight text-slate-900 border border-cyan-300/50'
+                : 'bg-red-500 text-white border border-red-400/40';
+            const icono = esExito ? 'fa-circle-check' : 'fa-circle-exclamation';
+
+            const toast = document.createElement('div');
+            toast.className = `${clases} pointer-events-auto flex items-center gap-3 px-5 py-4 rounded-2xl shadow-2xl text-sm font-semibold max-w-sm transform transition-all duration-300 translate-x-6 opacity-0`;
+            toast.innerHTML = `<i class="fas ${icono}"></i><span></span>`;
+            toast.querySelector('span').textContent = mensaje;
+            contenedor.appendChild(toast);
+
+            requestAnimationFrame(() => toast.classList.remove('translate-x-6', 'opacity-0'));
+            setTimeout(() => {
+                toast.classList.add('translate-x-6', 'opacity-0');
+                setTimeout(() => toast.remove(), 300);
+            }, 4200);
+        }
+
         const userProfiles = {
             'user-1': {
                 name: 'Juan Carlos Martínez',
@@ -554,11 +584,11 @@
 
             try {
                 await API.post('/usuarios/', objetoDatos);
-                alert('Usuario registrado correctamente');
+                mostrarNotificacion('exito', 'Usuario registrado correctamente');
                 form.reset();
                 closeCreateUserModal();
             } catch (error) {
-                alert(`Error al registrar el usuario: ${error.message || error}`);
+                mostrarNotificacion('error', `Error al registrar el usuario: ${error.message || error}`);
             }
         }
 
@@ -614,11 +644,23 @@
             document.getElementById('profileName').textContent = user.name;
             document.getElementById('profileEmail').textContent = user.email;
 
-            alert('Cambios guardados para ' + user.name);
+            mostrarNotificacion('exito', 'Cambios guardados para ' + user.name);
         }
 
-        function deactivateUser() {
-            alert('Dar de baja personal: ' + currentUserId);
+        async function deactivateUser() {
+            const user = userProfiles[currentUserId];
+            const nombreUsuario = user ? user.name : 'este usuario';
+
+            const confirmar = await solicitarConfirmacion({
+                titulo: 'Dar de baja personal',
+                mensaje: `¿Está seguro de dar de baja a ${nombreUsuario}? El acceso al sistema será revocado.`,
+                textoAceptar: 'Sí, dar de baja',
+                esPeligroso: true
+            });
+
+            if (!confirmar) return;
+
+            mostrarNotificacion('exito', `Solicitud de baja registrada para ${nombreUsuario}.`);
         }
 
         document.addEventListener('click', closeAllMenus);

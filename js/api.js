@@ -59,7 +59,7 @@ const API = {
 
             if (respuesta.status === 401) {
                 localStorage.clear();
-                window.location.href = "auth_login.html";
+                window.location.href = "/login";
                 return null;
             }
 
