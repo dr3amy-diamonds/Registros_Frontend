@@ -5,21 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gestión de Mantenimiento de Aires Acondicionados - Panel de Control</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        uccDark: '#132740',
-                        uccLight: '#00acc9',
-                    },
-                    fontFamily: {
-                        sans: ['Inter', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'sans-serif']
-                    }
-                }
-            }
-        }
-    </script>
+    <script src="js/tailwind-config.js"></script>
+    <link href="css/globals.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 </head>
@@ -100,45 +87,52 @@
                     <p class="text-slate-600 font-medium">Indicadores de gestión y carga térmica - Campus Montería</p>
                 </div>
 
-                <!-- KPI Grid Principal -->
-                <div class="grid grid-cols-4 gap-6 mb-10">
-                    <!-- Total Activos -->
-                    <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-8">
-                        <p class="text-xs font-black uppercase tracking-widest text-slate-500 mb-4">Total Activos</p>
-                        <h3 class="text-5xl font-black text-uccDark mb-2">142</h3>
-                        <p class="text-xs text-slate-500 font-medium">
-                            <i class="fas fa-arrow-up text-green-600 mr-1"></i>
-                            <span class="text-green-600 font-bold">+12</span> este mes
-                        </p>
+                <!-- Sección 1: Resumen de equipos -->
+                <section aria-labelledby="titulo-resumen-equipos" class="mb-6">
+                    <h2 id="titulo-resumen-equipos" class="text-xl font-black uppercase tracking-tight text-uccDark mb-1">Resumen de equipos de climatización</h2>
+                    <p class="text-sm font-medium text-slate-500 mb-4">Flota total. Chiller incluye centrales y Piso Techo.</p>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4" role="status" aria-live="polite" aria-label="Resumen de equipos">
+                        <div class="bg-white p-4 rounded-xl border border-slate-100 shadow-sm flex flex-col justify-between gap-2">
+                            <p class="text-xs font-bold uppercase tracking-widest text-slate-500">Cantidad aires</p>
+                            <h3 id="kpi-total" class="text-4xl font-black text-slate-900 tabular-nums">…</h3>
+                            <p class="text-xs font-medium text-slate-500">Conteo general de la flota</p>
+                        </div>
+                        <div class="bg-white p-4 rounded-xl border border-slate-100 shadow-sm flex flex-col justify-between gap-2">
+                            <p class="text-xs font-bold uppercase tracking-widest text-slate-500">Chiller</p>
+                            <h3 id="kpi-chiller" class="text-4xl font-black text-cyan-600 tabular-nums">…</h3>
+                            <p class="text-xs font-medium text-slate-500">Centrales y Piso Techo</p>
+                        </div>
+                        <div class="bg-white p-4 rounded-xl border border-slate-100 shadow-sm flex flex-col justify-between gap-2">
+                            <p class="text-xs font-bold uppercase tracking-widest text-slate-500">Otros</p>
+                            <h3 id="kpi-otros" class="text-4xl font-black text-slate-900 tabular-nums">…</h3>
+                            <p class="text-xs font-medium text-slate-500">Mini Splits y sistemas autónomos</p>
+                        </div>
                     </div>
+                </section>
 
-                    <!-- Capacidad Total BTU -->
-                    <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-8 border-l-4 border-l-uccLight">
-                        <p class="text-xs font-black uppercase tracking-widest text-slate-500 mb-4">Capacidad Total</p>
-                        <h3 class="text-4xl font-black text-uccLight mb-2">2.4M <span class="text-sm font-bold">BTU</span></h3>
-                        <p class="text-xs text-slate-500 font-medium">
-                            Equivalente a <strong>200 TR</strong>
-                        </p>
+                <!-- Sección 2: Resumen financiero -->
+                <section aria-labelledby="titulo-resumen-financiero" class="mb-6">
+                    <h2 id="titulo-resumen-financiero" class="text-xl font-black uppercase tracking-tight text-uccDark mb-1">Resumen financiero</h2>
+                    <p class="text-sm font-medium text-slate-500 mb-4">Presupuesto, gasto en insumos y saldo restante.</p>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4" role="status" aria-live="polite" aria-label="Resumen financiero">
+                        <div class="bg-white p-4 rounded-xl border border-slate-100 shadow-sm flex flex-col justify-between gap-2">
+                            <p class="text-xs font-bold uppercase tracking-widest text-slate-500">Valor presupuesto</p>
+                            <h3 id="kpi-presupuesto" class="text-2xl md:text-3xl font-black text-slate-900 tabular-nums">…</h3>
+                            <p class="text-xs font-medium text-slate-500">Monto asignado por administración</p>
+                        </div>
+                        <div class="bg-white p-4 rounded-xl border border-slate-100 shadow-sm flex flex-col justify-between gap-2">
+                            <p class="text-xs font-bold uppercase tracking-widest text-slate-500">Total gastado</p>
+                            <h3 id="kpi-gastado" class="text-2xl md:text-3xl font-black text-slate-900 tabular-nums">…</h3>
+                            <p class="text-xs font-medium text-slate-500">Insumos usados en mantenimientos</p>
+                        </div>
+                        <div id="card-saldo" class="bg-white p-4 rounded-xl border border-slate-100 shadow-sm flex flex-col justify-between gap-2">
+                            <p class="text-xs font-bold uppercase tracking-widest text-slate-500">Saldo disponible</p>
+                            <h3 id="kpi-saldo" class="text-2xl md:text-3xl font-black text-green-700 tabular-nums">…</h3>
+                            <p id="kpi-saldo-estado" class="text-xs font-bold text-slate-500">Presupuesto menos gasto</p>
+                        </div>
                     </div>
-
-                    <!-- Disponibilidad -->
-                    <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-8 border-l-4 border-l-green-500">
-                        <p class="text-xs font-black uppercase tracking-widest text-slate-500 mb-4">Disponibilidad</p>
-                        <h3 class="text-5xl font-black text-green-600 mb-2">98.2%</h3>
-                        <p class="text-xs text-slate-500 font-medium">
-                            <span class="text-green-600 font-bold">140</span> operativos
-                        </p>
-                    </div>
-
-                    <!-- Alertas Vencidas -->
-                    <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-8 border-l-4 border-l-red-500">
-                        <p class="text-xs font-black uppercase tracking-widest text-slate-500 mb-4">Alertas Vencidas</p>
-                        <h3 class="text-5xl font-black text-red-600 mb-2">03</h3>
-                        <p class="text-xs text-slate-500 font-medium">
-                            <span class="text-red-600 font-bold">2</span> en reparación
-                        </p>
-                    </div>
-                </div>
+                    <p id="dashboard-error" class="hidden mt-3 text-sm font-bold text-red-700" role="alert"></p>
+                </section>
 
 
                 <!-- Estado de Equipos por Tipo -->
@@ -196,6 +190,7 @@
     <script src="js/config.js"></script>
     <script src="js/api.js"></script>
     <script src="js/sidebar.js"></script>
+    <script src="js/dashboard-loader.js"></script>
 
 </body>
 </html>

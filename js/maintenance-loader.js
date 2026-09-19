@@ -399,6 +399,14 @@ function aplicarFiltrosYPaginacion() {
     renderizarTablaYPaginacion();
 }
 
+function limpiarFiltrosProgramacion() {
+    ['input-busqueda-mantenimiento', 'filterEstado', 'filterFechaDesde', 'filterFechaHasta'].forEach((id) => {
+        const el = document.getElementById(id);
+        if (el) el.value = '';
+    });
+    aplicarFiltrosYPaginacion();
+}
+
 /* ── Paginación estricta (10 filas) ───────────────────────────────────────── */
 
 function renderizarTablaYPaginacion() {
@@ -442,8 +450,8 @@ function renderizarTablaYPaginacion() {
                 <td class="px-8 py-5 text-slate-600">${escaparHtml(orden.tecnico_nombre)}</td>
                 <td class="px-8 py-5"><span class="inline-flex items-center gap-1 ${badge} px-3 py-1 rounded-full text-xs font-bold"><i class="fas ${icono} w-3"></i> ${escaparHtml(orden.estado)}</span></td>
                 <td class="px-8 py-5 text-center">
-                    <button type="button" data-orden-id="${idModal}" class="btn-ver-ficha inline-flex items-center justify-center bg-slate-100 hover:bg-slate-200 px-4 py-2 rounded-lg text-xs font-bold transition" title="Ver ficha">
-                        <i class="fas fa-eye text-[#00acc9]"></i>
+                    <button type="button" data-orden-id="${idModal}" aria-label="Ver ficha de la orden ${idModal}" class="btn-ver-ficha inline-flex items-center justify-center bg-slate-100 hover:bg-slate-200 px-4 py-2 rounded-lg text-xs font-bold transition min-h-[44px]">
+                        <i class="fas fa-eye text-uccTeal" aria-hidden="true"></i>
                         <span class="ml-2">Ver Ficha</span>
                     </button>
                 </td>`;
@@ -488,15 +496,23 @@ function irPaginaSiguiente() {
 /* ── Modal Programar ──────────────────────────────────────────────────────── */
 
 function openProgramarMantenimientoModal() {
-    const modal = document.getElementById('modal-programar-mantenimiento');
-    modal?.classList.remove('hidden');
-    modal?.classList.add('flex');
+    if (window.ModalAccesible) {
+        window.ModalAccesible.open('modal-programar-mantenimiento', { focus: '#selectActivo' });
+    } else {
+        const modal = document.getElementById('modal-programar-mantenimiento');
+        modal?.classList.remove('hidden');
+        modal?.classList.add('flex');
+    }
 }
 
 function closeProgramarMantenimientoModal() {
-    const modal = document.getElementById('modal-programar-mantenimiento');
-    modal?.classList.add('hidden');
-    modal?.classList.remove('flex');
+    if (window.ModalAccesible) {
+        window.ModalAccesible.close('modal-programar-mantenimiento');
+    } else {
+        const modal = document.getElementById('modal-programar-mantenimiento');
+        modal?.classList.add('hidden');
+        modal?.classList.remove('flex');
+    }
     const resetIds = ['selectActivo', 'inputFechaPlanificada', 'selectTecnico', 'selectTipo'];
     resetIds.forEach((id) => {
         const el = document.getElementById(id);
@@ -618,14 +634,22 @@ function openDetalleOrdenModal(idReferencia) {
     }
 
     const modal = document.getElementById('modal-detalle-orden');
-    modal?.classList.remove('hidden');
-    modal?.classList.add('flex');
+    if (window.ModalAccesible) {
+        window.ModalAccesible.open('modal-detalle-orden');
+    } else {
+        modal?.classList.remove('hidden');
+        modal?.classList.add('flex');
+    }
 }
 
 function closeDetalleOrdenModal() {
-    const modal = document.getElementById('modal-detalle-orden');
-    modal?.classList.add('hidden');
-    modal?.classList.remove('flex');
+    if (window.ModalAccesible) {
+        window.ModalAccesible.close('modal-detalle-orden');
+    } else {
+        const modal = document.getElementById('modal-detalle-orden');
+        modal?.classList.add('hidden');
+        modal?.classList.remove('flex');
+    }
     ordenSeleccionada = null;
     resetearBotonCancelar();
 }
@@ -737,12 +761,16 @@ function inicializarEventosMaintenance() {
 
     document.getElementById('modal-programar-mantenimiento')
         ?.addEventListener('click', (e) => {
-            if (e.target.id === 'modal-programar-mantenimiento') closeProgramarMantenimientoModal();
+            if (e.target.id === 'modal-programar-mantenimiento' && !window.ModalAccesible) closeProgramarMantenimientoModal();
         });
     document.getElementById('modal-detalle-orden')
         ?.addEventListener('click', (e) => {
-            if (e.target.id === 'modal-detalle-orden') closeDetalleOrdenModal();
+            if (e.target.id === 'modal-detalle-orden' && !window.ModalAccesible) closeDetalleOrdenModal();
         });
+    if (window.ModalAccesible) {
+        ['modal-programar-mantenimiento', 'modal-detalle-orden', 'modal-gestion-tipos-mantenimiento']
+            .forEach((id) => window.ModalAccesible.initModal(id));
+    }
 }
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -754,8 +782,8 @@ document.addEventListener('DOMContentLoaded', () => {
 /* ── Gestión de tipos de mantenimiento (CRUD — superusuario) ─────────────── */
 
 const CLASE_FILA_GESTION = 'bg-slate-50 rounded-xl px-4 py-2.5 mb-2 flex justify-between items-center text-sm hover:bg-slate-100/90 transition-colors duration-200';
-const CLASE_BTN_EDITAR_GESTION = 'p-2 rounded-lg text-slate-400 hover:text-uccLight transition-colors';
-const CLASE_BTN_ELIMINAR_GESTION = 'p-2 rounded-lg text-slate-400 hover:text-red-500 transition-colors';
+const CLASE_BTN_EDITAR_GESTION = 'p-2 rounded-lg text-slate-500 hover:text-uccTeal transition-colors min-h-[44px] min-w-[44px] inline-flex items-center justify-center';
+const CLASE_BTN_ELIMINAR_GESTION = 'p-2 rounded-lg text-slate-500 hover:text-red-600 transition-colors min-h-[44px] min-w-[44px] inline-flex items-center justify-center';
 const CLASE_INPUT_INLINE_GESTION = 'flex-1 border border-slate-200 hover:border-slate-300 focus:border-uccLight focus:ring-2 focus:ring-cyan-100 transition-all rounded-xl px-4 py-2.5 text-slate-800 bg-white text-sm font-medium';
 
 function esSuperusuarioProgramacion() {
@@ -798,16 +826,24 @@ function openGestionTiposMantenimientoModal() {
     }
     const modal = document.getElementById('modal-gestion-tipos-mantenimiento');
     if (!modal) return;
-    modal.classList.remove('hidden');
-    modal.classList.add('flex');
+    if (window.ModalAccesible) {
+        window.ModalAccesible.open('modal-gestion-tipos-mantenimiento', { focus: '#input-nuevo-tipo-mantenimiento' });
+    } else {
+        modal.classList.remove('hidden');
+        modal.classList.add('flex');
+    }
     renderizarListaTiposMantenimiento();
 }
 
 function closeGestionTiposMantenimientoModal() {
     const modal = document.getElementById('modal-gestion-tipos-mantenimiento');
     if (!modal) return;
-    modal.classList.add('hidden');
-    modal.classList.remove('flex');
+    if (window.ModalAccesible) {
+        window.ModalAccesible.close('modal-gestion-tipos-mantenimiento');
+    } else {
+        modal.classList.add('hidden');
+        modal.classList.remove('flex');
+    }
     const inputNombre = document.getElementById('input-nuevo-tipo-mantenimiento');
     const inputFrecuencia = document.getElementById('input-nuevo-frecuencia-mantenimiento');
     if (inputNombre) inputNombre.value = '';
@@ -818,13 +854,13 @@ async function renderizarListaTiposMantenimiento() {
     const lista = document.getElementById('lista-tipos-mantenimiento-gestion');
     if (!lista) return;
 
-    lista.innerHTML = '<p class="text-xs text-slate-400 text-center py-6"><i class="fas fa-spinner fa-spin mr-1"></i> Cargando...</p>';
+    lista.innerHTML = '<p class="text-xs text-slate-500 text-center py-6"><i class="fas fa-spinner fa-spin mr-1 text-uccTeal" aria-hidden="true"></i> Cargando...</p>';
 
     try {
         const tipos = await API.get('/tipos-mantenimiento/');
 
         if (!tipos.length) {
-            lista.innerHTML = '<p class="text-xs text-slate-400 text-center py-6">No hay tipos de mantenimiento registrados</p>';
+            lista.innerHTML = '<p class="text-xs text-slate-500 text-center py-6">No hay tipos de mantenimiento registrados</p>';
             return;
         }
 
@@ -836,14 +872,14 @@ async function renderizarListaTiposMantenimiento() {
             fila.innerHTML = `
                 <div class="flex-1 min-w-0 pr-2">
                     <span class="font-semibold text-slate-800 truncate tipo-mantenimiento-nombre-display">${escaparHtml(tipo.nombre)}</span>
-                    <span class="text-xs text-slate-400 ml-2 tipo-mantenimiento-frecuencia-display">${escaparHtml(formatearFrecuenciaTipoMantenimiento(tipo.frecuencia_dias))}</span>
+                    <span class="text-xs text-slate-500 ml-2 tipo-mantenimiento-frecuencia-display">${escaparHtml(formatearFrecuenciaTipoMantenimiento(tipo.frecuencia_dias))}</span>
                 </div>
                 <div class="flex items-center gap-0.5 shrink-0">
-                    <button type="button" onclick="activarEdicionTipoMantenimiento(${tipo.id})" class="${CLASE_BTN_EDITAR_GESTION}" title="Editar">
-                        <i class="fas fa-pen text-xs"></i>
+                    <button type="button" onclick="activarEdicionTipoMantenimiento(${tipo.id})" aria-label="Editar tipo de mantenimiento ${escaparHtml(tipo.nombre)}" class="${CLASE_BTN_EDITAR_GESTION}" title="Editar">
+                        <i class="fas fa-pen text-xs" aria-hidden="true"></i>
                     </button>
-                    <button type="button" onclick="eliminarTipoMantenimiento(${tipo.id})" class="${CLASE_BTN_ELIMINAR_GESTION}" title="Eliminar">
-                        <i class="fas fa-trash text-xs"></i>
+                    <button type="button" onclick="eliminarTipoMantenimiento(${tipo.id})" aria-label="Eliminar tipo de mantenimiento ${escaparHtml(tipo.nombre)}" class="${CLASE_BTN_ELIMINAR_GESTION}" title="Eliminar">
+                        <i class="fas fa-trash text-xs" aria-hidden="true"></i>
                     </button>
                 </div>`;
             fila.dataset.frecuencia = tipo.frecuencia_dias ?? '';
@@ -902,11 +938,11 @@ function activarEdicionTipoMantenimiento(id) {
                 placeholder="Frecuencia (días)" class="${CLASE_INPUT_INLINE_GESTION} sm:max-w-[160px]">
         </div>
         <div class="flex items-center gap-1 shrink-0">
-            <button type="button" onclick="guardarEdicionTipoMantenimiento(${id})" class="p-2.5 rounded-lg text-emerald-600 hover:text-emerald-700 hover:bg-emerald-50 transition-colors duration-200" title="Guardar">
-                <i class="fas fa-check"></i>
+            <button type="button" onclick="guardarEdicionTipoMantenimiento(${id})" aria-label="Guardar cambios del tipo" class="p-2.5 rounded-lg text-emerald-700 hover:text-emerald-800 hover:bg-emerald-50 transition-colors duration-200 min-h-[44px] min-w-[44px] inline-flex items-center justify-center" title="Guardar">
+                <i class="fas fa-check" aria-hidden="true"></i>
             </button>
-            <button type="button" onclick="renderizarListaTiposMantenimiento()" class="p-2.5 rounded-lg text-slate-400 hover:text-slate-600 hover:bg-white transition-colors duration-200" title="Cancelar">
-                <i class="fas fa-times"></i>
+            <button type="button" onclick="renderizarListaTiposMantenimiento()" aria-label="Cancelar edición" class="p-2.5 rounded-lg text-slate-500 hover:text-slate-700 hover:bg-white transition-colors duration-200 min-h-[44px] min-w-[44px] inline-flex items-center justify-center" title="Cancelar">
+                <i class="fas fa-times" aria-hidden="true"></i>
             </button>
         </div>`;
     document.getElementById(`edit-tipo-mantenimiento-nombre-${id}`)?.focus();
@@ -970,6 +1006,7 @@ window.guardarCambiosOrden = guardarCambiosOrden;
 window.cancelarMantenimiento = cancelarMantenimiento;
 window.mostrarNotificacion = mostrarNotificacion;
 window.openGestionTiposMantenimientoModal = openGestionTiposMantenimientoModal;
+window.limpiarFiltrosProgramacion = limpiarFiltrosProgramacion;
 window.closeGestionTiposMantenimientoModal = closeGestionTiposMantenimientoModal;
 window.submitCrearTipoMantenimiento = submitCrearTipoMantenimiento;
 window.activarEdicionTipoMantenimiento = activarEdicionTipoMantenimiento;

@@ -111,7 +111,7 @@ async function cargarTiposEventoFiltro() {
     try {
         const tipos = await API.get('/auditoria/tipos-evento');
         const valorActual = select.value;
-        select.innerHTML = '<option value="">Todos los tipos</option>';
+        select.innerHTML = '<option value="">Tipo de evento</option>';
         (tipos || []).forEach((tipo) => {
             const opt = document.createElement('option');
             opt.value = tipo;
@@ -131,7 +131,7 @@ async function cargarBloquesFiltro() {
     try {
         const data = await API.get('/bloques/?limit=100');
         catalogoBloques = Array.isArray(data) ? data : (data.items || []);
-        select.innerHTML = '<option value="">Todos los bloques</option>';
+        select.innerHTML = '<option value="">Bloque</option>';
         catalogoBloques.forEach((bloque) => {
             const opt = document.createElement('option');
             opt.value = String(bloque.id);
@@ -148,9 +148,9 @@ async function cargarEspaciosPorBloque(bloqueId) {
     const selectEspacio = document.getElementById('filterEspacio');
     if (!selectPiso || !selectEspacio) return;
 
-    selectPiso.innerHTML = '<option value="">Todos los pisos</option>';
+    selectPiso.innerHTML = '<option value="">Piso</option>';
     selectPiso.disabled = true;
-    selectEspacio.innerHTML = '<option value="">Todos los espacios</option>';
+    selectEspacio.innerHTML = '<option value="">Espacio / Aula</option>';
     selectEspacio.disabled = true;
     filtrosBitacora.piso = "";
     filtrosBitacora.espacio_id = "";
@@ -192,7 +192,7 @@ function filtrarEspaciosPorPiso(piso) {
     if (!selectEspacio) return;
 
     const valorPrevio = selectEspacio.value;
-    selectEspacio.innerHTML = '<option value="">Todos los espacios</option>';
+    selectEspacio.innerHTML = '<option value="">Espacio / Aula</option>';
 
     const lista = piso === ""
         ? catalogoEspacios
@@ -227,9 +227,9 @@ function limpiarFiltrosBitacora() {
     document.getElementById('filterTipo').value = "";
     document.getElementById('filterActor').value = "";
     document.getElementById('filterBloque').value = "";
-    document.getElementById('filterPiso').innerHTML = '<option value="">Todos los pisos</option>';
+    document.getElementById('filterPiso').innerHTML = '<option value="">Piso</option>';
     document.getElementById('filterPiso').disabled = true;
-    document.getElementById('filterEspacio').innerHTML = '<option value="">Todos los espacios</option>';
+    document.getElementById('filterEspacio').innerHTML = '<option value="">Espacio / Aula</option>';
     document.getElementById('filterEspacio').disabled = true;
 
     filtrosBitacora = {

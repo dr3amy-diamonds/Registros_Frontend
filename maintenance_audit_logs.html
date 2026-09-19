@@ -6,21 +6,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AiresFlow - Bitácora de Gestión</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        uccDark: '#132740',
-                        uccLight: '#00acc9',
-                    },
-                    fontFamily: {
-                        sans: ['Inter', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'sans-serif']
-                    }
-                }
-            }
-        }
-    </script>
+    <script src="js/tailwind-config.js"></script>
+    <link href="css/globals.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 </head>
@@ -61,64 +48,34 @@
         </header>
 
         <div class="flex-1 overflow-y-auto">
-            <div class="p-10">
-                <div class="mb-10">
-                    <h1 class="text-4xl font-black text-uccDark tracking-tighter mb-2">Bitácora de Gestión</h1>
-                    <p class="text-slate-600 font-medium">Historial narrativo de acciones operativas y administrativas — legible para todo el equipo.</p>
+            <div class="p-4">
+                <div class="py-2 mb-3">
+                    <h1 class="text-2xl font-black text-uccDark tracking-tighter mb-1">Bitácora de Gestión</h1>
+                    <p class="text-xs text-slate-600 font-medium">Historial narrativo de acciones operativas y administrativas — legible para todo el equipo.</p>
                 </div>
 
-                <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 mb-8 space-y-5">
-                    <div class="flex items-center justify-between gap-4 flex-wrap">
-                        <h2 class="text-sm font-black uppercase tracking-widest text-slate-600">Filtros de búsqueda</h2>
-                        <div class="flex gap-2">
-                            <button type="button" id="btnLimpiarFiltros" class="px-4 py-2.5 text-xs font-bold uppercase tracking-wider border border-slate-200 rounded-lg text-slate-600 hover:bg-slate-50 transition">
-                                Limpiar filtros
-                            </button>
-                            <button type="button" id="btnAplicarFiltros" class="px-4 py-2.5 text-xs font-bold uppercase tracking-wider bg-uccDark text-white rounded-lg hover:bg-slate-800 transition">
-                                Aplicar filtros
-                            </button>
-                        </div>
-                    </div>
-                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                        <div>
-                            <label for="filterFechaDesde" class="block text-xs font-black uppercase tracking-widest text-slate-600 mb-2">Fecha inicial</label>
-                            <input id="filterFechaDesde" type="date" class="w-full px-4 py-3 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-uccLight bg-white shadow-sm">
-                        </div>
-                        <div>
-                            <label for="filterFechaHasta" class="block text-xs font-black uppercase tracking-widest text-slate-600 mb-2">Fecha final</label>
-                            <input id="filterFechaHasta" type="date" class="w-full px-4 py-3 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-uccLight bg-white shadow-sm">
-                        </div>
-                        <div>
-                            <label for="filterTipo" class="block text-xs font-black uppercase tracking-widest text-slate-600 mb-2">Tipo de evento</label>
-                            <select id="filterTipo" class="w-full px-4 py-3 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-uccLight bg-white shadow-sm">
-                                <option value="">Todos los tipos</option>
-                            </select>
-                        </div>
-                        <div>
-                            <label for="filterActor" class="block text-xs font-black uppercase tracking-widest text-slate-600 mb-2">Operario</label>
-                            <input id="filterActor" type="search" placeholder="Nombre del responsable…" class="w-full px-4 py-3 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-uccLight bg-white shadow-sm">
-                        </div>
-                    </div>
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                        <div>
-                            <label for="filterBloque" class="block text-xs font-black uppercase tracking-widest text-slate-600 mb-2">Bloque</label>
-                            <select id="filterBloque" class="w-full px-4 py-3 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-uccLight bg-white shadow-sm">
-                                <option value="">Todos los bloques</option>
-                            </select>
-                        </div>
-                        <div>
-                            <label for="filterPiso" class="block text-xs font-black uppercase tracking-widest text-slate-600 mb-2">Piso</label>
-                            <select id="filterPiso" disabled class="w-full px-4 py-3 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-uccLight bg-slate-50 shadow-sm disabled:opacity-60">
-                                <option value="">Todos los pisos</option>
-                            </select>
-                        </div>
-                        <div>
-                            <label for="filterEspacio" class="block text-xs font-black uppercase tracking-widest text-slate-600 mb-2">Espacio / Aula</label>
-                            <select id="filterEspacio" disabled class="w-full px-4 py-3 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-uccLight bg-slate-50 shadow-sm disabled:opacity-60">
-                                <option value="">Todos los espacios</option>
-                            </select>
-                        </div>
-                    </div>
+                <div class="flex flex-wrap items-center gap-2.5 p-3 bg-white rounded-xl border border-slate-100 shadow-sm mb-4" role="search" aria-label="Filtros de bitácora">
+                    <input id="filterFechaDesde" type="date" title="Fecha inicial" aria-label="Fecha inicial" class="h-9 py-1 px-2.5 text-xs rounded-lg border border-slate-200 bg-slate-50/50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-uccLight min-h-0">
+                    <input id="filterFechaHasta" type="date" title="Fecha final" aria-label="Fecha final" class="h-9 py-1 px-2.5 text-xs rounded-lg border border-slate-200 bg-slate-50/50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-uccLight min-h-0">
+                    <select id="filterTipo" title="Tipo de evento" aria-label="Tipo de evento" class="h-9 py-1 px-2.5 text-xs rounded-lg border border-slate-200 bg-slate-50/50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-uccLight min-h-0 cursor-pointer">
+                        <option value="">Tipo de evento</option>
+                    </select>
+                    <input id="filterActor" type="search" placeholder="Operario…" title="Operario" aria-label="Operario" class="h-9 py-1 px-2.5 text-xs rounded-lg border border-slate-200 bg-slate-50/50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-uccLight w-36 min-h-0">
+                    <select id="filterBloque" title="Bloque" aria-label="Bloque" class="h-9 py-1 px-2.5 text-xs rounded-lg border border-slate-200 bg-slate-50/50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-uccLight min-h-0 cursor-pointer">
+                        <option value="">Bloque</option>
+                    </select>
+                    <select id="filterPiso" disabled title="Piso" aria-label="Piso" class="h-9 py-1 px-2.5 text-xs rounded-lg border border-slate-200 bg-slate-50/50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-uccLight disabled:opacity-60 min-h-0 cursor-pointer">
+                        <option value="">Piso</option>
+                    </select>
+                    <select id="filterEspacio" disabled title="Espacio / Aula" aria-label="Espacio / Aula" class="h-9 py-1 px-2.5 text-xs rounded-lg border border-slate-200 bg-slate-50/50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-uccLight disabled:opacity-60 min-h-0 cursor-pointer">
+                        <option value="">Espacio / Aula</option>
+                    </select>
+                    <button type="button" id="btnAplicarFiltros" class="h-9 px-4 text-xs font-medium bg-[#132740] hover:bg-[#00acc9] text-white rounded-lg transition-colors min-h-0">
+                        Aplicar filtros
+                    </button>
+                    <button type="button" id="btnLimpiarFiltros" title="Limpiar filtros" aria-label="Limpiar filtros" class="h-9 px-3 text-xs text-slate-500 hover:text-slate-800 bg-transparent rounded-lg transition-colors min-h-0">
+                        Limpiar ✕
+                    </button>
                 </div>
 
                 <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">

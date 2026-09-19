@@ -1163,13 +1163,13 @@ function limpiarFiltrosInventario() {
 
     // Resetear y deshabilitar selector de Piso
     if (selectPiso) {
-        selectPiso.innerHTML = '<option value="">Seleccionar piso...</option>';
+        selectPiso.innerHTML = '<option value="">Piso: Todos</option>';
         selectPiso.disabled = true;
     }
 
     // Resetear y deshabilitar selector de Aula
     if (selectAula) {
-        selectAula.innerHTML = '<option value="">Seleccionar espacio...</option>';
+        selectAula.innerHTML = '<option value="">Espacio: Todos</option>';
         selectAula.disabled = true;
     }
 
@@ -1207,7 +1207,7 @@ async function cargarFiltrosInventario() {
             bloquesCatalogGlobal = Array.isArray(bloquesData) ? bloquesData : (bloquesData.items || []);
             const selectBloque = document.getElementById("assetBlockFilter");
             if (selectBloque) {
-                selectBloque.innerHTML = '<option value="">Seleccionar bloque...</option>';
+                selectBloque.innerHTML = '<option value="">Bloque: Todos</option>';
                 bloquesCatalogGlobal.forEach(bloque => {
                     const option = document.createElement("option");
                     option.value = bloque.id;
@@ -1237,12 +1237,12 @@ function poblarPisosPorBloque(bloqueId) {
     if (!selectPiso) return;
 
     // Limpiar y deshabilitar selector de pisos
-    selectPiso.innerHTML = '<option value="">Seleccionar piso...</option>';
+    selectPiso.innerHTML = '<option value="">Piso: Todos</option>';
     selectPiso.disabled = true;
 
     // Limpiar y deshabilitar selector de aulas
     if (selectAula) {
-        selectAula.innerHTML = '<option value="">Seleccionar espacio...</option>';
+        selectAula.innerHTML = '<option value="">Espacio: Todos</option>';
         selectAula.disabled = true;
     }
 
@@ -1279,7 +1279,7 @@ function poblarAulasPorBloquePiso(bloqueId, piso) {
     const selectAula = document.getElementById("assetAulaFilter");
     if (!selectAula) return;
 
-    selectAula.innerHTML = '<option value="">Seleccionar espacio...</option>';
+    selectAula.innerHTML = '<option value="">Espacio: Todos</option>';
     selectAula.disabled = true;
 
     if (!bloqueId || !piso) {

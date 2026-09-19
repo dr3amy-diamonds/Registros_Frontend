@@ -6,21 +6,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AiresFlow - Programación de Mantenimientos</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        uccDark: '#132740',
-                        uccLight: '#00acc9',
-                    },
-                    fontFamily: {
-                        sans: ['Inter', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'sans-serif']
-                    }
-                }
-            }
-        }
-    </script>
+    <script src="js/tailwind-config.js"></script>
+    <link href="css/globals.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 </head>
@@ -31,29 +18,35 @@
 
     <aside id="main-sidebar" class="w-64 bg-white flex flex-col shadow-2xl overflow-y-auto fixed inset-y-0 left-0 z-50 transform -translate-x-full transition-transform duration-300 ease-in-out">
         <div class="p-6 relative flex flex-col items-center justify-center border-b border-slate-200 min-h-40">
-            <button id="btn-close-sidebar" class="absolute top-4 right-4 text-slate-400 hover:text-red-500 transition"><i class="fas fa-times text-xl"></i></button>
+            <button id="btn-close-sidebar" aria-label="Cerrar menú de navegación" class="absolute top-4 right-4 text-slate-500 hover:text-red-500 transition min-h-[44px] min-w-[44px] flex items-center justify-center"><i class="fas fa-times text-xl" aria-hidden="true"></i></button>
             <img src="img/ucc.png" alt="UCC Logo" class="h-24 object-contain mb-2">
             <h2 class="text-center text-sm font-black text-uccDark tracking-tighter">Sistema de Gestión de Aires</h2>
         </div>
-        <nav class="flex-1 px-4 py-8 space-y-1">
+        <nav class="flex-1 px-4 py-8 space-y-1" id="nav-principal">
             <a href="/dashboard" class="flex items-center gap-3 px-4 py-3 text-slate-700 hover:bg-slate-100 rounded-xl transition font-medium text-sm"><i class="fas fa-chart-line w-5"></i><span>Dashboard</span></a>
             <a href="/inventario" class="flex items-center gap-3 px-4 py-3 text-slate-700 hover:bg-slate-100 rounded-xl transition font-medium text-sm"><i class="fas fa-snowflake w-5"></i><span>Inventario</span></a>
             <a href="/programacion" class="flex items-center gap-3 px-4 py-3 bg-uccLight text-uccDark rounded-xl shadow-lg font-bold text-sm"><i class="fas fa-calendar-check w-5"></i><span>Programación</span></a>
+            <a href="/calendario" id="nav-calendario" class="flex items-center gap-3 px-4 py-3 text-slate-700 hover:bg-slate-100 rounded-xl transition font-medium text-sm"><i class="fas fa-calendar-alt w-5"></i><span>Resumen Mantenimiento</span></a>
             <a href="/auditoria" class="flex items-center gap-3 px-4 py-3 text-slate-700 hover:bg-slate-100 rounded-xl transition font-medium text-sm"><i class="fas fa-history w-5"></i><span>Auditoría</span></a>
             <a href="/reporte-tecnico" class="flex items-center gap-3 px-4 py-3 text-slate-700 hover:bg-slate-100 rounded-xl transition font-medium text-sm"><i class="fas fa-clipboard-list w-5"></i><span>Reporte Servicio</span></a>
             <a href="/exportar" class="flex items-center gap-3 px-4 py-3 text-slate-700 hover:bg-slate-100 rounded-xl transition font-medium text-sm"><i class="fas fa-download w-5"></i><span>Exportar Datos</span></a>
             <a href="/usuarios" class="flex items-center gap-3 px-4 py-3 text-slate-700 hover:bg-slate-100 rounded-xl transition font-medium text-sm"><i class="fas fa-shield-alt w-5"></i><span>Control de Acceso</span></a>
         </nav>
+        <div class="px-4 pb-2" id="sidebar-acciones-secundarias" aria-label="Acciones">
+            <p class="px-4 text-[10px] font-black uppercase tracking-widest text-slate-500 mb-1">Acciones</p>
+            <button type="button" onclick="accionInventario('openGestionTiposComponenteModal')" class="w-full flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-bold text-[#132740] bg-slate-100 hover:bg-[#00acc9]/15 border border-slate-200 transition min-h-[36px]"><i class="fas fa-box-open text-[#00acc9]"></i><span>Gestionar Insumos</span></button>
+            <button type="button" onclick="accionInventario('openCrearActivoModal')" class="mt-1 w-full flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-bold text-[#132740] bg-slate-100 hover:bg-[#00acc9]/15 border border-slate-200 transition min-h-[36px]"><i class="fas fa-plus text-[#00acc9]"></i><span>Registrar Nuevo Activo</span></button>
+        </div>
         <div class="p-4 border-t border-slate-200">
             <button onclick="logout()" class="w-full flex items-center gap-3 px-4 py-3 text-slate-700 hover:bg-slate-100 rounded-xl transition font-medium text-sm justify-center"><i class="fas fa-sign-out-alt w-5"></i><span>Cerrar Sesión</span></button>
         </div>
     </aside>
 
     <main class="flex-1 flex flex-col h-screen overflow-hidden">
-        <header class="bg-white border-b border-slate-200 px-10 py-5 flex items-center justify-between shadow-sm">
+        <header class="bg-white border-b border-slate-200 px-6 py-2 flex items-center justify-between shadow-sm">
             <div class="flex items-center gap-4">
-                <button id="btn-menu-toggle" type="button" class="text-slate-500 hover:text-[#00acc9] transition focus:outline-none bg-slate-100 hover:bg-slate-200 p-2 rounded-lg">
-                    <i class="fas fa-bars text-2xl"></i>
+                <button id="btn-menu-toggle" type="button" aria-label="Abrir menú de navegación" aria-expanded="false" class="text-slate-600 hover:text-[#0e7490] transition focus:outline-none bg-slate-100 hover:bg-slate-200 p-2 rounded-lg min-h-[44px] min-w-[44px] flex items-center justify-center">
+                    <i class="fas fa-bars text-2xl" aria-hidden="true"></i>
                 </button>
                 <img src="img/ucc.png" alt="UCC Logo" class="h-10 md:h-12 object-contain hidden sm:block">
             </div>
@@ -61,54 +54,41 @@
         </header>
 
         <div class="flex-1 overflow-y-auto">
-            <div class="p-10">
-                <div class="mb-10 flex justify-between items-start">
+            <div class="p-4">
+                <div class="mb-3 flex justify-between items-center py-2">
                     <div>
-                        <h1 class="text-4xl font-black text-uccDark tracking-tighter mb-2">Programación de Mantenimientos</h1>
-                        <p class="text-slate-600 font-medium">Gestión operativa de órdenes del campus</p>
+                        <h1 class="text-2xl font-black text-uccDark tracking-tighter mb-1">Programación de Mantenimientos</h1>
+                        <p class="text-xs text-slate-600 font-medium">Gestión operativa de órdenes del campus</p>
                     </div>
                     <div class="flex flex-wrap items-center gap-3">
-                        <button type="button" id="btn-gestion-tipos-mantenimiento" onclick="openGestionTiposMantenimientoModal()" title="Gestionar tipos de mantenimiento" class="hidden bg-uccDark hover:bg-slate-800 text-white font-bold px-5 py-3 rounded-xl shadow-lg transition-all flex items-center gap-2">
+                        <button type="button" id="btn-gestion-tipos-mantenimiento" onclick="openGestionTiposMantenimientoModal()" title="Gestionar tipos de mantenimiento" aria-label="Gestionar tipos de mantenimiento" class="hidden bg-uccDark hover:bg-slate-800 text-white font-bold px-5 py-3 rounded-xl shadow-lg transition-all flex items-center gap-2 min-h-[44px]">
                             <i class="fas fa-cog"></i>
                             <span>Tipos de Mantenimiento</span>
                         </button>
-                        <button type="button" onclick="openProgramarMantenimientoModal()" class="bg-uccLight hover:bg-[#00b8d4] text-white font-bold px-6 py-3 rounded-xl shadow-lg transition-all flex items-center gap-2">
+                        <button type="button" onclick="openProgramarMantenimientoModal()" aria-label="Programar nuevo mantenimiento" class="bg-uccLight hover:bg-[#00b8d4] text-uccDark font-bold px-6 py-3 rounded-xl shadow-lg transition-all flex items-center gap-2 min-h-[44px]">
                             <i class="fas fa-plus"></i>
                             <span>Programar Mantenimiento</span>
                         </button>
                     </div>
                 </div>
 
-                <!-- Barra de herramientas: búsqueda + filtros -->
-                <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 mb-6">
-                    <div class="grid grid-cols-1 lg:grid-cols-12 gap-4 items-end">
-                        <div class="lg:col-span-4">
-                            <label for="input-busqueda-mantenimiento" class="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-1.5">Buscar por aula o técnico</label>
-                            <div class="relative">
-                                <i class="fas fa-search absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-sm"></i>
-                                <input id="input-busqueda-mantenimiento" type="search" placeholder="Ej: Aula 204, Laboratorio de Sistemas…" autocomplete="off" class="w-full border border-slate-200 focus:border-uccLight focus:ring-4 focus:ring-cyan-50/50 rounded-xl pl-11 pr-4 py-2.5 text-sm bg-slate-50/50 text-slate-700 transition-all">
-                            </div>
+                <!-- Barra de filtros ultra-compacta: 1 sola línea -->
+                <div class="flex flex-wrap items-center gap-3 bg-white p-3 rounded-xl border border-slate-100 shadow-sm mb-4">
+                        <div class="relative flex-1 min-w-[180px]">
+                                <i class="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-slate-500 text-xs"></i>
+                                <input id="input-busqueda-mantenimiento" type="search" placeholder="Aula o técnico…" autocomplete="off" aria-label="Buscar por aula o técnico" class="w-full border border-slate-200 rounded-lg pl-8 pr-3 py-1.5 text-xs bg-slate-50/50 min-h-[36px]">
                         </div>
-                        <div class="lg:col-span-2">
-                            <label for="filterEstado" class="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-1.5">Estado</label>
-                            <select id="filterEstado" class="w-full border border-slate-200 focus:border-uccLight focus:ring-4 focus:ring-cyan-50/50 rounded-xl px-4 py-2.5 text-sm bg-slate-50/50 text-slate-700 transition-all appearance-none cursor-pointer">
-                                <option value="">Todos</option>
+                            <select id="filterEstado" aria-label="Estado" class="border border-slate-200 rounded-lg px-3 py-1.5 text-xs bg-slate-50/50 min-h-[36px] cursor-pointer">
+                                <option value="">Estado: Todos</option>
                                 <option value="Pendiente">Pendiente</option>
                                 <option value="En progreso">En progreso</option>
                                 <option value="Completado">Completado</option>
                                 <option value="Cancelado">Cancelado</option>
                                 <option value="Vencido">Vencido</option>
                             </select>
-                        </div>
-                        <div class="lg:col-span-3">
-                            <label for="filterFechaDesde" class="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-1.5">Fecha desde</label>
-                            <input id="filterFechaDesde" type="date" class="w-full border border-slate-200 focus:border-uccLight focus:ring-4 focus:ring-cyan-50/50 rounded-xl px-4 py-2.5 text-sm bg-slate-50/50 text-slate-700 transition-all">
-                        </div>
-                        <div class="lg:col-span-3">
-                            <label for="filterFechaHasta" class="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-1.5">Fecha hasta</label>
-                            <input id="filterFechaHasta" type="date" class="w-full border border-slate-200 focus:border-uccLight focus:ring-4 focus:ring-cyan-50/50 rounded-xl px-4 py-2.5 text-sm bg-slate-50/50 text-slate-700 transition-all">
-                        </div>
-                    </div>
+                            <input id="filterFechaDesde" type="date" aria-label="Fecha desde" class="border border-slate-200 rounded-lg px-3 py-1.5 text-xs bg-slate-50/50 min-h-[36px]">
+                            <input id="filterFechaHasta" type="date" aria-label="Fecha hasta" class="border border-slate-200 rounded-lg px-3 py-1.5 text-xs bg-slate-50/50 min-h-[36px]">
+                        <button type="button" onclick="limpiarFiltrosProgramacion()" class="text-xs font-semibold text-slate-500 hover:text-[#00acc9] px-2 min-h-[36px]" aria-label="Limpiar filtros">Limpiar ✕</button>
                 </div>
 
                 <!-- Tabla de órdenes -->
@@ -116,20 +96,20 @@
                     <div class="overflow-x-auto">
                         <table class="w-full text-sm">
                             <thead class="bg-slate-50 border-b border-slate-200">
-                                <tr class="text-xs font-black uppercase tracking-widest text-slate-500">
-                                    <th class="px-8 py-5 text-left">Equipo</th>
-                                    <th class="px-8 py-5 text-left">Aula / Espacio</th>
-                                    <th class="px-8 py-5 text-left">Tipo</th>
-                                    <th class="px-8 py-5 text-left">Fecha</th>
-                                    <th class="px-8 py-5 text-left">Técnico</th>
-                                    <th class="px-8 py-5 text-left">Estado</th>
-                                    <th class="px-8 py-5 text-center">Acción</th>
+                                <tr class="text-xs font-black uppercase tracking-widest text-slate-600">
+                                    <th scope="col" class="px-8 py-5 text-left">Equipo</th>
+                                    <th scope="col" class="px-8 py-5 text-left">Aula / Espacio</th>
+                                    <th scope="col" class="px-8 py-5 text-left">Tipo</th>
+                                    <th scope="col" class="px-8 py-5 text-left">Fecha</th>
+                                    <th scope="col" class="px-8 py-5 text-left">Técnico</th>
+                                    <th scope="col" class="px-8 py-5 text-left">Estado</th>
+                                    <th scope="col" class="px-8 py-5 text-center">Acción</th>
                                 </tr>
                             </thead>
                             <tbody id="tabla-mantenimientos-body" class="divide-y divide-slate-100">
                                 <tr id="fila-cargando">
                                     <td colspan="7" class="px-8 py-12 text-center text-slate-500">
-                                        <i class="fas fa-spinner fa-spin text-uccLight text-2xl mb-3"></i>
+                                        <i class="fas fa-spinner fa-spin text-uccTeal text-2xl mb-3" aria-hidden="true"></i>
                                         <p class="font-medium">Cargando órdenes desde el servidor…</p>
                                     </td>
                                 </tr>
@@ -141,71 +121,72 @@
                     <div class="px-8 py-5 border-t border-slate-100 flex flex-col sm:flex-row items-center justify-between gap-4 bg-slate-50/50">
                         <p id="paginacion-texto" class="text-sm text-slate-600 font-medium">Mostrando 0 a 0 de 0 órdenes en total</p>
                         <div class="flex gap-2">
-                            <button type="button" id="btn-pagina-anterior" disabled class="rounded-xl text-sm font-semibold px-5 py-2.5 bg-white border border-slate-200 text-slate-700 transition-all disabled:opacity-40 disabled:cursor-not-allowed hover:bg-slate-50">
-                                <i class="fas fa-chevron-left mr-1"></i> Anterior
+                            <button type="button" id="btn-pagina-anterior" disabled aria-label="Ir a la página anterior de órdenes" class="rounded-xl text-sm font-semibold px-5 py-2.5 bg-white border border-slate-200 text-slate-700 transition-all disabled:opacity-40 disabled:cursor-not-allowed hover:bg-slate-50 min-h-[44px]">
+                                <i class="fas fa-chevron-left mr-1" aria-hidden="true"></i> Anterior
                             </button>
-                            <button type="button" id="btn-pagina-siguiente" disabled class="rounded-xl text-sm font-semibold px-5 py-2.5 bg-white border border-slate-200 text-slate-700 transition-all disabled:opacity-40 disabled:cursor-not-allowed hover:bg-slate-50">
-                                Siguiente <i class="fas fa-chevron-right ml-1"></i>
+                            <button type="button" id="btn-pagina-siguiente" disabled aria-label="Ir a la página siguiente de órdenes" class="rounded-xl text-sm font-semibold px-5 py-2.5 bg-white border border-slate-200 text-slate-700 transition-all disabled:opacity-40 disabled:cursor-not-allowed hover:bg-slate-50 min-h-[44px]">
+                                Siguiente <i class="fas fa-chevron-right ml-1" aria-hidden="true"></i>
                             </button>
                         </div>
                     </div>
                 </div>
+
             </div>
         </div>
     </main>
 
     <!-- Modal Programar Mantenimiento -->
-    <div id="modal-programar-mantenimiento" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm hidden items-center justify-center z-50 p-4">
+    <div id="modal-programar-mantenimiento" role="dialog" aria-modal="true" aria-labelledby="titulo-programar-mantenimiento" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm hidden items-center justify-center z-50 p-4">
         <div class="bg-white w-full max-w-2xl rounded-3xl shadow-2xl p-8 max-h-[90vh] overflow-y-auto">
             <div class="flex items-start justify-between mb-6">
                 <div>
-                    <h2 class="text-lg font-black text-uccDark tracking-tight">Programar Mantenimiento</h2>
+                    <h2 id="titulo-programar-mantenimiento" class="text-lg font-black text-uccDark tracking-tight">Programar Mantenimiento</h2>
                     <p class="text-xs text-slate-500 font-medium mt-1">Nueva orden de servicio</p>
                 </div>
-                <button type="button" onclick="closeProgramarMantenimientoModal()" class="text-slate-400 hover:text-slate-700 transition p-1" aria-label="Cerrar">
+                <button type="button" onclick="closeProgramarMantenimientoModal()" class="text-slate-600 hover:text-slate-800 transition p-1 min-h-[44px] min-w-[44px] flex items-center justify-center" aria-label="Cerrar">
                     <i class="fas fa-times text-xl"></i>
                 </button>
             </div>
             <form onsubmit="submitProgramarMantenimiento(event)" class="grid grid-cols-1 md:grid-cols-2 gap-5 mb-5">
                 <div class="md:col-span-2">
-                    <label for="selectActivo" class="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-1.5">Equipo / Ubicación</label>
+                    <label for="selectActivo" class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1.5">Equipo / Ubicación</label>
                     <select id="selectActivo" required class="w-full border border-slate-200 focus:border-uccLight focus:ring-4 focus:ring-cyan-50/50 rounded-xl px-4 py-2.5 text-sm bg-slate-50/50 text-slate-700 transition-all appearance-none cursor-pointer">
                         <option value="">Cargando equipos…</option>
                     </select>
                 </div>
                 <div>
-                    <label for="inputFechaPlanificada" class="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-1.5">Fecha planificada</label>
+                    <label for="inputFechaPlanificada" class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1.5">Fecha planificada</label>
                     <input id="inputFechaPlanificada" type="date" required class="w-full border border-slate-200 focus:border-uccLight focus:ring-4 focus:ring-cyan-50/50 rounded-xl px-4 py-2.5 text-sm bg-slate-50/50 text-slate-700 transition-all">
                 </div>
                 <div>
-                    <label for="selectTecnico" class="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-1.5">Técnico responsable</label>
+                    <label for="selectTecnico" class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1.5">Técnico responsable</label>
                     <select id="selectTecnico" required class="w-full border border-slate-200 focus:border-uccLight focus:ring-4 focus:ring-cyan-50/50 rounded-xl px-4 py-2.5 text-sm bg-slate-50/50 text-slate-700 transition-all appearance-none cursor-pointer">
                         <option value="">Cargando técnicos…</option>
                     </select>
                 </div>
                 <div class="md:col-span-2">
-                    <label for="selectTipo" class="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-1.5">Tipo de intervención</label>
+                    <label for="selectTipo" class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1.5">Tipo de intervención</label>
                     <select id="selectTipo" required class="w-full border border-slate-200 focus:border-uccLight focus:ring-4 focus:ring-cyan-50/50 rounded-xl px-4 py-2.5 text-sm bg-slate-50/50 text-slate-700 transition-all appearance-none cursor-pointer">
                         <option value="">Cargando tipos…</option>
                     </select>
                 </div>
                 <div class="md:col-span-2 flex justify-end gap-3 pt-4 border-t border-slate-100">
                     <button type="button" onclick="closeProgramarMantenimientoModal()" class="rounded-xl text-sm font-semibold px-5 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 transition-all">Cancelar</button>
-                    <button type="submit" id="btn-submit-programar" class="rounded-xl text-sm font-semibold px-5 py-2.5 bg-uccLight hover:bg-[#00b8d4] text-white shadow-md transition-all">Programar</button>
+                    <button type="submit" id="btn-submit-programar" class="rounded-xl text-sm font-semibold px-5 py-2.5 bg-uccLight hover:bg-[#00b8d4] text-uccDark shadow-md transition-all min-h-[44px]">Programar</button>
                 </div>
             </form>
         </div>
     </div>
 
     <!-- Modal Detalle de Orden -->
-    <div id="modal-detalle-orden" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm hidden items-center justify-center z-50 p-4">
+    <div id="modal-detalle-orden" role="dialog" aria-modal="true" aria-labelledby="titulo-detalle-orden" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm hidden items-center justify-center z-50 p-4">
         <div class="bg-white max-w-2xl w-full rounded-3xl shadow-2xl p-8 max-h-[90vh] overflow-y-auto">
             <div class="flex items-start justify-between mb-6">
                 <div>
-                    <h2 class="text-lg font-black text-uccDark tracking-tight">Ficha de Inspección</h2>
+                    <h2 id="titulo-detalle-orden" class="text-lg font-black text-uccDark tracking-tight">Ficha de Inspección</h2>
                     <p class="text-xs text-slate-500 font-medium mt-1">Detalles y reasignación de orden</p>
                 </div>
-                <button type="button" onclick="closeDetalleOrdenModal()" class="text-slate-400 hover:text-slate-700 transition p-1" aria-label="Cerrar">
+                <button type="button" onclick="closeDetalleOrdenModal()" class="text-slate-600 hover:text-slate-800 transition p-1 min-h-[44px] min-w-[44px] flex items-center justify-center" aria-label="Cerrar">
                     <i class="fas fa-times text-xl"></i>
                 </button>
             </div>
@@ -214,31 +195,31 @@
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-5 mb-5">
                 <div>
-                    <label for="detalleOrderId" class="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-1.5">ID Orden</label>
+                    <label for="detalleOrderId" class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1.5">ID Orden</label>
                     <input id="detalleOrderId" type="text" readonly class="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-sm bg-slate-50/50 text-slate-700">
                 </div>
                 <div>
-                    <label for="detalleEquipo" class="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-1.5">Equipo</label>
+                    <label for="detalleEquipo" class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1.5">Equipo</label>
                     <input id="detalleEquipo" type="text" readonly class="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-sm bg-slate-50/50 text-slate-700">
                 </div>
                 <div>
-                    <label for="detalleAula" class="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-1.5">Aula / Espacio</label>
+                    <label for="detalleAula" class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1.5">Aula / Espacio</label>
                     <input id="detalleAula" type="text" readonly class="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-sm bg-slate-50/50 text-slate-700">
                 </div>
                 <div>
-                    <label for="detalleDate" class="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-1.5">Fecha</label>
+                    <label for="detalleDate" class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1.5">Fecha</label>
                     <input id="detalleDate" type="date" class="w-full border border-slate-200 focus:border-uccLight focus:ring-4 focus:ring-cyan-50/50 rounded-xl px-4 py-2.5 text-sm bg-slate-50/50 text-slate-700 transition-all">
                 </div>
                 <div>
-                    <label for="detalleTipo" class="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-1.5">Tipo de servicio</label>
+                    <label for="detalleTipo" class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1.5">Tipo de servicio</label>
                     <input id="detalleTipo" type="text" readonly class="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-sm bg-slate-50/50 text-slate-700">
                 </div>
                 <div>
-                    <label for="detalleEstado" class="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-1.5">Estado</label>
+                    <label for="detalleEstado" class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1.5">Estado</label>
                     <input id="detalleEstado" type="text" readonly class="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-sm bg-slate-50/50 text-slate-700">
                 </div>
                 <div class="md:col-span-2">
-                    <label for="selectTecnicoReasignar" class="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-1.5">Reasignar técnico</label>
+                    <label for="selectTecnicoReasignar" class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1.5">Reasignar técnico</label>
                     <select id="selectTecnicoReasignar" class="w-full border border-slate-200 focus:border-uccLight focus:ring-4 focus:ring-cyan-50/50 rounded-xl px-4 py-2.5 text-sm bg-slate-50/50 text-slate-700 transition-all appearance-none cursor-pointer">
                         <option value="">Cargando…</option>
                     </select>
@@ -247,21 +228,21 @@
 
             <div class="flex flex-wrap justify-end gap-3 pt-4 border-t border-slate-100">
                 <button type="button" onclick="closeDetalleOrdenModal()" class="rounded-xl text-sm font-semibold px-5 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 transition-all">Cerrar</button>
-                <button type="button" id="btn-cancelar-mantenimiento" onclick="cancelarMantenimiento()" class="rounded-xl text-sm font-semibold px-5 py-2.5 bg-red-600 hover:bg-red-700 text-white shadow-md transition-all">Cancelar orden</button>
-                <button type="button" id="btn-guardar-orden" onclick="guardarCambiosOrden()" class="rounded-xl text-sm font-semibold px-5 py-2.5 bg-uccLight hover:bg-[#00b8d4] text-white shadow-md transition-all">Guardar cambios</button>
+                <button type="button" id="btn-cancelar-mantenimiento" onclick="cancelarMantenimiento()" aria-label="Cancelar orden de mantenimiento" class="rounded-xl text-sm font-semibold px-5 py-2.5 bg-red-600 hover:bg-red-700 text-white shadow-md transition-all min-h-[44px]">Cancelar orden</button>
+                <button type="button" id="btn-guardar-orden" onclick="guardarCambiosOrden()" aria-label="Guardar cambios de la orden" class="rounded-xl text-sm font-semibold px-5 py-2.5 bg-uccLight hover:bg-[#00b8d4] text-uccDark shadow-md transition-all min-h-[44px]">Guardar cambios</button>
             </div>
         </div>
     </div>
 
     <!-- Modal Gestión de Tipos de Mantenimiento -->
-    <div id="modal-gestion-tipos-mantenimiento" class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm hidden flex items-center justify-center z-[60] p-4">
+    <div id="modal-gestion-tipos-mantenimiento" role="dialog" aria-modal="true" aria-labelledby="titulo-gestion-tipos" class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm hidden flex items-center justify-center z-[60] p-4">
         <div class="bg-white max-w-lg w-full rounded-3xl shadow-2xl border border-slate-100 overflow-hidden flex flex-col max-h-[90vh]">
             <div class="shrink-0 px-6 py-5 border-b border-slate-100 flex items-center justify-between gap-3 bg-white">
                 <div class="min-w-0">
-                    <p class="text-[10px] font-bold uppercase tracking-widest text-uccLight mb-0.5">Catálogo</p>
-                    <h3 class="text-slate-800 font-extrabold text-xl leading-tight truncate">Gestión de Tipos de Mantenimiento</h3>
+                    <p class="text-[10px] font-bold uppercase tracking-widest text-uccTeal mb-0.5">Catálogo</p>
+                    <h3 id="titulo-gestion-tipos" class="text-slate-800 font-extrabold text-xl leading-tight truncate">Gestión de Tipos de Mantenimiento</h3>
                 </div>
-                <button type="button" onclick="closeGestionTiposMantenimientoModal()" class="shrink-0 w-9 h-9 rounded-lg border border-slate-200 text-slate-400 hover:text-uccLight hover:bg-cyan-50/60 flex items-center justify-center transition-all" aria-label="Cerrar">
+                <button type="button" onclick="closeGestionTiposMantenimientoModal()" class="shrink-0 min-h-[44px] min-w-[44px] rounded-lg border border-slate-200 text-slate-500 hover:text-uccTeal hover:bg-cyan-50/60 flex items-center justify-center transition-all" aria-label="Cerrar gestión de tipos de mantenimiento">
                     <i class="fas fa-times text-sm"></i>
                 </button>
             </div>
@@ -278,7 +259,7 @@
                             class="w-full border border-slate-200 focus:border-uccLight focus:ring-4 focus:ring-cyan-50 rounded-xl px-3 py-2.5 text-sm bg-slate-50/50 transition-all text-slate-700 placeholder-slate-400">
                     </div>
                     <button type="button" onclick="submitCrearTipoMantenimiento()"
-                        class="shrink-0 bg-uccLight hover:bg-[#00b8d4] text-white font-bold px-5 py-2.5 rounded-xl shadow-md transition-all flex items-center justify-center gap-2 text-sm whitespace-nowrap">
+                        class="shrink-0 bg-uccLight hover:bg-[#00b8d4] text-uccDark font-bold px-5 py-2.5 rounded-xl shadow-md transition-all flex items-center justify-center gap-2 text-sm whitespace-nowrap min-h-[44px]">
                         <i class="fas fa-plus text-xs"></i>
                         <span>Agregar</span>
                     </button>
@@ -287,7 +268,7 @@
             <div class="px-6 py-4 flex-1 min-h-0 overflow-hidden flex flex-col bg-white">
                 <p class="text-xs font-bold uppercase tracking-wider text-slate-500 mb-2 shrink-0">Tipos registrados</p>
                 <div id="lista-tipos-mantenimiento-gestion" class="max-h-[50vh] overflow-y-auto pr-2 flex-1">
-                    <p class="text-sm text-slate-400 text-center py-6"><i class="fas fa-spinner fa-spin mr-2 text-uccLight"></i>Cargando...</p>
+                    <p class="text-sm text-slate-500 text-center py-6"><i class="fas fa-spinner fa-spin mr-2 text-uccTeal" aria-hidden="true"></i>Cargando...</p>
                 </div>
             </div>
         </div>
@@ -296,6 +277,7 @@
     <div id="toast-container" class="fixed top-6 right-6 z-[100] flex flex-col gap-3 pointer-events-none" aria-live="polite"></div>
 
     <script src="js/config.js"></script>
+    <script src="js/modal-accesible.js"></script>
     <script src="js/confirmation-modal.js"></script>
     <script src="js/api.js"></script>
     <script src="js/sidebar.js"></script>

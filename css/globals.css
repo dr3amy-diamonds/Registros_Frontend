@@ -1,41 +1,32 @@
 /* ============================================================================
-   AiresFlow - CSS Global Framework
-   Sistema de Gestión de Climatización UCC Montería
-   Filosofía: Sistémico-Institucional, Sobrio, Alto funcionamiento
+   AiresFlow — CSS global (vanilla, sin @apply: compatible con CDN Play)
+   Tokens + accesibilidad + calendario anual estilo Excel
    ============================================================================ */
-
-/*! purge: false */
 
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
 
 :root {
     --color-dark: #132740;
     --color-light: #00acc9;
-    --color-white: #ffffff;
+    /* Variantes accesibles (contraste ≥ 4.5:1 sobre blanco) */
+    --color-teal: #0e7490;
+    --color-teal-dark: #155e75;
     --color-slate-50: #f8fafc;
     --color-slate-100: #f1f5f9;
     --color-slate-200: #e2e8f0;
-    --color-slate-300: #cbd5e1;
-    --color-slate-400: #94a3b8;
-    --color-slate-500: #64748b;
+    --color-slate-500: #64748b; /* mínimo para texto secundario sobre blanco */
     --color-slate-600: #475569;
     --color-slate-700: #334155;
     --color-slate-800: #1e293b;
-    --status-green: #80ba27;
-    --status-red: #ef4444;
-    --status-yellow: #f59e0b;
-    --status-gray: #9ca3af;
+    --status-green: #15803d;
+    --status-red: #b91c1c;
+    --status-yellow: #92400e;
+    --radius-xl: 0.75rem;
 }
 
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-}
+*, *::before, *::after { box-sizing: border-box; }
 
-html {
-    scroll-behavior: smooth;
-}
+html { scroll-behavior: smooth; }
 
 body {
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
@@ -44,249 +35,191 @@ body {
     line-height: 1.5;
 }
 
-/* ============================================================================
-   Typography
-   ============================================================================ */
-h1 { @apply text-4xl font-black tracking-tighter; }
-h2 { @apply text-3xl font-black tracking-tight; }
-h3 { @apply text-lg font-bold; }
-h4 { @apply text-base font-bold; }
-
-.text-label {
-    @apply text-xs font-black uppercase tracking-widest text-slate-400;
+/* ——— Foco visible (teclado) ——— */
+:focus-visible {
+    outline: 3px solid var(--color-teal);
+    outline-offset: 2px;
+    border-radius: 6px;
 }
 
-.text-caption {
-    @apply text-xs text-slate-500 font-medium;
+/* ——— Selección / scrollbars con identidad ——— */
+::selection { background: rgba(0, 172, 201, 0.28); }
+* { scrollbar-width: thin; scrollbar-color: #94a3b8 transparent; }
+
+/* ——— Controles: objetivo táctil mínimo 44px ——— */
+button, [role="button"], a.btn, input[type="submit"], input[type="button"] {
+    min-height: 44px;
+}
+table button, table a {
+    min-height: 44px;
+    min-width: 44px;
 }
 
-.text-body-sm {
-    @apply text-sm text-slate-700 font-normal;
-}
-
-/* ============================================================================
-   Badges de Estado (Core Element)
-   ============================================================================ */
+/* ——— Badges de estado (contraste corregido) ——— */
 .badge {
-    @apply inline-flex items-center gap-2 px-3 py-1.5 rounded-full font-bold text-xs;
+    display: inline-flex; align-items: center; gap: 0.5rem;
+    padding: 0.375rem 0.75rem; border-radius: 9999px;
+    font-weight: 700; font-size: 0.75rem; line-height: 1;
+}
+.badge-success { background: #dcfce7; color: #15803d; }
+.badge-warning { background: #fef3c7; color: #92400e; }
+.badge-danger  { background: #fee2e2; color: #b91c1c; }
+.badge-neutral { background: #f1f5f9; color: #475569; }
+.badge-info    { background: #e0f2fe; color: #0c4a6e; }
+
+/* ——— Botones sobre fondo marca: texto oscuro para contraste ——— */
+.btn-marca {
+    background: var(--color-light);
+    color: var(--color-dark);
+    font-weight: 700;
+}
+.btn-marca:hover { filter: brightness(0.95); }
+
+/* Texto de marca sobre blanco: usar variante oscura */
+.text-marca-accesible { color: var(--color-teal); }
+
+/* ——— Tablas ——— */
+table { font-variant-numeric: tabular-nums; }
+th[scope="col"] { white-space: nowrap; }
+
+/* ——— Modal (respaldo si Tailwind CDN falla) ——— */
+.modal-backdrop-fallback {
+    position: fixed; inset: 0; background: rgba(15, 23, 42, 0.6);
+    display: flex; align-items: center; justify-content: center; z-index: 50;
 }
 
-.badge-success {
-    @apply bg-emerald-100 text-emerald-700;
-}
-
-.badge-warning {
-    @apply bg-amber-100 text-amber-700;
-}
-
-.badge-danger {
-    @apply bg-red-100 text-red-700;
-}
-
-.badge-neutral {
-    @apply bg-slate-100 text-slate-600;
-}
-
-.badge-info {
-    @apply bg-blue-100 text-blue-700;
-}
-
-/* ============================================================================
-   Componentes de Formularios
-   ============================================================================ */
-.input-field {
-    @apply px-4 py-3 border border-slate-200 rounded-lg text-sm font-normal focus:outline-none focus:ring-2 focus:ring-uccLight focus:border-transparent;
-    transition: all 0.2s ease;
-}
-
-.input-field:hover {
-    @apply border-slate-300;
-}
-
-.select-field {
-    @apply px-4 py-3 border border-slate-200 rounded-lg text-sm font-normal bg-white focus:outline-none focus:ring-2 focus:ring-uccLight focus:border-transparent;
-    appearance: none;
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 16 16'%3E%3Cpath fill='%23%23132740' d='M4.5 6.5l3.5 3.5 3.5-3.5'/%3E%3C/svg%3E");
-    background-repeat: no-repeat;
-    background-position: right 0.75rem center;
-    padding-right: 2.5rem;
-}
-
-.label-field {
-    @apply block text-xs font-bold text-slate-700 mb-2 uppercase tracking-widest;
-}
-
-/* ============================================================================
-   Botones
-   ============================================================================ */
-.btn {
-    @apply inline-flex items-center justify-center gap-2 px-4 py-3 rounded-lg font-bold text-sm transition-all duration-200;
-    cursor: pointer;
-    border: none;
-}
-
-.btn-primary {
-    @apply bg-uccDark text-white hover:bg-slate-800 active:scale-95;
-}
-
-.btn-secondary {
-    @apply bg-slate-200 text-slate-800 hover:bg-slate-300 active:scale-95;
-}
-
-.btn-ghost {
-    @apply bg-transparent text-uccLight hover:bg-slate-100 active:scale-95;
-}
-
-.btn-danger {
-    @apply bg-red-500 text-white hover:bg-red-600 active:scale-95;
-}
-
-.btn-sm {
-    @apply px-3 py-2 text-xs;
-}
-
-.btn-lg {
-    @apply px-6 py-4 text-base;
-}
-
-/* ============================================================================
-   Tarjetas (Cards)
-   ============================================================================ */
-.card {
-    @apply bg-white rounded-[2rem] shadow-sm border border-slate-200 p-8;
-}
-
-.card-header {
-    @apply text-label mb-4;
-}
-
-.card-value {
-    @apply text-3xl font-black text-uccDark;
-}
-
-.card-elevated {
-    @apply shadow-md border-l-4 border-l-uccLight;
-}
-
-/* ============================================================================
-   Tablas
-   ============================================================================ */
-.table-head {
-    @apply bg-slate-50 border-b border-slate-100 text-label;
-}
-
-.table-head th {
-    @apply px-8 py-5;
-}
-
-.table-body tr {
-    @apply border-b border-slate-100 hover:bg-slate-50 transition cursor-pointer;
-}
-
-.table-body td {
-    @apply px-8 py-6 text-sm font-normal;
-}
-
-.table-cell-code {
-    @apply font-black text-uccDark;
-}
-
-.table-cell-metric {
-    @apply font-bold text-slate-600;
-}
-
-/* ============================================================================
-   Modal/Dialog
-   ============================================================================ */
-.modal-backdrop {
-    @apply fixed inset-0 bg-black/50 flex items-center justify-center;
-    z-index: 999;
-}
-
-.modal {
-    @apply bg-white rounded-3xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto;
-}
-
-.modal-header {
-    @apply p-8 border-b border-slate-200 flex justify-between items-center;
-}
-
-.modal-body {
-    @apply p-8 space-y-6;
-}
-
-.modal-footer {
-    @apply p-8 border-t border-slate-200 flex justify-end gap-4;
-}
-
-/* ============================================================================
-   Utilidades de Grid
-   ============================================================================ */
-.grid-2 { @apply grid grid-cols-2 gap-6; }
-.grid-3 { @apply grid grid-cols-3 gap-6; }
-.grid-4 { @apply grid grid-cols-4 gap-6; }
-
-@media (max-width: 1024px) {
-    .grid-4 { @apply grid-cols-2; }
-    .grid-3 { @apply grid-cols-2; }
-}
-
-@media (max-width: 640px) {
-    .grid-2, .grid-3, .grid-4 { @apply grid-cols-1; }
-}
-
-/* ============================================================================
-   Animaciones
-   ============================================================================ */
-@keyframes slide-in {
-    from {
-        opacity: 0;
-        transform: translateY(10px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-.animate-slide-in {
-    animation: slide-in 0.3s ease-out;
-}
-
-/* ============================================================================
-   Status Indicators
-   ============================================================================ */
-.status-dot {
-    @apply inline-block w-3 h-3 rounded-full;
-}
-
-.status-operativo { @apply bg-green-500; }
-.status-reparacion { @apply bg-yellow-500; }
-.status-inactivo { @apply bg-gray-400; }
-.status-baja { @apply bg-red-500; }
-
-/* ============================================================================
-   Loading & Skeleton
-   ============================================================================ */
-.skeleton {
-    @apply bg-slate-200 rounded-lg animate-pulse;
-}
-
-.skeleton-text { @apply h-4 w-full; }
-.skeleton-avatar { @apply h-12 w-12 rounded-full; }
-
-/* ============================================================================
-   Responsive Utilities
-   ============================================================================ */
+/* ——— Utilidad accesibilidad ——— */
 .visually-hidden {
-    position: absolute;
-    width: 1px;
-    height: 1px;
-    padding: 0;
-    margin: -1px;
-    overflow: hidden;
-    clip: rect(0, 0, 0, 0);
-    white-space: nowrap;
-    border-width: 0;
+    position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+    overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0;
 }
 
+/* ============================================================================
+   Calendario anual por equipo (estilo Excel) — Fase 2
+   ============================================================================ */
+.excel-header {
+    background: var(--color-dark);
+    color: #fff;
+}
+.excel-subheader {
+    background: #e8eef4;
+    color: var(--color-dark);
+}
+.cal-matrix-wrap { overflow-x: auto; }
+.cal-matrix {
+    border-collapse: collapse;
+    width: 100%;
+    table-layout: fixed;
+    font-size: 0.72rem;
+}
+.cal-matrix th, .cal-matrix td {
+    border: 1px solid #cbd5e1;
+    padding: 0;
+    text-align: center;
+}
+.cal-matrix thead th {
+    background: var(--color-dark);
+    color: #fff;
+    font-size: 0.65rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    padding: 0.4rem 0.1rem;
+    position: sticky;
+    top: 0;
+    z-index: 2;
+}
+.cal-matrix tbody th {
+    position: sticky;
+    left: 0;
+    z-index: 1;
+    background: #f1f5f9;
+    color: var(--color-dark);
+    font-weight: 700;
+    text-align: left;
+    padding: 0.35rem 0.6rem;
+    white-space: nowrap;
+    min-width: 9rem;
+}
+.cal-cell {
+    width: 26px; height: 30px;
+    display: inline-flex; align-items: center; justify-content: center;
+    font-weight: 800; cursor: pointer;
+    min-width: 26px; min-height: 30px;
+}
+.cal-cell.is-empty { color: transparent; cursor: default; background: transparent; }
+.cal-cell.is-realizado { background: #10b981; color: #fff; border-radius: 4px; }
+/* Legado: programado/vencido ya no se pintan; se mantienen neutros por compatibilidad */
+.cal-cell.is-programado, .cal-cell.is-vencido { background: transparent; color: transparent; cursor: default; }
+.cal-cell:hover:not(.is-empty) { outline: 2px solid var(--color-teal); outline-offset: -2px; }
+.cal-legend-dot { display: inline-block; width: 0.75rem; height: 0.75rem; border-radius: 9999px; }
+
+/* ============================================================================
+   Resumen Mantenimiento estilo Excel — filas espacios, columnas año
+   Estructura: toolbar (título+KPIs+nav) / matriz única / lista móvil
+   ============================================================================ */
+:root {
+    --cal-month-h: 37px;
+    --cal-day-h: 30px;
+    --cal-first-col: 192px;
+    --cal-total-col: 64px;
+}
+.cal-toolbar { display: flex; flex-direction: column; gap: 12px; margin-bottom: 12px; }
+.cal-toolbar-main { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 12px; padding: 4px 2px; }
+.cal-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+.cal-kpis { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
+.cal-kpi { background: #fff; border: 1px solid var(--color-slate-200); border-radius: 14px; padding: 10px 14px; display: flex; flex-direction: column; gap: 2px; box-shadow: 0 1px 2px rgba(15, 23, 42, 0.05); }
+.cal-kpi-label { font-size: 0.65rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.08em; color: var(--color-slate-500); }
+.cal-kpi-value { font-size: 1.35rem; font-weight: 900; color: var(--color-dark); line-height: 1.1; font-variant-numeric: tabular-nums; }
+.cal-kpi-sub { font-size: 0.7rem; font-weight: 500; color: var(--color-slate-500); }
+.cal-subbar { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px; }
+.cal-month-nav { display: flex; flex-wrap: wrap; gap: 6px; }
+.cal-month-nav button { min-height: 32px; min-width: 44px; padding: 4px 10px; font-size: 0.68rem; font-weight: 800; letter-spacing: 0.06em; border: 1px solid var(--color-slate-200); background: #fff; color: var(--color-slate-600); border-radius: 9999px; cursor: pointer; transition: background 0.15s ease, color 0.15s ease; }
+.cal-month-nav button:hover { background: var(--color-dark); color: #fff; border-color: var(--color-dark); }
+.cal-month-nav button:focus-visible { outline: 3px solid var(--color-teal); outline-offset: 2px; }
+.cal-matrix-card { background: #fff; border: 1px solid var(--color-slate-200); border-radius: 16px; box-shadow: 0 1px 2px rgba(15, 23, 42, 0.06); overflow: hidden; }
+.cal-resumen-scroll { overflow: auto; max-height: 68vh; background: #fff; }
+.cal-resumen-scroll:focus-visible { outline: 3px solid var(--color-teal); outline-offset: -3px; }
+.cal-resumen { border-collapse: separate; border-spacing: 0; width: max-content; min-width: 100%; font-size: 0.72rem; }
+.cal-resumen th, .cal-resumen td { border-bottom: 1px dotted #cbd5e1; border-right: 1px dotted #e2e8f0; padding: 0; text-align: center; vertical-align: middle; background: #fff; }
+.cal-resumen thead th { position: sticky; z-index: 3; background: var(--color-dark); color: #fff; }
+.cal-resumen thead tr:first-child th { top: 0; height: var(--cal-month-h); }
+.cal-resumen thead tr:nth-child(2) th { top: var(--cal-month-h); height: var(--cal-day-h); z-index: 3; }
+.cal-resumen-mes { font-size: 0.72rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.08em; text-align: center; padding: 0.5rem 0.4rem; background: #132740 !important; color: #fff !important; border-bottom: 1px solid rgba(255, 255, 255, 0.25) !important; border-left: 2px solid rgba(255, 255, 255, 0.22) !important; }
+.cal-resumen-mes.is-target { background: #0e7490 !important; }
+.cal-resumen-dia { font-size: 0.7rem; font-weight: 600; text-align: center; vertical-align: middle; padding: 0.3rem 0.1rem; min-width: 30px; color: #e2e8f0; }
+.cal-resumen-corner { left: 0; z-index: 30 !important; width: var(--cal-first-col); min-width: var(--cal-first-col); max-width: var(--cal-first-col); font-size: 0.75rem; font-weight: 800; text-align: left !important; padding: 0.75rem 1rem !important; background: #132740 !important; color: #fff !important; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.cal-resumen-total-head { right: 0; z-index: 30 !important; width: var(--cal-total-col); min-width: var(--cal-total-col); background: #0f2f4a !important; color: #fff !important; font-size: 0.68rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.06em; }
+.cal-resumen-fila { position: sticky; left: 0; z-index: 20 !important; background: #fff !important; color: #334155 !important; font-weight: 500; text-align: left !important; padding: 0.65rem 1rem !important; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; width: var(--cal-first-col); min-width: var(--cal-first-col); max-width: var(--cal-first-col); font-size: 0.875rem; border-right: 2px solid #cbd5e1 !important; }
+.cal-resumen tbody tr:nth-child(even) td, .cal-resumen tbody tr:nth-child(even) th.cal-resumen-fila { background: #f8fafc !important; }
+.cal-resumen tbody tr:hover td, .cal-resumen tbody tr:hover th.cal-resumen-fila { background: #ecfeff !important; }
+.cal-resumen tbody tr { height: 40px; }
+.cal-resumen td { min-width: 30px; height: 40px; padding: 0; }
+.cal-resumen td.cal-total { position: sticky; right: 0; z-index: 20 !important; background: #f1f5f9 !important; font-weight: 900; color: var(--color-dark); border-left: 2px solid #cbd5e1 !important; min-width: var(--cal-total-col); font-variant-numeric: tabular-nums; }
+.cal-resumen tbody tr:nth-child(even) td.cal-total { background: #e2e8f0 !important; }
+.cal-resumen .cal-cell.is-realizado { display: inline-flex; align-items: center; justify-content: center; width: 24px; height: 24px; min-width: 24px; min-height: 24px; margin: auto; background: #10b981; color: #fff; border-radius: 6px; font-weight: 700; font-size: 0.75rem; box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2); cursor: pointer; transition: transform 0.15s ease; border: 0; }
+.cal-resumen .cal-cell.is-realizado:hover { transform: scale(1.12); }
+.cal-resumen .cal-cell.is-realizado:focus-visible { outline: 3px solid var(--color-teal); outline-offset: 2px; }
+.cal-resumen .cal-cell.is-realizado.is-multi { background: #047857; }
+.cal-resumen .cal-cell.is-empty { width: 100%; height: 40px; display: inline-block; }
+
+/* Vista lista (móvil) */
+.cal-lista-item {
+    border: 1px solid var(--color-slate-200);
+    border-radius: var(--radius-xl);
+    padding: 0.9rem 1rem;
+    background: #fff;
+}
+
+@media (max-width: 768px) {
+    .cal-matrix thead th { font-size: 0.6rem; }
+    .cal-matrix tbody th { min-width: 7rem; }
+    .cal-kpis { grid-template-columns: 1fr; }
+    .cal-toolbar-main { align-items: stretch; flex-direction: column; }
+    :root { --cal-first-col: 148px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+    *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+}

@@ -49,6 +49,12 @@
                     icono: "fas fa-calendar-check"
                 },
                 {
+                    id: "nav-calendario",
+                    href: "/calendario",
+                    label: "Resumen Mantenimiento",
+                    icono: "fas fa-calendar-alt"
+                },
+                {
                     id: "nav-inventario",
                     href: "/inventario",
                     label: "Historial de Activos",
@@ -93,11 +99,65 @@
 
             if (currentPath.includes("mis-ordenes") || currentPath.includes("mis_ordenes")) {
                 marcarNavActivo("nav-mis-ordenes");
+            } else if (currentPath.includes("calendario") || currentPath.includes("calendar")) {
+                marcarNavActivo("nav-calendario");
             } else if (currentPath.includes("inventario") || currentPath.includes("asset_inventory")) {
                 marcarNavActivo("nav-inventario");
             } else if (currentPath.includes("reporte-tecnico") || currentPath.includes("service_report_form")) {
                 marcarNavActivo("nav-mis-ordenes");
             }
+        }
+
+        function asegurarEnlaceCalendario() {
+            const nav = obtenerNavContainer();
+            if (!nav) return;
+            const existentes = Array.from(nav.querySelectorAll('a[href="/calendario"]'));
+            if (existentes.length > 1) {
+                existentes.slice(1).forEach((nodo) => nodo.remove());
+            }
+            let enlace = nav.querySelector('a[href="/calendario"]');
+            if (!enlace) {
+                const ref = nav.querySelector('a[href="/programacion"]');
+                const html = '<a href="/calendario" id="nav-calendario" class="flex items-center gap-3 px-4 py-3 text-slate-700 hover:bg-slate-100 rounded-xl transition font-medium text-sm">' +
+                    '<i class="fas fa-calendar-alt w-5"></i><span>Resumen Mantenimiento</span></a>';
+                if (ref && ref.insertAdjacentHTML) {
+                    ref.insertAdjacentHTML("afterend", html);
+                } else {
+                    nav.insertAdjacentHTML("beforeend", html);
+                }
+                enlace = nav.querySelector('a[href="/calendario"]');
+            }
+            if (enlace && !enlace.id) enlace.id = "nav-calendario";
+            if (enlace && (currentPath.includes("calendario") || currentPath.includes("calendar"))) {
+                enlace.classList.remove("text-slate-600", "text-slate-700", "hover:bg-slate-100");
+                enlace.classList.add("bg-uccLight", "text-uccDark", "font-bold");
+            }
+        }
+
+        function accionInventario(nombre) {
+            if (typeof window[nombre] === 'function') {
+                window[nombre]();
+                return;
+            }
+            window.location.href = '/inventario';
+        }
+        window.accionInventario = accionInventario;
+
+        function inyectarAccionesSecundarias() {
+            if (document.getElementById('sidebar-acciones-secundarias')) return;
+            const nav = obtenerNavContainer();
+            if (!nav) return;
+            const acciones = [
+                { label: 'Gestionar Insumos', icon: 'fas fa-box-open', fn: 'openGestionTiposComponenteModal' },
+                { label: 'Registrar Nuevo Activo', icon: 'fas fa-plus', fn: 'openCrearActivoModal' }
+            ];
+            const box = document.createElement('div');
+            box.id = 'sidebar-acciones-secundarias';
+            box.className = 'px-4 pb-2 mt-auto';
+            box.setAttribute('aria-label', 'Acciones');
+            box.innerHTML = '<p class="px-4 text-[10px] font-black uppercase tracking-widest text-slate-500 mb-1">Acciones</p>' +
+                acciones.map((a) => '<button type="button" onclick="accionInventario(\'' + a.fn + '\')" class="w-full flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-bold text-[#132740] bg-slate-100 hover:bg-[#00acc9]/15 border border-slate-200 transition min-h-[36px] mt-1"><i class="' + a.icon + ' text-[#00acc9]"></i><span>' + a.label + '</span></button>').join('');
+            nav.insertAdjacentElement('afterend', box);
         }
 
         function reemplazarYVincular(selector, accion) {
@@ -174,6 +234,8 @@
         }
 
         limpiarEInyectarNavTecnico();
+        asegurarEnlaceCalendario();
+        inyectarAccionesSecundarias();
         vincularBotonCerrarSesion();
         vincularControlesMoviles();
         cerrarSidebar();

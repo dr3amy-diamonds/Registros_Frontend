@@ -6,21 +6,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AiresFlow - Inventario de Activos</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        uccDark: '#132740',
-                        uccLight: '#00acc9',
-                    },
-                    fontFamily: {
-                        sans: ['Inter', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'sans-serif']
-                    }
-                }
-            }
-        }
-    </script>
+    <script src="js/tailwind-config.js"></script>
+    <link href="css/globals.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 </head>
@@ -99,51 +86,23 @@
             <div class="p-10">
                 <!-- Encabezado de Sección -->
                 <div class="mb-10">
-                    <!-- Título y Botones -->
-                    <div class="flex justify-between items-center mb-6">
-                        <div>
-                            <h1 class="text-4xl font-black text-uccDark tracking-tighter">Inventario Técnico</h1>
-                            <p class="text-slate-500 font-medium mt-2">Base de datos de activos instalados en campus Montería</p>
-                        </div>
-                        <div class="flex gap-3">
-                            <button type="button" id="btn-gestion-tipos-componente" onclick="openGestionTiposComponenteModal()" title="Gestionar tipos de insumos" class="hidden bg-uccDark hover:bg-slate-800 text-white font-bold px-6 py-3 rounded-xl shadow-lg transition-all flex items-center gap-2">
-                                <i class="fas fa-toolbox"></i>
-                                <span>Gestionar Insumos</span>
-                            </button>
-                            <button id="btn-registrar-activo" onclick="openCrearActivoModal()" class="bg-uccLight hover:bg-[#00b8d4] text-white font-bold px-6 py-3 rounded-xl shadow-lg transition-all flex items-center gap-2">
-                                <i class="fas fa-plus"></i>
-                                <span>Registrar Nuevo Activo</span>
-                            </button>
-                        </div>
+                    <!-- Título -->
+                    <div class="mb-4">
+                        <h1 class="text-4xl font-black text-uccDark tracking-tighter">Inventario Técnico</h1>
+                        <p class="text-slate-500 font-medium mt-2">Base de datos de activos instalados en campus Montería</p>
                     </div>
-                    <!-- Tarjeta de Filtros Integrada -->
-                    <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
-                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 items-end">
-                            <div>
-                                <label for="assetBlockFilter" class="block text-xs font-black uppercase tracking-widest text-slate-600 mb-2">Bloque</label>
-                                <select id="assetBlockFilter" class="w-full px-5 py-3 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-uccLight bg-white appearance-none">
-                                    <option value="">Seleccionar bloque...</option>
-                                </select>
-                            </div>
-                            <div>
-                                <label for="filterPiso" class="block text-xs font-black uppercase tracking-widest text-slate-600 mb-2">Piso</label>
-                                <select id="filterPiso" class="w-full px-5 py-3 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-uccLight bg-white appearance-none" disabled>
-                                    <option value="">Seleccionar piso...</option>
-                                </select>
-                            </div>
-                            <div>
-                                <label for="assetAulaFilter" class="block text-xs font-black uppercase tracking-widest text-slate-600 mb-2">Aula / Espacio</label>
-                                <select id="assetAulaFilter" class="w-full px-5 py-3 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-uccLight bg-white appearance-none" disabled>
-                                    <option value="">Seleccionar espacio...</option>
-                                </select>
-                            </div>
-                            <div>
-                                <button type="button" id="btn-limpiar-filtros" onclick="limpiarFiltrosInventario()" class="w-full px-5 py-3 border border-slate-200 rounded-xl text-sm font-bold text-slate-600 hover:bg-slate-50 transition flex items-center justify-center gap-2">
-                                    <i class="fas fa-eraser"></i>
-                                    <span>Limpiar filtros</span>
-                                </button>
-                            </div>
-                        </div>
+                    <!-- Filtros compactos: 1 fila horizontal -->
+                    <div class="flex flex-wrap items-center gap-3 p-3 bg-white rounded-xl border border-slate-100 shadow-sm mb-4">
+                        <select id="assetBlockFilter" aria-label="Bloque" class="flex-1 min-w-[160px] border border-slate-200 rounded-lg px-3 py-1.5 text-xs bg-slate-50/50 min-h-[36px] cursor-pointer focus:outline-none focus:ring-2 focus:ring-uccLight">
+                            <option value="">Bloque: Todos</option>
+                        </select>
+                        <select id="filterPiso" aria-label="Piso" class="flex-1 min-w-[140px] border border-slate-200 rounded-lg px-3 py-1.5 text-xs bg-slate-50/50 min-h-[36px] cursor-pointer focus:outline-none focus:ring-2 focus:ring-uccLight" disabled>
+                            <option value="">Piso: Todos</option>
+                        </select>
+                        <select id="assetAulaFilter" aria-label="Aula o espacio" class="flex-1 min-w-[160px] border border-slate-200 rounded-lg px-3 py-1.5 text-xs bg-slate-50/50 min-h-[36px] cursor-pointer focus:outline-none focus:ring-2 focus:ring-uccLight" disabled>
+                            <option value="">Espacio: Todos</option>
+                        </select>
+                        <button type="button" id="btn-limpiar-filtros" onclick="limpiarFiltrosInventario()" aria-label="Limpiar filtros" class="text-xs font-semibold text-slate-500 hover:text-[#00acc9] px-2 min-h-[36px]">Limpiar ✕</button>
                     </div>
                 </div>
 
