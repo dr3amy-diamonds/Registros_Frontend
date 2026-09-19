@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <script src="js/auth_guard.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AiresFlow - Resumen Mantenimiento Preventivo</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="js/tailwind-config.js"></script>
+    <link href="css/globals.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+</head>
+
+<body class="bg-slate-50 flex h-screen overflow-hidden font-sans">
+
+    <div id="sidebar-overlay" class="fixed inset-0 bg-slate-900/50 z-40 hidden backdrop-blur-sm transition-opacity"></div>
+
+    <aside id="main-sidebar" class="w-64 bg-white flex flex-col shadow-2xl overflow-y-auto fixed inset-y-0 left-0 z-50 transform -translate-x-full transition-transform duration-300 ease-in-out">
+        <div class="p-6 relative flex flex-col items-center justify-center border-b border-slate-200 min-h-40">
+            <button id="btn-close-sidebar" aria-label="Cerrar menú de navegación" class="absolute top-4 right-4 text-slate-500 hover:text-red-500 transition min-h-[44px] min-w-[44px] flex items-center justify-center"><i class="fas fa-times text-xl" aria-hidden="true"></i></button>
+            <img src="img/ucc.png" alt="UCC Logo" class="h-24 object-contain mb-2">
+            <h2 class="text-center text-sm font-black text-uccDark tracking-tighter">Sistema de Gestión de Aires</h2>
+        </div>
+        <nav class="flex-1 px-4 py-8 space-y-1" id="nav-principal">
+            <a href="/dashboard" class="flex items-center gap-3 px-4 py-3 text-slate-700 hover:bg-slate-100 rounded-xl transition font-medium text-sm"><i class="fas fa-chart-line w-5"></i><span>Dashboard</span></a>
+            <a href="/inventario" class="flex items-center gap-3 px-4 py-3 text-slate-700 hover:bg-slate-100 rounded-xl transition font-medium text-sm"><i class="fas fa-snowflake w-5"></i><span>Inventario</span></a>
+            <a href="/programacion" class="flex items-center gap-3 px-4 py-3 text-slate-700 hover:bg-slate-100 rounded-xl transition font-medium text-sm"><i class="fas fa-calendar-check w-5"></i><span>Programación</span></a>
+            <a href="/calendario" id="nav-calendario" class="flex items-center gap-3 px-4 py-3 bg-uccLight text-uccDark rounded-xl shadow-lg font-bold text-sm"><i class="fas fa-calendar-alt w-5"></i><span>Resumen Mantenimiento</span></a>
+            <a href="/auditoria" class="flex items-center gap-3 px-4 py-3 text-slate-700 hover:bg-slate-100 rounded-xl transition font-medium text-sm"><i class="fas fa-history w-5"></i><span>Auditoría</span></a>
+            <a href="/reporte-tecnico" class="flex items-center gap-3 px-4 py-3 text-slate-700 hover:bg-slate-100 rounded-xl transition font-medium text-sm"><i class="fas fa-clipboard-list w-5"></i><span>Reporte Servicio</span></a>
+            <a href="/exportar" class="flex items-center gap-3 px-4 py-3 text-slate-700 hover:bg-slate-100 rounded-xl transition font-medium text-sm"><i class="fas fa-download w-5"></i><span>Exportar Datos</span></a>
+            <a href="/usuarios" class="flex items-center gap-3 px-4 py-3 text-slate-700 hover:bg-slate-100 rounded-xl transition font-medium text-sm"><i class="fas fa-shield-alt w-5"></i><span>Control de Acceso</span></a>
+        </nav>
+        <div class="px-4 pb-2" id="sidebar-acciones-secundarias" aria-label="Acciones">
+            <p class="px-4 text-[10px] font-black uppercase tracking-widest text-slate-500 mb-1">Acciones</p>
+            <button type="button" onclick="accionInventario('openGestionTiposComponenteModal')" class="w-full flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-bold text-[#132740] bg-slate-100 hover:bg-[#00acc9]/15 border border-slate-200 transition min-h-[36px]"><i class="fas fa-box-open text-[#00acc9]"></i><span>Gestionar Insumos</span></button>
+            <button type="button" onclick="accionInventario('openCrearActivoModal')" class="mt-1 w-full flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-bold text-[#132740] bg-slate-100 hover:bg-[#00acc9]/15 border border-slate-200 transition min-h-[36px]"><i class="fas fa-plus text-[#00acc9]"></i><span>Registrar Nuevo Activo</span></button>
+        </div>
+        <div class="p-4 border-t border-slate-200">
+            <button onclick="logout()" class="w-full flex items-center gap-3 px-4 py-3 text-slate-700 hover:bg-slate-100 rounded-xl transition font-medium text-sm justify-center"><i class="fas fa-sign-out-alt w-5"></i><span>Cerrar Sesión</span></button>
+        </div>
+    </aside>
+
+    <main class="flex-1 flex flex-col h-screen overflow-hidden">
+        <header class="bg-white border-b border-slate-200 px-6 py-2 flex items-center justify-between shadow-sm">
+            <div class="flex items-center gap-4">
+                <button id="btn-menu-toggle" type="button" aria-label="Abrir menú de navegación" aria-expanded="false" class="text-slate-600 hover:text-[#0e7490] transition focus:outline-none bg-slate-100 hover:bg-slate-200 p-2 rounded-lg min-h-[44px] min-w-[44px] flex items-center justify-center">
+                    <i class="fas fa-bars text-2xl" aria-hidden="true"></i>
+                </button>
+                <img src="img/ucc.png" alt="UCC Logo" class="h-10 md:h-12 object-contain hidden sm:block">
+            </div>
+            <p class="text-xs font-black uppercase tracking-widest text-slate-500">RESUMEN MANTENIMIENTO PREVENTIVO</p>
+        </header>
+
+        <div class="flex-1 overflow-y-auto">
+            <div class="p-4 md:p-6 max-w-[1600px] mx-auto">
+                <section class="cal-toolbar" aria-label="Controles del resumen anual">
+                    <div class="cal-toolbar-main">
+                        <div class="min-w-0">
+                            <h1 class="text-2xl font-black text-uccDark tracking-tighter mb-1">Resumen Mantenimiento Preventivo</h1>
+                            <p id="resumen-calendario-estado" class="text-xs text-slate-600 font-medium" aria-live="polite">Cargando mantenimientos del año…</p>
+                        </div>
+                        <div class="cal-actions">
+                            <label for="select-anio-resumen" class="text-xs font-bold uppercase tracking-wider text-slate-500">Año</label>
+                            <select id="select-anio-resumen" aria-label="Año" class="w-28 border border-slate-200 rounded-lg px-3 py-1.5 text-xs bg-white min-h-[36px] cursor-pointer"></select>
+                            <label for="select-mes-salto" class="text-xs font-bold uppercase tracking-wider text-slate-500">Mes</label>
+                            <select id="select-mes-salto" aria-label="Saltar a mes" class="w-32 border border-slate-200 rounded-lg px-3 py-1.5 text-xs bg-white min-h-[36px] cursor-pointer"></select>
+                            <a href="/programacion" class="bg-uccLight hover:bg-[#00b8d4] text-uccDark font-bold px-6 py-2.5 rounded-xl shadow-lg transition-all inline-flex items-center gap-2 text-sm min-h-[44px]"><i class="fas fa-arrow-left"></i><span>Volver</span></a>
+                        </div>
+                    </div>
+
+                    <div class="cal-kpis" role="group" aria-label="Indicadores del año">
+                        <article class="cal-kpi"><span class="cal-kpi-label">Espacios</span><span class="cal-kpi-value" id="kpi-espacios">—</span><span class="cal-kpi-sub">filas en matriz</span></article>
+                        <article class="cal-kpi"><span class="cal-kpi-label">Intervenciones</span><span class="cal-kpi-value" id="kpi-eventos">—</span><span class="cal-kpi-sub">X verdes en el año</span></article>
+                        <article class="cal-kpi"><span class="cal-kpi-label">Cobertura</span><span class="cal-kpi-value" id="kpi-cobertura">—</span><span class="cal-kpi-sub">espacios con ≥1 X</span></article>
+                    </div>
+
+                    <div class="cal-subbar">
+                        <div class="flex flex-wrap gap-3 text-xs font-bold" role="note" aria-label="Leyenda">
+                            <span class="inline-flex items-center gap-2 bg-white border border-slate-200 rounded-full px-4 py-2 text-slate-700"><span class="cal-legend-dot" style="background:#10b981"></span> X · Completado / Realizado</span>
+                            <span class="inline-flex items-center gap-2 text-slate-500 px-2 py-2">Celdas vacías = sin mantenimiento ejecutado. Clic en X = detalle.</span>
+                        </div>
+                        <nav id="nav-meses" class="cal-month-nav" aria-label="Saltar a mes"></nav>
+                    </div>
+                </section>
+
+                <section class="cal-matrix-card" aria-label="Matriz anual de mantenimientos por espacio">
+                    <div class="cal-resumen-scroll overflow-x-auto select-none rounded-xl border border-slate-200 shadow-sm" id="cal-resumen-scroll" tabindex="0" aria-label="Matriz anual con scroll horizontal">
+                        <table class="cal-resumen" aria-label="Matriz anual de mantenimientos por espacio">
+                            <caption class="visually-hidden">Filas = espacios, columnas = días del año agrupados por mes. X verde = mantenimiento completado. Última columna = total anual.</caption>
+                            <thead id="cal-resumen-head"></thead>
+                            <tbody id="cal-resumen-body">
+                                <tr><td class="px-8 py-12 text-center text-sm text-slate-500">Cargando matriz anual…</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+
+                <div class="md:hidden bg-white rounded-2xl shadow-sm border border-slate-200 p-5 mt-4">
+                    <h2 class="font-black text-uccDark text-sm uppercase tracking-wider mb-4">Registros del año</h2>
+                    <div id="lista-calendario-resumen" class="space-y-3"></div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <div id="modal-detalle-calendario" role="dialog" aria-modal="true" aria-labelledby="titulo-detalle-calendario" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm hidden items-center justify-center z-50 p-4">
+        <div class="bg-white w-full max-w-3xl rounded-3xl shadow-2xl p-8 max-h-[90vh] overflow-y-auto">
+            <div class="flex items-start justify-between mb-2">
+                <div>
+                    <h2 id="titulo-detalle-calendario" class="text-lg font-black text-uccDark tracking-tight">Detalle del día</h2>
+                    <p id="subtitulo-detalle-calendario" class="text-xs text-slate-500 font-medium mt-1"></p>
+                </div>
+                <button type="button" onclick="cerrarDetalleCalendario()" class="text-slate-600 hover:text-slate-800 transition p-1 min-h-[44px] min-w-[44px] flex items-center justify-center" aria-label="Cerrar detalle del día">
+                    <i class="fas fa-times text-xl" aria-hidden="true"></i>
+                </button>
+            </div>
+            <p class="text-xs text-slate-500 font-medium mb-4">Solo lectura: este detalle no se puede modificar desde el calendario.</p>
+            <div class="overflow-x-auto">
+                <table class="w-full text-sm">
+                    <caption class="visually-hidden">Detalle de ejecución. Solo lectura.</caption>
+                    <thead class="bg-slate-50 border-b border-slate-200">
+                        <tr class="text-xs font-black uppercase tracking-widest text-slate-600">
+                            <th scope="col" class="px-5 py-4 text-left">Orden</th>
+                            <th scope="col" class="px-5 py-4 text-left">Fecha ejecución</th>
+                            <th scope="col" class="px-5 py-4 text-left">Técnico</th>
+                            <th scope="col" class="px-5 py-4 text-left">Observaciones</th>
+                            <th scope="col" class="px-5 py-4 text-left">Insumos</th>
+                            <th scope="col" class="px-5 py-4 text-left">Costo total</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tabla-detalle-calendario-body" class="divide-y divide-slate-100"></tbody>
+                </table>
+            </div>
+            <div class="flex justify-end gap-3 pt-4 mt-4 border-t border-slate-100">
+                <button type="button" onclick="cerrarDetalleCalendario()" aria-label="Cerrar detalle del día" class="rounded-xl text-sm font-semibold px-5 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 transition-all min-h-[44px]">Cerrar</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="toast-container" class="fixed top-6 right-6 z-[100] flex flex-col gap-3 pointer-events-none" aria-live="polite"></div>
+
+    <script src="js/config.js"></script>
+    <script src="js/modal-accesible.js"></script>
+    <script src="js/api.js"></script>
+    <script src="js/sidebar.js"></script>
+    <script src="js/calendar-resumen.js"></script>
+
+</body>
+</html>
