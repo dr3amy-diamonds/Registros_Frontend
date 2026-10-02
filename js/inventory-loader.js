@@ -5,7 +5,7 @@
 const API_BASE_URL = "http://127.0.0.1:8000/api/v1";
 
 let paginaActual = 1;
-const registrosPorPagina = 10;
+const registrosPorPagina = 50;
 let equiposCargadosGlobal = [];
 let equiposCompletosGlobal = []; // Catálogo completo sin filtrar
 let espaciosCatalogGlobal = [];
@@ -172,10 +172,16 @@ function cargarInventarioCompleto() {
         return;
     }
 
-    // Mostrar estado inicial vacío con mensaje guía
-    mostrarEstadoInicialVacio();
+    // Estado de carga (no bloquea: los filtros siguen opcionales)
+    tablaBody.innerHTML = `
+        <tr>
+            <td colspan="4" class="px-8 py-12 text-center text-slate-400 text-sm">
+                <i class="fas fa-spinner fa-spin mr-2 text-[#00acc9]"></i>Cargando inventario completo...
+            </td>
+        </tr>
+    `;
 
-    // Realizar petición GET al backend
+    // GET sin parámetros de filtro: trae el inventario completo
     fetch(`${API_BASE_URL}/equipos/?limit=100`)
         .then(respuesta => {
             if (!respuesta.ok) {
@@ -190,17 +196,18 @@ function cargarInventarioCompleto() {
                 throw new Error("La respuesta del servidor no es un array válido");
             }
 
-            equiposCompletosGlobal = equipos; // Guardar catálogo completo
-            equiposCargadosGlobal = []; // Iniciar con lista vacía
+            equiposCompletosGlobal = equipos; // Catálogo completo sin filtrar
+            equiposCargadosGlobal = [...equipos]; // Por defecto: totalidad de activos
             paginaActual = 1;
 
             console.log(`✅ Cargados ${equipos.length} equipos exitosamente`);
+            renderizarTablaPaginada();
         })
         .catch(error => {
             console.error("❌ Error al cargar equipos:", error);
             tablaBody.innerHTML = `
                 <tr>
-                    <td colspan="5" class="px-8 py-8">
+                    <td colspan="4" class="px-8 py-8">
                         <div class="p-4 bg-red-50 border border-red-200 rounded-lg">
                             <p class="text-sm font-bold text-red-600">
                                 <i class="fas fa-exclamation-circle mr-2"></i>Error al conectar con el servidor
@@ -222,51 +229,32 @@ function cargarInventarioCompleto() {
 }
 
 /**
- * Muestra el estado inicial vacío con mensaje guía
- */
-function mostrarEstadoInicialVacio() {
-    const tablaBody = document.getElementById("tablaEquiposBody");
-    if (!tablaBody) return;
-
-    tablaBody.innerHTML = `
-        <tr>
-            <td colspan="5" class="px-8 py-16">
-                <div class="flex flex-col items-center justify-center text-center">
-                    <div class="mb-4 flex items-center justify-center w-16 h-16 rounded-2xl bg-[#00acc9]/10">
-                        <i class="fas fa-layer-group text-3xl text-[#00acc9]"></i>
-                    </div>
-                    <h3 class="text-lg font-bold text-slate-700 mb-2">Navegación Espacial por Ubicación</h3>
-                    <p class="text-sm text-slate-500 max-w-md">
-                        Seleccione un <strong>Bloque</strong>, <strong>Piso</strong> y <strong>Aula/Espacio</strong> para consultar los equipos de climatización instalados en la ubicación específica.
-                    </p>
-                </div>
-            </td>
-        </tr>
-    `;
-
-    // Limpiar paginación
-    const textoPaginacion = document.getElementById("texto-paginacion-equipos");
-    if (textoPaginacion) {
-        textoPaginacion.innerHTML = "Seleccione una ubicación para visualizar equipos";
-    }
-
-    actualizarBotonesPaginacion(0);
-}
-
-/**
  * Crea una fila de tabla (<tr>) con los datos de un equipo
  * @param {Object} equipo - Objeto con datos del equipo desde la API
  * @returns {HTMLElement} Elemento <tr> con los datos formateados
  */
+const CHILLER_TIPOS_IDS = [1, 2, 5];
+
+function obtenerDependenciaEquipo(equipo) {
+    const tipoId = equipo.tipo_equipo_id != null ? Number(equipo.tipo_equipo_id) : null;
+    if (tipoId != null && CHILLER_TIPOS_IDS.includes(tipoId)) return "Chiller";
+    return "Otros";
+}
+
+function obtenerBadgeDependencia(dependencia) {
+    const esChiller = dependencia === "Chiller";
+    return `<span class="inline-flex items-center gap-1 ${esChiller ? "bg-cyan-50 text-cyan-700" : "bg-slate-100 text-slate-600"} px-2 py-0.5 rounded-full text-xs font-bold">${dependencia}</span>`;
+}
+
 function crearFilaEquipo(equipo) {
     const fila = document.createElement("tr");
     fila.className = "hover:bg-slate-50/50 transition cursor-pointer";
     fila.setAttribute("data-equipo-id", equipo.id);
     fila.setAttribute("data-codigo-activo", equipo.codigo_activo);
 
-    const estadoBadge = obtenerBadgeEstado(equipo.estado);
     const ubicacion = construirUbicacion(equipo);
     const tipoEquipo = obtenerNombreTipoEquipo(equipo);
+    const dependencia = obtenerDependenciaEquipo(equipo);
 
     const piso = equipo.espacio && typeof equipo.espacio === "object" ? equipo.espacio.piso : "";
     const bloqueId = equipo.espacio && typeof equipo.espacio === "object" ? equipo.espacio.bloque_id : "";
@@ -278,29 +266,53 @@ function crearFilaEquipo(equipo) {
     fila.setAttribute("data-estado", normalizarEstadoEquipo(equipo.estado));
 
     fila.innerHTML = `
-        <td class="px-8 py-5 font-black text-uccDark">
-            ${equipo.codigo_activo}
+        <td class="py-3 px-4 font-semibold text-slate-700 text-sm col-ubicacion">
+            <span class="block leading-snug">${ubicacion.nombre}</span>
+            <span class="text-slate-400 block text-xs leading-snug">${ubicacion.piso}</span>
         </td>
-        <td class="px-8 py-5 font-bold text-slate-600">
-            <span class="bg-slate-100 text-slate-700 px-3 py-1 rounded-lg text-xs font-bold">
+        <td class="py-3 px-4 font-semibold text-slate-600 text-sm">
+            <span class="bg-slate-100 text-slate-700 px-2 py-0.5 rounded-md text-xs font-semibold">
                 ${tipoEquipo}
             </span>
         </td>
-        <td class="px-8 py-5 font-semibold text-slate-600 col-ubicacion">
-            <span class="text-xs block">${ubicacion.nombre}</span>
-            <span class="text-xs text-slate-400 block">${ubicacion.piso}</span>
+        <td class="py-3 px-4 text-sm">
+            ${obtenerBadgeDependencia(dependencia)}
         </td>
-        <td class="px-8 py-5">
-            ${estadoBadge}
-        </td>
-        <td class="px-8 py-5 text-center">
-            <button onclick="openTechnicalSheet(${equipo.id})" class="inline-flex items-center justify-center bg-slate-100 hover:bg-slate-200 px-4 py-2 rounded-lg text-xs font-bold transition" title="Ver detalles técnicos">
+        <td class="py-3 px-4 text-center text-sm">
+            <button onclick="mostrarDetalleInline(${equipo.id})" class="inline-flex items-center justify-center gap-1.5 bg-slate-100 hover:bg-slate-200 px-3 py-1.5 rounded-lg text-xs font-bold transition" style="min-height:36px" title="Ver detalles técnicos">
                 <i class="fas fa-eye text-[#00acc9]"></i>
-                <span class="ml-2">Ver Detalles</span>
+                <span>Ver detalles</span>
             </button>
         </td>
     `;
 
+    return fila;
+}
+
+function obtenerPisoEquipo(equipo) {
+    const piso = equipo.espacio && typeof equipo.espacio === "object" ? equipo.espacio.piso : null;
+    if (piso == null || piso === "") return null;
+    const num = Number(piso);
+    return Number.isNaN(num) ? String(piso) : num;
+}
+
+function ordenarPorPiso(equipos) {
+    return [...equipos].sort((a, b) => {
+        const pa = obtenerPisoEquipo(a);
+        const pb = obtenerPisoEquipo(b);
+        if (pa == null && pb == null) return 0;
+        if (pa == null) return 1;
+        if (pb == null) return -1;
+        if (pa === pb) return String(a.codigo_activo || "").localeCompare(String(b.codigo_activo || ""));
+        return pa > pb ? 1 : -1;
+    });
+}
+
+function crearFilaDivisoraPiso(piso) {
+    const fila = document.createElement("tr");
+    fila.className = "bg-slate-100/80";
+    const etiqueta = piso == null ? "Piso sin asignar" : `Piso ${piso}`;
+    fila.innerHTML = `<td colspan="4" class="py-1.5 px-3 text-[11px] font-bold uppercase tracking-widest text-slate-500">${etiqueta}</td>`;
     return fila;
 }
 
@@ -407,7 +419,7 @@ function normalizarEstadoEquipo(estado) {
 }
 
 /**
- * Renderiza la tabla principal con paginación local (10 registros por página)
+ * Renderiza la tabla principal con paginación local (50 registros por página)
  */
 function renderizarTablaPaginada() {
     const tablaBody = document.getElementById("tablaEquiposBody");
@@ -428,7 +440,7 @@ function renderizarTablaPaginada() {
     if (total === 0) {
         tablaBody.innerHTML = `
             <tr>
-                <td colspan="5" class="text-center py-12">
+                <td colspan="4" class="text-center py-12">
                     <p class="text-slate-400 text-sm">
                         <i class="fas fa-inbox text-2xl block mb-2"></i>
                         No hay equipos registrados en la base de datos
@@ -441,13 +453,20 @@ function renderizarTablaPaginada() {
         return;
     }
 
-    equiposPagina.forEach(equipo => {
+    const equiposOrdenados = ordenarPorPiso(equiposPagina);
+    let pisoActual = Symbol("ninguno");
+    equiposOrdenados.forEach(equipo => {
+        const piso = obtenerPisoEquipo(equipo);
+        const clave = piso == null ? "sin-piso" : `piso-${piso}`;
+        if (clave !== pisoActual) {
+            pisoActual = clave;
+            tablaBody.appendChild(crearFilaDivisoraPiso(piso));
+        }
         tablaBody.appendChild(crearFilaEquipo(equipo));
     });
 
     actualizarTextoPaginacion(inicio, fin, total);
     actualizarBotonesPaginacion(totalPaginas);
-    filtrarTabla();
 }
 
 /**
@@ -903,6 +922,119 @@ async function openTechnicalSheet(equipoId) {
     }
 }
 
+// ========================================
+// VISTA DETALLE INLINE OPCIÓN C (reemplaza tabla en el mismo espacio)
+// ========================================
+function setInlineTexto(id, valor) {
+    var el = document.getElementById(id);
+    if (el) el.textContent = valor;
+}
+
+function volverAListaInventario() {
+    var tabla = document.getElementById("contenedor-tabla");
+    var detalle = document.getElementById("vista-detalle-inline");
+    if (detalle) {
+        detalle.classList.add("hidden");
+        detalle.classList.remove("flex");
+    }
+    if (tabla) tabla.classList.remove("hidden");
+}
+
+async function mostrarDetalleInline(equipoId) {
+    var tabla = document.getElementById("contenedor-tabla");
+    var detalle = document.getElementById("vista-detalle-inline");
+    if (!detalle) {
+        openTechnicalSheet(equipoId);
+        return;
+    }
+    if (tabla) tabla.classList.add("hidden");
+    detalle.classList.remove("hidden");
+    detalle.classList.add("flex");
+    window.currentEquipoId = equipoId;
+    setInlineTexto("dInlineId", "Cargando...");
+    setInlineTexto("dInlineSubtitle", "Cargando ficha...");
+    try {
+        const response = await fetch(`${API_BASE_URL}/equipos/${equipoId}/`);
+        if (!response.ok) throw new Error(`Error HTTP ${response.status}`);
+        const equipo = await response.json();
+        window.currentEquipoCodigoActivo = equipo.codigo_activo;
+        const marca = equipo.marca ? (typeof equipo.marca === "object" ? equipo.marca.nombre : equipo.marca) : "No especificada";
+        setInlineTexto("dInlineId", equipo.codigo_activo || "N/A");
+        setInlineTexto("dInlineSubtitle", equipo.numero_serie ? ("Serie " + equipo.numero_serie) : "Sin serie");
+        setInlineTexto("dInlineBrand", marca);
+        setInlineTexto("dInlineModel", equipo.modelo || "No especificado");
+        setInlineTexto("dInlineSerial", equipo.numero_serie || "No especificado");
+        setInlineTexto("dInlineType", obtenerNombreTipoEquipo(equipo));
+        setInlineTexto("dInlineBtu", equipo.capacidad_btu ? `${Number(equipo.capacidad_btu).toLocaleString("es-CO")} BTU/h` : "No especificada");
+        setInlineTexto("dInlineTr", equipo.tonelaje ? `${parseFloat(equipo.tonelaje).toFixed(2)} TR` : "No especificado");
+        setInlineTexto("dInlineVoltage", equipo.voltaje || "No especificado");
+        setInlineTexto("dInlineRefrigerant", equipo.refrigerante || "No especificado");
+        setInlineTexto("dInlineBlock", equipo.espacio && equipo.espacio.codigo_espacio ? equipo.espacio.codigo_espacio : "No especificado");
+        setInlineTexto("dInlineSpace", equipo.espacio && equipo.espacio.nombre ? equipo.espacio.nombre : "No especificado");
+        setInlineTexto("dInlineFloor", equipo.espacio && equipo.espacio.piso != null ? `Piso ${equipo.espacio.piso}` : "No especificado");
+        setInlineTexto("dInlineInstallDate", equipo.fecha_instalacion ? new Date(equipo.fecha_instalacion).toLocaleDateString("es-CO") : "No especificada");
+        setInlineTexto("dInlineLastService", equipo.ultima_fecha ? new Date(equipo.ultima_fecha).toLocaleDateString("es-CO") : "No registrada");
+        setInlineTexto("dInlineWarranty", "Vigente");
+        setInlineTexto("dInlineNextMaintenance", equipo.proxima_fecha ? new Date(equipo.proxima_fecha).toLocaleDateString("es-CO") : "No programado");
+        setInlineTexto("dInlineCountdown", "Información disponible");
+        var pill = document.getElementById("dInlineStatusPill");
+        if (pill) pill.innerHTML = obtenerBadgeEstado(equipo.estado);
+        var btnActivar = document.getElementById("dInlineBtnActivar");
+        if (btnActivar) {
+            const est = String(equipo.estado || "").toLowerCase();
+            if (est === "inactivo" || est === "dado de baja") btnActivar.classList.remove("hidden");
+            else btnActivar.classList.add("hidden");
+        }
+        await cargarHistorialInline(equipoId);
+        // Sincroniza también el modal clásico por compatibilidad
+        try { await openTechnicalSheetSilent(equipo); } catch (e) { /* solo inline */ }
+    } catch (error) {
+        console.error("❌ Error detalle inline:", error);
+        setInlineTexto("dInlineId", "Error");
+        mostrarNotificacion("error", "No se pudo cargar el detalle del equipo.");
+    }
+}
+
+async function openTechnicalSheetSilent(equipo) {
+    const mapa = {
+        technicalSheetId: equipo.codigo_activo || "N/A",
+        technicalSheetBrand: equipo.marca ? (typeof equipo.marca === "object" ? equipo.marca.nombre : equipo.marca) : "No especificada",
+        technicalSheetModel: equipo.modelo || "No especificado",
+        technicalSheetType: obtenerNombreTipoEquipo(equipo),
+        technicalSheetSubtitle: equipo.numero_serie || "Sin serie",
+        technicalSheetSerialNumber: equipo.numero_serie || "No especificado",
+        technicalSheetVoltage: equipo.voltaje || "No especificado",
+        technicalSheetRefrigerant: equipo.refrigerante || "No especificado"
+    };
+    Object.keys(mapa).forEach(function (id) {
+        var el = document.getElementById(id);
+        if (el) el.textContent = mapa[id];
+    });
+}
+
+async function cargarHistorialInline(equipoId) {
+    const tbody = document.getElementById("dInlineHistory");
+    if (!tbody) return;
+    const vacio = `<tr><td colspan="4" class="px-5 py-8 text-center text-slate-500 italic">No hay intervenciones registradas aún para este equipo.</td></tr>`;
+    tbody.innerHTML = `<tr><td colspan="4" class="px-5 py-6 text-center text-slate-400 text-sm"><i class="fas fa-spinner fa-spin mr-2"></i>Cargando historial...</td></tr>`;
+    try {
+        const response = await fetch(`${API_BASE_URL}/equipos/${equipoId}/mantenimientos`);
+        if (!response.ok) { tbody.innerHTML = vacio; return; }
+        const data = await response.json();
+        const items = Array.isArray(data) ? data : (data.items || []);
+        if (!items.length) { tbody.innerHTML = vacio; return; }
+        tbody.innerHTML = "";
+        items.forEach(function (item) {
+            const fila = document.createElement("tr");
+            const fecha = item.fecha_mantenimiento ? new Date(item.fecha_mantenimiento + "T00:00:00").toLocaleDateString("es-CO") : "—";
+            fila.innerHTML = `<td class="px-5 py-3 text-slate-700 font-medium">${fecha}</td><td class="px-5 py-3 text-slate-600">${item.tecnico_nombre || "—"}</td><td class="px-5 py-3"><span class="bg-cyan-50 text-cyan-700 px-2 py-1 rounded-md text-xs font-bold">${item.tipo_nombre || "—"}</span></td><td class="px-5 py-3 text-slate-600 text-sm">${item.detalle_mantenimiento || "—"}</td>`;
+            tbody.appendChild(fila);
+        });
+    } catch (e) {
+        tbody.innerHTML = vacio;
+    }
+}
+
 /**
  * Carga el historial de mantenimientos en la tabla de la hoja de vida
  * @param {number} equipoId
@@ -1094,8 +1226,8 @@ async function activateTechnicalSheet() {
 }
 
 /**
- * Renderiza equipos filtrados por ubicación específica (Bloque, Piso, Aula)
- * Solo se ejecuta cuando se selecciona un Aula/Espacio
+ * Aplica los filtros opcionales de ubicación (Bloque, Piso, Aula).
+ * Sin selección muestra el inventario completo agrupado por piso.
  */
 function renderizarEquiposPorUbicacion() {
     const selectBloque = document.getElementById("assetBlockFilter");
@@ -1109,19 +1241,82 @@ function renderizarEquiposPorUbicacion() {
     const piso = selectPiso?.value || "";
     const aulaId = selectAula?.value || "";
 
-    // Si no hay aula seleccionada, mostrar estado inicial vacío
-    if (!aulaId) {
-        mostrarEstadoInicialVacio();
+    // Filtros 100% opcionales: sin selección = inventario completo
+    if (!bloqueId && !piso && !aulaId) {
+        equiposCargadosGlobal = [...equiposCompletosGlobal];
+        paginaActual = 1;
+        renderizarTablaPaginada();
         return;
     }
 
-    // Filtrar equipos por el espacio seleccionado desde el catálogo completo
-    const equiposFiltrados = equiposCompletosGlobal.filter(equipo => {
-        const espacioId = equipo.espacio && typeof equipo.espacio === "object"
-            ? equipo.espacio.id
-            : equipo.espacio_id;
-        return String(espacioId) === String(aulaId);
-    });
+    // Filtro más específico: aula/espacio puntual
+    if (aulaId) {
+        const equiposFiltrados = equiposCompletosGlobal.filter(equipo => {
+            const espacioId = equipo.espacio && typeof equipo.espacio === "object"
+                ? equipo.espacio.id
+                : equipo.espacio_id;
+            return String(espacioId) === String(aulaId);
+        });
+        mostrarEquiposFiltrados(equiposFiltrados);
+        return;
+    }
+
+    // Filtro por bloque + piso
+    if (bloqueId && piso) {
+        const idsEspacios = new Set(
+            espaciosCatalogGlobal
+                .filter(e => String(e.bloque_id) === String(bloqueId) && String(e.piso) === String(piso))
+                .map(e => String(e.id))
+        );
+        const equiposFiltrados = equiposCompletosGlobal.filter(equipo => {
+            const espacio = equipo.espacio && typeof equipo.espacio === "object" ? equipo.espacio : null;
+            if (espacio) {
+                if (espacio.id != null && idsEspacios.has(String(espacio.id))) return true;
+                return String(espacio.bloque_id || "") === String(bloqueId) && String(espacio.piso ?? "") === String(piso);
+            }
+            const espacioId = equipo.espacio_id != null ? String(equipo.espacio_id) : "";
+            return espacioId && idsEspacios.has(espacioId);
+        });
+        mostrarEquiposFiltrados(equiposFiltrados);
+        return;
+    }
+
+    // Filtro solo por bloque
+    if (bloqueId) {
+        const idsEspacios = new Set(
+            espaciosCatalogGlobal
+                .filter(e => String(e.bloque_id) === String(bloqueId))
+                .map(e => String(e.id))
+        );
+        const equiposFiltrados = equiposCompletosGlobal.filter(equipo => {
+            const espacio = equipo.espacio && typeof equipo.espacio === "object" ? equipo.espacio : null;
+            if (espacio) {
+                if (espacio.id != null && idsEspacios.has(String(espacio.id))) return true;
+                if (espacio.bloque_id != null) return String(espacio.bloque_id) === String(bloqueId);
+                if (espacio.bloque && typeof espacio.bloque === "object" && espacio.bloque.id != null)
+                    return String(espacio.bloque.id) === String(bloqueId);
+            }
+            const espacioId = equipo.espacio_id != null ? String(equipo.espacio_id) : "";
+            return espacioId && idsEspacios.has(espacioId);
+        });
+        mostrarEquiposFiltrados(equiposFiltrados);
+        return;
+    }
+
+    // Solo piso (sin bloque): agrupa por piso en todo el campus
+    if (piso) {
+        const equiposFiltrados = equiposCompletosGlobal.filter(equipo => {
+            const p = equipo.espacio && typeof equipo.espacio === "object" ? equipo.espacio.piso : null;
+            return p != null && String(p) === String(piso);
+        });
+        mostrarEquiposFiltrados(equiposFiltrados);
+        return;
+    }
+}
+
+function mostrarEquiposFiltrados(equiposFiltrados) {
+    const tablaBody = document.getElementById("tablaEquiposBody");
+    if (!tablaBody) return;
 
     // Limpiar tabla
     tablaBody.innerHTML = "";
@@ -1129,7 +1324,7 @@ function renderizarEquiposPorUbicacion() {
     if (equiposFiltrados.length === 0) {
         tablaBody.innerHTML = `
             <tr>
-                <td colspan="5" class="px-8 py-12 text-center">
+                <td colspan="4" class="px-8 py-12 text-center">
                     <div class="flex flex-col items-center justify-center">
                         <i class="fas fa-inbox text-4xl text-slate-300 mb-3"></i>
                         <p class="text-sm text-slate-500">No hay equipos de climatización instalados en esta ubicación</p>
@@ -1139,17 +1334,18 @@ function renderizarEquiposPorUbicacion() {
         `;
         actualizarTextoPaginacion(0, 0, 0);
         actualizarBotonesPaginacion(0);
+        equiposCargadosGlobal = [];
         return;
     }
 
-    // Renderizar equipos filtrados con paginación
+    // Renderizar equipos filtrados con paginación (agrupados por piso)
     equiposCargadosGlobal = equiposFiltrados;
     paginaActual = 1;
     renderizarTablaPaginada();
 }
 
 /**
- * Limpia todos los filtros y retorna la tabla al estado inicial vacío
+ * Limpia los filtros y vuelve al inventario completo agrupado por piso
  */
 function limpiarFiltrosInventario() {
     const selectBloque = document.getElementById("assetBlockFilter");
@@ -1163,18 +1359,24 @@ function limpiarFiltrosInventario() {
 
     // Resetear y deshabilitar selector de Piso
     if (selectPiso) {
-        selectPiso.innerHTML = '<option value="">Piso: Todos</option>';
+        selectPiso.innerHTML = '<option value="">Todos los pisos</option>';
         selectPiso.disabled = true;
     }
 
     // Resetear y deshabilitar selector de Aula
     if (selectAula) {
-        selectAula.innerHTML = '<option value="">Espacio: Todos</option>';
+        selectAula.innerHTML = '<option value="">Todas las aulas</option>';
         selectAula.disabled = true;
     }
 
-    // Recargar equipos completos y mostrar estado inicial vacío
-    cargarInventarioCompleto();
+    // Sin filtros = inventario completo agrupado por piso
+    equiposCargadosGlobal = [...equiposCompletosGlobal];
+    paginaActual = 1;
+    if (equiposCompletosGlobal.length) {
+        renderizarTablaPaginada();
+    } else {
+        cargarInventarioCompleto();
+    }
 }
 
 function actualizarOpcionesPisoFiltro() {
@@ -1207,7 +1409,7 @@ async function cargarFiltrosInventario() {
             bloquesCatalogGlobal = Array.isArray(bloquesData) ? bloquesData : (bloquesData.items || []);
             const selectBloque = document.getElementById("assetBlockFilter");
             if (selectBloque) {
-                selectBloque.innerHTML = '<option value="">Bloque: Todos</option>';
+                selectBloque.innerHTML = '<option value="">Todos los bloques</option>';
                 bloquesCatalogGlobal.forEach(bloque => {
                     const option = document.createElement("option");
                     option.value = bloque.id;
@@ -1237,16 +1439,17 @@ function poblarPisosPorBloque(bloqueId) {
     if (!selectPiso) return;
 
     // Limpiar y deshabilitar selector de pisos
-    selectPiso.innerHTML = '<option value="">Piso: Todos</option>';
+    selectPiso.innerHTML = '<option value="">Todos los pisos</option>';
     selectPiso.disabled = true;
 
     // Limpiar y deshabilitar selector de aulas
     if (selectAula) {
-        selectAula.innerHTML = '<option value="">Espacio: Todos</option>';
+        selectAula.innerHTML = '<option value="">Todas las aulas</option>';
         selectAula.disabled = true;
     }
 
     if (!bloqueId) {
+        renderizarEquiposPorUbicacion();
         return;
     }
 
@@ -1256,6 +1459,7 @@ function poblarPisosPorBloque(bloqueId) {
 
     if (pisosUnicos.length === 0) {
         selectPiso.disabled = true;
+        renderizarEquiposPorUbicacion();
         return;
     }
 
@@ -1268,6 +1472,7 @@ function poblarPisosPorBloque(bloqueId) {
     });
 
     selectPiso.disabled = false;
+    renderizarEquiposPorUbicacion();
 }
 
 /**
@@ -1279,10 +1484,11 @@ function poblarAulasPorBloquePiso(bloqueId, piso) {
     const selectAula = document.getElementById("assetAulaFilter");
     if (!selectAula) return;
 
-    selectAula.innerHTML = '<option value="">Espacio: Todos</option>';
+    selectAula.innerHTML = '<option value="">Todas las aulas</option>';
     selectAula.disabled = true;
 
     if (!bloqueId || !piso) {
+        renderizarEquiposPorUbicacion();
         return;
     }
 
@@ -1292,6 +1498,7 @@ function poblarAulasPorBloquePiso(bloqueId, piso) {
     );
 
     if (espaciosFiltrados.length === 0) {
+        renderizarEquiposPorUbicacion();
         return;
     }
 
@@ -1303,6 +1510,7 @@ function poblarAulasPorBloquePiso(bloqueId, piso) {
     });
 
     selectAula.disabled = false;
+    renderizarEquiposPorUbicacion();
 }
 
 /**

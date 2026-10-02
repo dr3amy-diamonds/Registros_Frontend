@@ -54,6 +54,10 @@ table button, table a {
     min-height: 44px;
     min-width: 44px;
 }
+table button.btn-xs, table a.btn-xs {
+    min-height: 0;
+    min-width: 0;
+}
 
 /* ——— Badges de estado (contraste corregido) ——— */
 .badge {

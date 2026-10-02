@@ -68,121 +68,127 @@
     <main class="flex-1 flex flex-col h-screen overflow-hidden">
 
         <!-- Header -->
-        <header class="bg-white border-b border-slate-200 px-10 py-5 flex items-center justify-between shadow-sm">
-            <div class="flex items-center gap-4">
+        <header class="bg-white border-b border-slate-200 px-4 py-2 flex items-center justify-between shadow-sm sticky top-0 z-30 shrink-0">
+            <div class="flex items-center gap-3">
                 <button id="btn-menu-toggle" type="button" class="text-slate-500 hover:text-[#00acc9] transition focus:outline-none bg-slate-100 hover:bg-slate-200 p-2 rounded-lg">
-                    <i class="fas fa-bars text-2xl"></i>
+                    <i class="fas fa-bars text-xl"></i>
                 </button>
-                <img src="img/ucc.png" alt="UCC Logo" class="h-10 md:h-12 object-contain hidden sm:block">
+                <img src="img/ucc.png" alt="UCC Logo" class="h-8 object-contain hidden sm:block">
             </div>
-            <p class="text-xs font-black uppercase tracking-widest text-slate-500">ANÁLISIS EN TIEMPO REAL</p>
+            <p class="text-xs font-bold uppercase tracking-widest text-slate-500">ANÁLISIS EN TIEMPO REAL</p>
         </header>
 
-        <!-- Contenido Scrollable -->
-        <div class="flex-1 overflow-y-auto">
-            <div class="p-10">
+        <!-- Contenido sin scroll: 4 filas que llenan la pantalla -->
+        <div class="flex-1 overflow-hidden min-h-0">
+            <div class="px-4 py-3 max-w-7xl mx-auto w-full h-full min-h-0 flex flex-col overflow-hidden">
                 <!-- Encabezado -->
-                <div class="mb-10">
-                    <h1 class="text-4xl font-black text-uccDark tracking-tighter mb-2">Panel de Control</h1>
-                    <p class="text-slate-600 font-medium">Indicadores de gestión y carga térmica - Campus Montería</p>
+                <div class="mb-2 flex flex-wrap items-baseline gap-x-2 gap-y-0 shrink-0">
+                    <h1 class="text-xl font-bold text-uccDark tracking-tight">Panel de Control</h1>
+                    <p class="text-xs text-slate-500 font-medium">Indicadores de gestión y carga térmica - Campus Montería</p>
                 </div>
 
-                <!-- Sección 1: Resumen de equipos -->
-                <section aria-labelledby="titulo-resumen-equipos" class="mb-6">
-                    <h2 id="titulo-resumen-equipos" class="text-xl font-black uppercase tracking-tight text-uccDark mb-1">Resumen de equipos de climatización</h2>
-                    <p class="text-sm font-medium text-slate-500 mb-4">Flota total. Chiller incluye centrales y Piso Techo.</p>
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4" role="status" aria-live="polite" aria-label="Resumen de equipos">
-                        <div class="bg-white p-4 rounded-xl border border-slate-100 shadow-sm flex flex-col justify-between gap-2">
-                            <p class="text-xs font-bold uppercase tracking-widest text-slate-500">Cantidad aires</p>
-                            <h3 id="kpi-total" class="text-4xl font-black text-slate-900 tabular-nums">…</h3>
-                            <p class="text-xs font-medium text-slate-500">Conteo general de la flota</p>
+                <!-- Fila 1: Resumen de equipos de climatización -->
+                <section aria-labelledby="titulo-resumen-equipos" class="mb-2 shrink-0">
+                    <h2 id="titulo-resumen-equipos" class="text-lg font-bold uppercase tracking-tight text-uccDark leading-tight">Resumen de equipos de climatización</h2>
+                    <p class="text-xs text-slate-500 mb-2 leading-tight">Flota total. Chiller incluye centrales y Piso Techo.</p>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-3" role="status" aria-live="polite" aria-label="Resumen de equipos">
+                        <div class="bg-white p-4 rounded-lg border border-slate-100 shadow-sm flex flex-col justify-center gap-1 min-h-[96px]">
+                            <p class="text-[11px] font-bold uppercase tracking-widest text-slate-500">Cantidad aires</p>
+                            <h3 id="kpi-total" class="text-3xl font-bold text-slate-900 tabular-nums leading-none">…</h3>
+                            <p class="text-[11px] font-medium text-slate-500">Conteo general de la flota</p>
                         </div>
-                        <div class="bg-white p-4 rounded-xl border border-slate-100 shadow-sm flex flex-col justify-between gap-2">
-                            <p class="text-xs font-bold uppercase tracking-widest text-slate-500">Chiller</p>
-                            <h3 id="kpi-chiller" class="text-4xl font-black text-cyan-600 tabular-nums">…</h3>
-                            <p class="text-xs font-medium text-slate-500">Centrales y Piso Techo</p>
+                        <div class="bg-white p-4 rounded-lg border border-slate-100 shadow-sm flex flex-col justify-center gap-1 min-h-[96px]">
+                            <p class="text-[11px] font-bold uppercase tracking-widest text-slate-500">Chiller</p>
+                            <h3 id="kpi-chiller" class="text-3xl font-bold text-[#00acc9] tabular-nums leading-none">…</h3>
+                            <p class="text-[11px] font-medium text-slate-500">Centrales y Piso Techo</p>
                         </div>
-                        <div class="bg-white p-4 rounded-xl border border-slate-100 shadow-sm flex flex-col justify-between gap-2">
-                            <p class="text-xs font-bold uppercase tracking-widest text-slate-500">Otros</p>
-                            <h3 id="kpi-otros" class="text-4xl font-black text-slate-900 tabular-nums">…</h3>
-                            <p class="text-xs font-medium text-slate-500">Mini Splits y sistemas autónomos</p>
+                        <div class="bg-white p-4 rounded-lg border border-slate-100 shadow-sm flex flex-col justify-center gap-1 min-h-[96px]">
+                            <p class="text-[11px] font-bold uppercase tracking-widest text-slate-500">Otros</p>
+                            <h3 id="kpi-otros" class="text-3xl font-bold text-slate-900 tabular-nums leading-none">…</h3>
+                            <p class="text-[11px] font-medium text-slate-500">Mini Splits y sistemas autónomos</p>
                         </div>
                     </div>
                 </section>
 
-                <!-- Sección 2: Resumen financiero -->
-                <section aria-labelledby="titulo-resumen-financiero" class="mb-6">
-                    <h2 id="titulo-resumen-financiero" class="text-xl font-black uppercase tracking-tight text-uccDark mb-1">Resumen financiero</h2>
-                    <p class="text-sm font-medium text-slate-500 mb-4">Presupuesto, gasto en insumos y saldo restante.</p>
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4" role="status" aria-live="polite" aria-label="Resumen financiero">
-                        <div class="bg-white p-4 rounded-xl border border-slate-100 shadow-sm flex flex-col justify-between gap-2">
-                            <p class="text-xs font-bold uppercase tracking-widest text-slate-500">Valor presupuesto</p>
-                            <h3 id="kpi-presupuesto" class="text-2xl md:text-3xl font-black text-slate-900 tabular-nums">…</h3>
-                            <p class="text-xs font-medium text-slate-500">Monto asignado por administración</p>
+                <!-- Fila 2: Resumen financiero -->
+                <section aria-labelledby="titulo-resumen-financiero" class="mb-2 shrink-0">
+                    <h2 id="titulo-resumen-financiero" class="text-lg font-bold uppercase tracking-tight text-uccDark leading-tight">Resumen financiero</h2>
+                    <p class="text-xs text-slate-500 mb-2 leading-tight">Presupuesto, gasto en insumos y saldo restante.</p>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-3" role="status" aria-live="polite" aria-label="Resumen financiero">
+                        <div class="bg-white p-4 rounded-lg border border-slate-100 shadow-sm flex flex-col justify-center gap-1 min-h-[96px]">
+                            <p class="text-[11px] font-bold uppercase tracking-widest text-slate-500">Valor presupuesto</p>
+                            <h3 id="kpi-presupuesto" class="text-2xl font-bold text-slate-900 tabular-nums leading-none">…</h3>
+                            <p class="text-[11px] font-medium text-slate-500">Monto asignado por administración</p>
                         </div>
-                        <div class="bg-white p-4 rounded-xl border border-slate-100 shadow-sm flex flex-col justify-between gap-2">
-                            <p class="text-xs font-bold uppercase tracking-widest text-slate-500">Total gastado</p>
-                            <h3 id="kpi-gastado" class="text-2xl md:text-3xl font-black text-slate-900 tabular-nums">…</h3>
-                            <p class="text-xs font-medium text-slate-500">Insumos usados en mantenimientos</p>
+                        <div class="bg-white p-4 rounded-lg border border-slate-100 shadow-sm flex flex-col justify-center gap-1 min-h-[96px]">
+                            <p class="text-[11px] font-bold uppercase tracking-widest text-slate-500">Total gastado</p>
+                            <h3 id="kpi-gastado" class="text-2xl font-bold text-slate-900 tabular-nums leading-none">…</h3>
+                            <p class="text-[11px] font-medium text-slate-500">Insumos usados en mantenimientos</p>
                         </div>
-                        <div id="card-saldo" class="bg-white p-4 rounded-xl border border-slate-100 shadow-sm flex flex-col justify-between gap-2">
-                            <p class="text-xs font-bold uppercase tracking-widest text-slate-500">Saldo disponible</p>
-                            <h3 id="kpi-saldo" class="text-2xl md:text-3xl font-black text-green-700 tabular-nums">…</h3>
-                            <p id="kpi-saldo-estado" class="text-xs font-bold text-slate-500">Presupuesto menos gasto</p>
+                        <div id="card-saldo" class="bg-emerald-50/60 p-4 rounded-lg border border-slate-100 shadow-sm flex flex-col justify-center gap-1 min-h-[96px]">
+                            <p class="text-[11px] font-bold uppercase tracking-widest text-slate-500">Saldo disponible</p>
+                            <h3 id="kpi-saldo" class="text-2xl font-bold text-[#10b981] tabular-nums leading-none">…</h3>
+                            <p id="kpi-saldo-estado" class="text-[11px] font-medium text-slate-500">Presupuesto menos gasto</p>
                         </div>
                     </div>
-                    <p id="dashboard-error" class="hidden mt-3 text-sm font-bold text-red-700" role="alert"></p>
+                    <p id="dashboard-error" class="hidden mt-1 text-sm font-bold text-red-700" role="alert"></p>
                 </section>
 
-
-                <!-- Estado de Equipos por Tipo -->
-                <div class="grid grid-cols-2 gap-6 mb-10">
-                    <!-- Tabla de Equipos -->
-                    <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-8">
-                        <h3 class="text-sm font-black uppercase tracking-widest text-uccDark mb-6">Estado de Equipos</h3>
-                        <div class="space-y-4">
-                            <div class="flex items-center justify-between p-4 bg-slate-50 rounded-xl">
-                                <span class="text-sm font-bold text-slate-700">Operativos</span>
-                                <span class="text-xl font-black text-green-600">140</span>
-                            </div>
-                            <div class="flex items-center justify-between p-4 bg-amber-50 rounded-xl">
-                                <span class="text-sm font-bold text-slate-700">En Reparación</span>
-                                <span class="text-xl font-black text-amber-600">2</span>
-                            </div>
-                            <div class="flex items-center justify-between p-4 bg-slate-100 rounded-xl">
-                                <span class="text-sm font-bold text-slate-700">Inactivos</span>
-                                <span class="text-xl font-black text-slate-600">0</span>
-                            </div>
-                            <div class="flex items-center justify-between p-4 bg-red-50 rounded-xl">
-                                <span class="text-sm font-bold text-slate-700">Dados de Baja</span>
-                                <span class="text-xl font-black text-red-600">0</span>
-                            </div>
+                <!-- Fila 3: Estado de equipos -->
+                <section aria-labelledby="titulo-estado-equipos" class="mb-2 shrink-0">
+                    <h2 id="titulo-estado-equipos" class="text-lg font-bold uppercase tracking-tight text-uccDark leading-tight">Estado de equipos</h2>
+                    <p class="text-xs text-slate-500 mb-2 leading-tight">Condición operativa actual de la flota.</p>
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-3" role="status" aria-live="polite" aria-label="Estado de equipos">
+                        <div class="bg-white p-4 rounded-lg border border-slate-100 shadow-sm flex flex-col justify-center gap-1 min-h-[88px]">
+                            <p class="text-[11px] font-bold uppercase tracking-widest text-slate-500">Operativos</p>
+                            <h3 id="estado-operativos" class="text-3xl font-bold text-green-700 tabular-nums leading-none">…</h3>
+                            <p class="text-[11px] font-medium text-slate-500">Equipos disponibles</p>
+                        </div>
+                        <div class="bg-white p-4 rounded-lg border border-slate-100 shadow-sm flex flex-col justify-center gap-1 min-h-[88px]">
+                            <p class="text-[11px] font-bold uppercase tracking-widest text-slate-500">En reparación</p>
+                            <h3 id="estado-reparacion" class="text-3xl font-bold text-amber-600 tabular-nums leading-none">…</h3>
+                            <p class="text-[11px] font-medium text-slate-500">En taller</p>
+                        </div>
+                        <div class="bg-white p-4 rounded-lg border border-slate-100 shadow-sm flex flex-col justify-center gap-1 min-h-[88px]">
+                            <p class="text-[11px] font-bold uppercase tracking-widest text-slate-500">Inactivos</p>
+                            <h3 id="estado-inactivos" class="text-3xl font-bold text-slate-600 tabular-nums leading-none">…</h3>
+                            <p class="text-[11px] font-medium text-slate-500">Fuera de servicio</p>
+                        </div>
+                        <div class="bg-white p-4 rounded-lg border border-slate-100 shadow-sm flex flex-col justify-center gap-1 min-h-[88px]">
+                            <p class="text-[11px] font-bold uppercase tracking-widest text-slate-500">Dados de baja</p>
+                            <h3 id="estado-baja" class="text-3xl font-bold text-red-600 tabular-nums leading-none">…</h3>
+                            <p class="text-[11px] font-medium text-slate-500">Retirados</p>
                         </div>
                     </div>
+                </section>
 
-                    <!-- Tabla de Mantenimientos -->
-                    <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-8">
-                        <h3 class="text-sm font-black uppercase tracking-widest text-uccDark mb-6">Mantenimientos Este Mes</h3>
-                        <div class="space-y-4">
-                            <div class="flex items-center justify-between p-4 bg-slate-50 rounded-xl">
-                                <span class="text-sm font-bold text-slate-700">Realizados</span>
-                                <span class="text-xl font-black text-uccLight">28</span>
-                            </div>
-                            <div class="flex items-center justify-between p-4 bg-blue-50 rounded-xl">
-                                <span class="text-sm font-bold text-slate-700">Programados</span>
-                                <span class="text-xl font-black text-blue-600">12</span>
-                            </div>
-                            <div class="flex items-center justify-between p-4 bg-slate-100 rounded-xl">
-                                <span class="text-sm font-bold text-slate-700">Pendientes</span>
-                                <span class="text-xl font-black text-slate-600">5</span>
-                            </div>
-                            <div class="flex items-center justify-between p-4 bg-red-50 rounded-xl">
-                                <span class="text-sm font-bold text-slate-700">Vencidos</span>
-                                <span class="text-xl font-black text-red-600">3</span>
-                            </div>
+                <!-- Fila 4: Mantenimientos este mes -->
+                <section aria-labelledby="titulo-mantenimientos" class="mb-0 shrink-0">
+                    <h2 id="titulo-mantenimientos" class="text-lg font-bold uppercase tracking-tight text-uccDark leading-tight">Mantenimientos este mes</h2>
+                    <p class="text-xs text-slate-500 mb-2 leading-tight">Actividad del mes en curso.</p>
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-3" role="status" aria-live="polite" aria-label="Mantenimientos este mes">
+                        <div class="bg-white p-4 rounded-lg border border-slate-100 shadow-sm flex flex-col justify-center gap-1 min-h-[88px]">
+                            <p class="text-[11px] font-bold uppercase tracking-widest text-slate-500">Realizados</p>
+                            <h3 id="mant-realizados" class="text-3xl font-bold text-[#00acc9] tabular-nums leading-none">…</h3>
+                            <p class="text-[11px] font-medium text-slate-500">Ejecutados</p>
+                        </div>
+                        <div class="bg-white p-4 rounded-lg border border-slate-100 shadow-sm flex flex-col justify-center gap-1 min-h-[88px]">
+                            <p class="text-[11px] font-bold uppercase tracking-widest text-slate-500">Programados</p>
+                            <h3 id="mant-programados" class="text-3xl font-bold text-blue-600 tabular-nums leading-none">…</h3>
+                            <p class="text-[11px] font-medium text-slate-500">Creados en el mes</p>
+                        </div>
+                        <div class="bg-white p-4 rounded-lg border border-slate-100 shadow-sm flex flex-col justify-center gap-1 min-h-[88px]">
+                            <p class="text-[11px] font-bold uppercase tracking-widest text-slate-500">Pendientes</p>
+                            <h3 id="mant-pendientes" class="text-3xl font-bold text-slate-600 tabular-nums leading-none">…</h3>
+                            <p class="text-[11px] font-medium text-slate-500">Por ejecutar</p>
+                        </div>
+                        <div class="bg-white p-4 rounded-lg border border-slate-100 shadow-sm flex flex-col justify-center gap-1 min-h-[88px]">
+                            <p class="text-[11px] font-bold uppercase tracking-widest text-slate-500">Vencidos</p>
+                            <h3 id="mant-vencidos" class="text-3xl font-bold text-red-600 tabular-nums leading-none">…</h3>
+                            <p class="text-[11px] font-medium text-slate-500">Fuera de fecha</p>
                         </div>
                     </div>
-                </div>
+                </section>
             </div>
         </div>
     </main>
