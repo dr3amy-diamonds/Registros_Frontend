@@ -1012,27 +1012,383 @@ async function openTechnicalSheetSilent(equipo) {
     });
 }
 
-async function cargarHistorialInline(equipoId) {
-    const tbody = document.getElementById("dInlineHistory");
-    if (!tbody) return;
-    const vacio = `<tr><td colspan="4" class="px-5 py-8 text-center text-slate-500 italic">No hay intervenciones registradas aún para este equipo.</td></tr>`;
-    tbody.innerHTML = `<tr><td colspan="4" class="px-5 py-6 text-center text-slate-400 text-sm"><i class="fas fa-spinner fa-spin mr-2"></i>Cargando historial...</td></tr>`;
+var historialAnioInline = new Date().getFullYear();
+var historialEquipoIdInline = null;
+var historialEventosInline = [];
+
+function fetchConTokenInline(url) {
+    var headers = {};
     try {
-        const response = await fetch(`${API_BASE_URL}/equipos/${equipoId}/mantenimientos`);
-        if (!response.ok) { tbody.innerHTML = vacio; return; }
-        const data = await response.json();
-        const items = Array.isArray(data) ? data : (data.items || []);
-        if (!items.length) { tbody.innerHTML = vacio; return; }
-        tbody.innerHTML = "";
-        items.forEach(function (item) {
-            const fila = document.createElement("tr");
-            const fecha = item.fecha_mantenimiento ? new Date(item.fecha_mantenimiento + "T00:00:00").toLocaleDateString("es-CO") : "—";
-            fila.innerHTML = `<td class="px-5 py-3 text-slate-700 font-medium">${fecha}</td><td class="px-5 py-3 text-slate-600">${item.tecnico_nombre || "—"}</td><td class="px-5 py-3"><span class="bg-cyan-50 text-cyan-700 px-2 py-1 rounded-md text-xs font-bold">${item.tipo_nombre || "—"}</span></td><td class="px-5 py-3 text-slate-600 text-sm">${item.detalle_mantenimiento || "—"}</td>`;
-            tbody.appendChild(fila);
-        });
-    } catch (e) {
-        tbody.innerHTML = vacio;
+        var t = localStorage.getItem("token");
+        if (t) headers["Authorization"] = "Bearer " + t;
+    } catch (e) {}
+    return fetch(url, { headers: headers });
+}
+
+function esCorrectivoInline(nombreTipo) {
+    return String(nombreTipo || "").normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().indexOf("correct") !== -1;
+}
+
+function formatearCOPInline(valor) {
+    var n = Number(valor);
+    if (!Number.isFinite(n) || n <= 0) return "$ 0";
+    try { return n.toLocaleString("es-CO", { style: "currency", currency: "COP", maximumFractionDigits: 0 }); }
+    catch (e) { return "$" + Math.round(n).toLocaleString("es-CO"); }
+}
+
+function describirDetalleInline(texto) {
+    try {
+        if (typeof formatearObservacionesMantenimiento === "function") {
+            return formatearObservacionesMantenimiento(texto);
+        }
+    } catch (e) {}
+    return '<p class="text-sm text-slate-700 leading-relaxed whitespace-pre-wrap">' + escaparHtmlInline(texto || "Sin observaciones") + "</p>";
+}
+
+function badgeEstadoEquipoInline(estado) {
+    var v = String(estado || "").trim();
+    if (!v || v === "—") return '<span class="text-slate-400 text-sm">—</span>';
+    var cls = "bg-slate-100 text-slate-600";
+    var icon = "fas fa-question";
+    if (v === "Operativo") { cls = "bg-green-100 text-green-700"; icon = "fas fa-check"; }
+    else if (v === "En reparación") { cls = "bg-amber-100 text-amber-700"; icon = "fas fa-tools"; }
+    else if (v === "Dado de baja") { cls = "bg-red-100 text-red-700"; icon = "fas fa-ban"; }
+    return '<span class="inline-flex items-center gap-1 ' + cls + ' px-2.5 py-1 rounded-full text-xs font-bold whitespace-nowrap"><i class="' + icon + '"></i> ' + escaparHtmlInline(v) + "</span>";
+}
+
+function resolverParsedInline(item) {
+    // Prefiere campos del backend; fallback a parse local del texto.
+    var trabajo = item.trabajo_realizado != null ? item.trabajo_realizado : null;
+    var estado = item.estado_final != null ? item.estado_final : null;
+    var hallazgos = item.hallazgos != null ? item.hallazgos : null;
+    var recomendaciones = item.recomendaciones != null ? item.recomendaciones : null;
+    var necesitaParse = (trabajo == null || estado == null) && typeof parseDetalleMantenimientoJS === "function";
+    if (necesitaParse) {
+        try {
+            var p = parseDetalleMantenimientoJS(item.descripcion || "");
+            if (trabajo == null) trabajo = p.trabajo_realizado;
+            if (estado == null) estado = p.estado_final;
+            if (hallazgos == null) hallazgos = p.hallazgos;
+            if (recomendaciones == null) recomendaciones = p.recomendaciones;
+        } catch (e) {}
     }
+    return { trabajo: trabajo, estado: estado, hallazgos: hallazgos, recomendaciones: recomendaciones };
+}
+
+function describirTrabajoInline(item) {
+    var r = resolverParsedInline(item);
+    var html = "";
+    try {
+        if (typeof formatearSoloTrabajoRealizado === "function") {
+            html = formatearSoloTrabajoRealizado(item.descripcion, r.trabajo);
+        } else {
+            html = '<p class="text-sm text-slate-700 leading-relaxed whitespace-pre-wrap">' + escaparHtmlInline(r.trabajo || "Sin descripción") + "</p>";
+        }
+    } catch (e) {
+        html = '<p class="text-sm text-slate-700 leading-relaxed whitespace-pre-wrap">' + escaparHtmlInline(r.trabajo || "Sin descripción") + "</p>";
+    }
+    var extras = "";
+    if (r.hallazgos) extras += '<div class="mt-1"><p class="text-[10px] font-black uppercase tracking-wider text-slate-400">Hallazgos</p><p class="text-xs text-slate-600">' + escaparHtmlInline(r.hallazgos) + "</p></div>";
+    if (r.recomendaciones) extras += '<div class="mt-1"><p class="text-[10px] font-black uppercase tracking-wider text-slate-400">Recomendaciones</p><p class="text-xs text-slate-600">' + escaparHtmlInline(r.recomendaciones) + "</p></div>";
+    if (extras) {
+        html += '<details class="mt-1.5 text-xs"><summary class="cursor-pointer text-[#00acc9] font-bold hover:underline">Ver hallazgos y recomendaciones</summary><div class="mt-1 space-y-1">' + extras + "</div></details>";
+    }
+    return html;
+}
+
+function formatearFechaInline(fechaStr) {
+    if (!fechaStr) return "—";
+    var s = String(fechaStr).split("T")[0];
+    var p = s.split("-");
+    if (p.length < 3) return s;
+    return p[2] + "/" + p[1] + "/" + p[0];
+}
+
+function parsearFechaInline(fechaStr) {
+    if (!fechaStr) return null;
+    var s = String(fechaStr).split("T")[0].split("-").map(Number);
+    if (s.length < 3 || !s[0] || !s[1] || !s[2]) return null;
+    return new Date(s[0], s[1] - 1, s[2]);
+}
+
+function diasEnMesInline(anio, mesIdx) {
+    return new Date(anio, mesIdx + 1, 0).getDate();
+}
+
+function poblarAniosInline() {
+    var sel = document.getElementById("select-anio-inline");
+    if (!sel) return;
+    if (sel.options.length) return;
+    var base = new Date().getFullYear();
+    var html = "";
+    for (var y = base - 2; y <= base + 2; y++) {
+        html += '<option value="' + y + '"' + (y === historialAnioInline ? " selected" : "") + ">" + y + "</option>";
+    }
+    sel.innerHTML = html;
+    sel.addEventListener("change", function () {
+        historialAnioInline = Number(sel.value) || base;
+        if (historialEquipoIdInline) cargarHistorialAnualInline(historialEquipoIdInline, historialAnioInline);
+    });
+}
+
+function construirEncabezadoDiasInline(theadId) {
+    var thead = document.getElementById(theadId);
+    if (!thead) return;
+    var tr = document.createElement("tr");
+    var thMes = document.createElement("th");
+    thMes.scope = "col";
+    thMes.textContent = "Mes";
+    tr.appendChild(thMes);
+    for (var d = 1; d <= 31; d++) {
+        var th = document.createElement("th");
+        th.scope = "col";
+        th.textContent = String(d);
+        tr.appendChild(th);
+    }
+    thead.innerHTML = "";
+    thead.appendChild(tr);
+}
+
+function escaparHtmlInline(t) {
+    return String(t == null ? "" : t).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+}
+
+function badgeTipoInline(tipoNombre) {
+    var esCorr = esCorrectivoInline(tipoNombre);
+    var txt = escaparHtmlInline(tipoNombre || "—");
+    var cls = esCorr ? "bg-amber-50 text-amber-700" : "bg-cyan-50 text-cyan-700";
+    return '<span class="inline-flex items-center px-2 py-1 rounded-md text-xs font-bold ' + cls + '">' + txt + "</span>";
+}
+
+function renderMatrizInline(tbodyId, tituloId, eventos, esCorr, anio) {
+    var tbody = document.getElementById(tbodyId);
+    var titulo = document.getElementById(tituloId);
+    if (!tbody) return;
+    var MESES = ["Ene", "Feb", "Mar", "Abr", "May", "Jun", "Jul", "Ago", "Sep", "Oct", "Nov", "Dic"];
+    var filtrados = eventos.filter(function (e) { return !!e.correctivo === !!esCorr; });
+    if (titulo) {
+        titulo.textContent = (esCorr ? "Mantenimiento correctivo" : "Mantenimiento preventivo") + " — " + anio + " (" + filtrados.length + ")";
+    }
+    var mapa = {};
+    filtrados.forEach(function (e) {
+        var f = parsearFechaInline(e.fecha);
+        if (!f || f.getFullYear() !== anio) return;
+        var clave = f.getMonth() + "-" + f.getDate();
+        if (!mapa[clave]) mapa[clave] = [];
+        mapa[clave].push(e);
+    });
+    tbody.innerHTML = "";
+    for (var m = 0; m < 12; m++) {
+        var tr = document.createElement("tr");
+        var th = document.createElement("th");
+        th.scope = "row";
+        th.textContent = MESES[m];
+        tr.appendChild(th);
+        var maxDia = diasEnMesInline(anio, m);
+        for (var d = 1; d <= 31; d++) {
+            var td = document.createElement("td");
+            if (d > maxDia) {
+                var v = document.createElement("span");
+                v.className = "cal-cell is-empty";
+                v.textContent = "·";
+                td.appendChild(v);
+            } else {
+                var lista = mapa[m + "-" + d] || [];
+                if (!lista.length) {
+                    var s = document.createElement("span");
+                    s.className = "cal-cell is-empty";
+                    s.textContent = "";
+                    td.appendChild(s);
+                } else {
+                    (function (mesIdx, dia, items) {
+                        var btn = document.createElement("button");
+                        btn.type = "button";
+                        btn.className = "cal-cell is-realizado";
+                        btn.textContent = items.length > 1 ? "X" + items.length : "X";
+                        btn.setAttribute("aria-label", "Ver detalle del día");
+                        btn.addEventListener("click", function () { abrirDetalleDiaInline(mesIdx, dia, items); });
+                        td.appendChild(btn);
+                    })(m, d, lista);
+                }
+            }
+            tr.appendChild(td);
+        }
+        tbody.appendChild(tr);
+    }
+}
+
+function renderHistorialUnicoInline(eventosMant) {
+    var tbody = document.getElementById("dInlineHistory");
+    var resumen = document.getElementById("resumen-anio-inline");
+    if (!tbody) return;
+    var ordenados = (eventosMant || []).slice().sort(function (a, b) {
+        return String(b.fecha || "") < String(a.fecha || "") ? -1 : 1;
+    });
+    var nPrev = ordenados.filter(function (e) { return !e.correctivo; }).length;
+    var nCorr = ordenados.filter(function (e) { return !!e.correctivo; }).length;
+    if (resumen) resumen.textContent = ordenados.length + " en " + historialAnioInline + " · " + nPrev + " preventivos · " + nCorr + " correctivos";
+    if (!ordenados.length) {
+        tbody.innerHTML = '<tr><td colspan="7" class="px-5 py-8 text-center text-slate-500 italic">No hay intervenciones registradas aún para este equipo en ' + historialAnioInline + ".</td></tr>";
+        return;
+    }
+    tbody.innerHTML = "";
+    ordenados.forEach(function (item, idx) {
+        var fila = document.createElement("tr");
+        fila.className = "hover:bg-slate-50/60 align-top";
+        var costoTxt = escaparHtmlInline(formatearCOPInline(item.costo));
+        fila.innerHTML =
+            '<td class="px-5 py-4 text-slate-500 text-sm align-top whitespace-nowrap">' + (idx + 1) + "</td>" +
+            '<td class="px-5 py-4 text-slate-700 font-medium whitespace-nowrap align-top">' + escaparHtmlInline(formatearFechaInline(item.fecha)) + "</td>" +
+            '<td class="px-5 py-4 text-slate-600 text-sm align-top" style="min-width:280px;max-width:460px">' + describirTrabajoInline(item) + "</td>" +
+            '<td class="px-5 py-4 align-top whitespace-nowrap">' + badgeEstadoEquipoInline(item.estado_final) + "</td>" +
+            '<td class="px-5 py-4 text-slate-600 text-sm align-top whitespace-nowrap">' + escaparHtmlInline(item.tecnico || "—") + "</td>" +
+            '<td class="px-5 py-4 text-slate-700 font-bold whitespace-nowrap text-sm align-top">' + costoTxt + "</td>" +
+            '<td class="px-5 py-4 align-top whitespace-nowrap">' + badgeTipoInline(item.tipo) + "</td>";
+        tbody.appendChild(fila);
+    });
+}
+
+function abrirDetalleDiaInline(mesIdx, dia, lista) {
+    var MESES_LARGOS = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"];
+    var sub = document.getElementById("subtitulo-detalle-dia-inline");
+    if (sub) sub.textContent = MESES_LARGOS[mesIdx] + " " + dia + " de " + historialAnioInline + " · " + lista.length + " registro(s)";
+    var tbody = document.getElementById("tabla-detalle-dia-inline-body");
+    if (tbody) {
+        tbody.innerHTML = "";
+        lista.forEach(function (e) {
+            var tr = document.createElement("tr");
+            tr.className = "align-top";
+            tr.innerHTML =
+                '<td class="px-4 py-3 text-slate-700 font-medium whitespace-nowrap align-top">' + escaparHtmlInline(formatearFechaInline(e.fecha)) + "</td>" +
+                '<td class="px-4 py-3 text-slate-600 align-top whitespace-nowrap">' + escaparHtmlInline(e.tecnico || "—") + "</td>" +
+                '<td class="px-4 py-3 align-top whitespace-nowrap">' + badgeTipoInline(e.tipo) + "</td>" +
+                '<td class="px-4 py-3 text-slate-600 text-sm align-top" style="min-width:260px;max-width:440px">' + describirTrabajoInline(e) + "</td>" +
+                '<td class="px-4 py-3 align-top whitespace-nowrap">' + badgeEstadoEquipoInline(e.estado_final) + "</td>" +
+                '<td class="px-4 py-3 font-bold text-slate-700 whitespace-nowrap text-sm align-top">' + escaparHtmlInline(formatearCOPInline(e.costo)) + "</td>";
+            tbody.appendChild(tr);
+        });
+    }
+    var modal = document.getElementById("modal-detalle-dia-inline");
+    if (modal) { modal.classList.remove("hidden"); modal.classList.add("flex"); }
+}
+
+function cerrarDetalleDiaInline() {
+    var modal = document.getElementById("modal-detalle-dia-inline");
+    if (modal) { modal.classList.add("hidden"); modal.classList.remove("flex"); }
+}
+
+async function cargarHistorialAnualInline(equipoId, anio) {
+    var tbody = document.getElementById("dInlineHistory");
+    var vacio = '<tr><td colspan="7" class="px-5 py-8 text-center text-slate-500 italic">No hay intervenciones registradas aún para este equipo en ' + anio + ".</td></tr>";
+    if (tbody) tbody.innerHTML = '<tr><td colspan="7" class="px-5 py-6 text-center text-slate-400 text-sm"><i class="fas fa-spinner fa-spin mr-2"></i>Cargando historial ' + anio + "…</td></tr>";
+    renderMatrizInline("matriz-prev-body-inline", "titulo-matriz-prev-inline", [], false, anio);
+    renderMatrizInline("matriz-corr-body-inline", "titulo-matriz-corr-inline", [], true, anio);
+    var mants = [];
+    var progs = [];
+    try {
+        var r1 = await fetchConTokenInline(API_BASE_URL + "/mantenimientos/?equipo_id=" + encodeURIComponent(equipoId) + "&anio=" + encodeURIComponent(anio) + "&limit=100");
+        if (r1.ok) {
+            var d1 = await r1.json();
+            mants = Array.isArray(d1) ? d1 : (d1.items || []);
+        }
+    } catch (e) { mants = []; }
+    try {
+        var r2 = await fetchConTokenInline(API_BASE_URL + "/programaciones/?equipo_id=" + encodeURIComponent(equipoId) + "&anio=" + encodeURIComponent(anio) + "&size=100");
+        if (r2.ok) {
+            var d2 = await r2.json();
+            progs = d2.items || (Array.isArray(d2) ? d2 : []);
+        }
+    } catch (e) { progs = []; }
+    // Fallback sin año: historial por equipo (incluye gasto total)
+    if (!mants.length) {
+        try {
+            var r3 = await fetchConTokenInline(API_BASE_URL + "/equipos/" + encodeURIComponent(equipoId) + "/mantenimientos?limit=100");
+            if (r3.ok) {
+                var d3 = await r3.json();
+                var todos = Array.isArray(d3) ? d3 : (d3.items || []);
+                mants = todos.filter(function (m) {
+                    var f = parsearFechaInline(m.fecha_mantenimiento);
+                    return f && f.getFullYear() === anio;
+                }).map(function (m) {
+                    return {
+                        fecha_mantenimiento: String(m.fecha_mantenimiento).split("T")[0],
+                        tipo_nombre: m.tipo_nombre,
+                        tecnico_nombre: m.tecnico_nombre,
+                        observaciones: m.detalle_mantenimiento,
+                        detalle_mantenimiento: m.detalle_mantenimiento,
+                        costo_total: m.costo_total,
+                        costo_servicio: m.costo_total,
+                        trabajo_realizado: m.trabajo_realizado,
+                        estado_final: m.estado_final,
+                        hallazgos: m.hallazgos,
+                        recomendaciones: m.recomendaciones
+                    };
+                });
+            }
+        } catch (e) {}
+    }
+    function nombreTecnicoProg(p) {
+        if (p.encargado && typeof p.encargado === "object") {
+            var n = p.encargado.nombre || "";
+            return n || "Sin asignar";
+        }
+        return "Sin asignar";
+    }
+    function tipoProg(p) {
+        if (p.tipo_mantenimiento && typeof p.tipo_mantenimiento === "object") return p.tipo_mantenimiento.nombre || "—";
+        return "—";
+    }
+    var eventosMant = (mants || []).map(function (m) {
+        var tipo = m.tipo_nombre || "—";
+        var costo = (m.costo_total != null ? m.costo_total : m.costo_servicio);
+        return {
+            fecha: String(m.fecha_mantenimiento || "").split("T")[0],
+            tipo: tipo,
+            correctivo: esCorrectivoInline(tipo),
+            tecnico: m.tecnico_nombre || "Sin asignar",
+            descripcion: m.observaciones || m.detalle_mantenimiento || "—",
+            trabajo_realizado: m.trabajo_realizado,
+            estado_final: m.estado_final,
+            hallazgos: m.hallazgos,
+            recomendaciones: m.recomendaciones,
+            costo: costo,
+            origen: "mantenimiento",
+            id: m.id
+        };
+    }).filter(function (e) { return parsearFechaInline(e.fecha); });
+    var eventosProg = (progs || []).filter(function (p) {
+        var est = String(p.estado || "");
+        return est === "Completado" || est === "Completada" || est === "Realizado";
+    }).map(function (p) {
+        var tipo = tipoProg(p);
+        return {
+            fecha: String(p.fecha_programada || "").split("T")[0],
+            tipo: tipo,
+            correctivo: esCorrectivoInline(tipo),
+            tecnico: nombreTecnicoProg(p),
+            descripcion: "Orden " + (p.id != null ? p.id : "") + " · " + tipo,
+            costo: null,
+            origen: "programacion",
+            id: p.id
+        };
+    }).filter(function (e) { return parsearFechaInline(e.fecha); });
+    // Matrices: trabajos hechos + órdenes completadas (automático). Historial: solo trabajos con detalle y gasto.
+    var paraMatrices = eventosMant.concat(eventosProg);
+    historialEventosInline = paraMatrices;
+    renderMatrizInline("matriz-prev-body-inline", "titulo-matriz-prev-inline", paraMatrices, false, anio);
+    renderMatrizInline("matriz-corr-body-inline", "titulo-matriz-corr-inline", paraMatrices, true, anio);
+    renderHistorialUnicoInline(eventosMant);
+    if (!paraMatrices.length && tbody && !eventosMant.length) tbody.innerHTML = vacio;
+}
+
+async function cargarHistorialInline(equipoId) {
+    historialEquipoIdInline = equipoId;
+    poblarAniosInline();
+    construirEncabezadoDiasInline("matriz-prev-head-inline");
+    construirEncabezadoDiasInline("matriz-corr-head-inline");
+    var sel = document.getElementById("select-anio-inline");
+    if (sel && sel.value) historialAnioInline = Number(sel.value) || historialAnioInline;
+    await cargarHistorialAnualInline(equipoId, historialAnioInline);
 }
 
 /**

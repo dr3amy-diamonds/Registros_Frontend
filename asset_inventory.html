@@ -164,12 +164,11 @@
                     <div class="flex-1 min-h-0 overflow-y-auto space-y-4 pr-1">
                         <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
                             <div class="grid grid-cols-1 lg:grid-cols-12">
-                                <div class="lg:col-span-4 bg-uccDark text-white p-6 flex flex-col justify-center">
-                                    <p class="text-[10px] font-bold uppercase tracking-widest text-[#00acc9] mb-2">ID de Inventario</p>
-                                    <h3 id="dInlineId" class="text-3xl font-bold tracking-tight leading-none mb-4 break-all">---</h3>
-                                    <p class="text-xs text-white/60">Hoja de vida técnica completa del equipo.</p>
+                                <div class="lg:col-span-3 bg-uccDark text-white px-4 py-2 lg:py-3 flex flex-col justify-center">
+                                    <p class="text-[10px] font-bold uppercase tracking-widest text-[#00acc9] mb-0">ID de Inventario</p>
+                                    <h3 id="dInlineId" class="text-base lg:text-lg font-bold tracking-tight leading-tight break-all">---</h3>
                                 </div>
-                                <div class="lg:col-span-8 p-6 grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-5">
+                                <div class="lg:col-span-9 p-4 lg:p-5 grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-5">
                                     <section>
                                         <h4 class="text-[11px] font-bold text-slate-500 uppercase tracking-widest mb-3 pb-2 border-b border-slate-100">Especificaciones Técnicas</h4>
                                         <dl class="space-y-3 text-sm">
@@ -193,8 +192,8 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                            <section class="bg-white rounded-2xl shadow-sm border border-slate-200 p-5">
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 items-stretch">
+                            <section class="bg-white rounded-2xl shadow-sm border border-slate-200 p-4">
                                 <h5 class="text-[11px] font-bold text-slate-500 uppercase tracking-widest mb-3">Ubicación Técnica</h5>
                                 <dl class="space-y-2 text-sm">
                                     <div class="flex items-start justify-between gap-3 py-2 border-b border-slate-100"><dt class="text-xs font-semibold text-slate-500">Bloque</dt><dd id="dInlineBlock" class="text-xs font-bold text-uccDark text-right">---</dd></div>
@@ -202,7 +201,7 @@
                                     <div class="flex items-start justify-between gap-3 py-2"><dt class="text-xs font-semibold text-slate-500">Espacio</dt><dd id="dInlineSpace" class="text-xs font-bold text-uccDark text-right">---</dd></div>
                                 </dl>
                             </section>
-                            <section class="bg-white rounded-2xl shadow-sm border border-slate-200 p-5">
+                            <section class="bg-white rounded-2xl shadow-sm border border-slate-200 p-4">
                                 <h5 class="text-[11px] font-bold text-slate-500 uppercase tracking-widest mb-3">Ciclo de Vida</h5>
                                 <dl class="space-y-2 text-sm">
                                     <div class="flex items-start justify-between gap-3 py-2 border-b border-slate-100"><dt class="text-xs font-semibold text-slate-500">Instalación</dt><dd id="dInlineInstallDate" class="text-xs font-bold text-uccDark text-right">---</dd></div>
@@ -210,15 +209,53 @@
                                     <div class="flex items-start justify-between gap-3 py-2"><dt class="text-xs font-semibold text-slate-500">Garantía</dt><dd id="dInlineWarranty" class="text-xs font-bold text-emerald-600 text-right">---</dd></div>
                                 </dl>
                             </section>
-                            <section class="bg-uccDark rounded-2xl shadow-lg p-5 text-white flex flex-col justify-between relative overflow-hidden">
+                            <section class="bg-uccDark rounded-2xl shadow-lg p-3 text-white flex flex-col justify-center gap-0 relative overflow-hidden min-h-full">
                                 <div class="absolute top-0 left-0 right-0 h-1 bg-[#00acc9]"></div>
-                                <h5 class="text-[11px] font-bold uppercase tracking-widest text-white/70 mb-3">Próximo Mantenimiento</h5>
-                                <div><h4 id="dInlineNextMaintenance" class="text-2xl font-bold tracking-tight tabular-nums leading-tight">---</h4><p id="dInlineCountdown" class="text-xs text-white/60 font-medium mt-2">---</p></div>
+                                <h5 class="text-[11px] font-bold uppercase tracking-widest text-white/70 mb-0">Próximo Mantenimiento</h5>
+                                <div><h4 id="dInlineNextMaintenance" class="text-base lg:text-lg font-bold tracking-tight tabular-nums leading-tight">---</h4><p id="dInlineCountdown" class="text-[11px] text-white/60 font-medium mt-0.5">---</p></div>
                             </section>
                         </div>
                         <section class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
-                            <div class="px-5 py-3 border-b border-slate-100 bg-slate-50/80"><h3 class="text-[11px] font-bold text-uccDark uppercase tracking-widest">Historial de Intervenciones</h3></div>
-                            <div class="overflow-x-auto"><table class="w-full text-sm"><thead><tr class="text-[10px] font-bold text-slate-400 uppercase tracking-widest border-b border-slate-100"><th class="px-5 py-3 text-left">Fecha</th><th class="px-5 py-3 text-left">Técnico</th><th class="px-5 py-3 text-left">Tipo</th><th class="px-5 py-3 text-left">Observaciones</th></tr></thead><tbody id="dInlineHistory" class="divide-y divide-slate-100"></tbody></table></div>
+                            <div class="px-5 py-3 border-b border-slate-100 bg-slate-50/80 flex flex-wrap items-center gap-3">
+                                <h3 class="text-[11px] font-bold text-uccDark uppercase tracking-widest">Historial anual del equipo</h3>
+                                <div class="ml-auto flex items-center gap-2">
+                                    <label for="select-anio-inline" class="text-[11px] font-bold uppercase tracking-widest text-slate-500">Año</label>
+                                    <select id="select-anio-inline" class="border border-slate-200 rounded-lg px-3 py-1.5 text-sm bg-white min-h-[38px] cursor-pointer"></select>
+                                </div>
+                            </div>
+                            <div class="px-5 py-2 border-b border-slate-100 flex flex-wrap items-center gap-2">
+                                <span class="inline-flex items-center gap-2 text-xs font-bold text-slate-600"><span class="cal-legend-dot" style="background:#10b981"></span> X · Trabajo terminado</span>
+                                <span id="resumen-anio-inline" class="text-xs text-slate-500 font-medium">Cargando año…</span>
+                            </div>
+                            <div class="p-4 space-y-4">
+                                <div>
+                                    <h4 id="titulo-matriz-prev-inline" class="text-[11px] font-bold text-uccDark uppercase tracking-widest mb-2">Mantenimiento preventivo</h4>
+                                    <div class="cal-matrix-wrap rounded-xl border border-slate-200">
+                                        <table class="cal-matrix" aria-label="Cuadrícula anual de preventivos">
+                                            <thead id="matriz-prev-head-inline"></thead>
+                                            <tbody id="matriz-prev-body-inline"></tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                                <div>
+                                    <h4 id="titulo-matriz-corr-inline" class="text-[11px] font-bold text-uccDark uppercase tracking-widest mb-2">Mantenimiento correctivo</h4>
+                                    <div class="cal-matrix-wrap rounded-xl border border-slate-200">
+                                        <table class="cal-matrix" aria-label="Cuadrícula anual de correctivos">
+                                            <thead id="matriz-corr-head-inline"></thead>
+                                            <tbody id="matriz-corr-body-inline"></tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="px-5 py-3 border-t border-b border-slate-100 bg-slate-50/80"><h3 class="text-[11px] font-bold text-uccDark uppercase tracking-widest">Historial de intervenciones</h3></div>
+                            <div class="overflow-x-auto">
+                                <div style="max-height:320px;overflow-y:auto">
+                                    <table class="w-full text-sm">
+                                        <thead class="sticky top-0 bg-white z-10"><tr class="text-[10px] font-bold text-slate-400 uppercase tracking-widest border-b border-slate-100"><th class="px-5 py-3 text-left whitespace-nowrap" style="width:48px">No</th><th class="px-5 py-3 text-left whitespace-nowrap" style="width:110px">Fecha</th><th class="px-5 py-3 text-left" style="min-width:280px">Descripción</th><th class="px-5 py-3 text-left whitespace-nowrap" style="width:130px">Estado del equipo</th><th class="px-5 py-3 text-left whitespace-nowrap" style="width:140px">Responsable</th><th class="px-5 py-3 text-left whitespace-nowrap" style="width:110px">Gasto total</th><th class="px-5 py-3 text-left whitespace-nowrap" style="width:150px">Tipo de mantenimiento</th></tr></thead>
+                                        <tbody id="dInlineHistory" class="divide-y divide-slate-100"></tbody>
+                                    </table>
+                                </div>
+                            </div>
                         </section>
                         <div class="flex flex-wrap justify-end gap-3 pb-1">
                             <button id="dInlineBtnActivar" onclick="activateTechnicalSheet()" class="bg-emerald-600 hover:bg-emerald-700 text-white px-5 py-2.5 rounded-xl text-sm font-bold transition hidden"><i class="fas fa-play"></i> Activar Equipo</button>
@@ -852,6 +889,21 @@
                     <button onclick="decommissionTechnicalSheet()" class="bg-red-600 hover:bg-red-700 text-white px-5 py-2.5 rounded-xl text-sm font-bold transition flex items-center gap-2"><i class="fas fa-power-off"></i> Dar de Baja</button>
                 </div>
             </div>
+        </div>
+    </div>
+
+    <div id="modal-detalle-dia-inline" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm hidden items-center justify-center z-50 p-4">
+        <div class="bg-white w-full max-w-2xl rounded-3xl shadow-2xl p-6 max-h-[85vh] overflow-y-auto">
+            <div class="flex items-start justify-between mb-2">
+                <div>
+                    <h2 class="text-base font-bold text-uccDark">Detalle del día</h2>
+                    <p id="subtitulo-detalle-dia-inline" class="text-xs text-slate-500 font-medium mt-1"></p>
+                </div>
+                <button type="button" onclick="cerrarDetalleDiaInline()" class="text-slate-500 hover:text-slate-800 p-2" aria-label="Cerrar detalle">✕</button>
+            </div>
+            <p class="text-xs text-slate-500 mb-3">Solo lectura.</p>
+            <div class="overflow-x-auto"><table class="w-full text-sm"><thead><tr class="text-[10px] font-bold text-slate-400 uppercase tracking-widest border-b border-slate-100"><th class="px-4 py-3 text-left">Fecha</th><th class="px-4 py-3 text-left">Responsable</th><th class="px-4 py-3 text-left">Tipo</th><th class="px-4 py-3 text-left">Descripción</th><th class="px-4 py-3 text-left">Estado del equipo</th><th class="px-4 py-3 text-left">Gasto total</th></tr></thead><tbody id="tabla-detalle-dia-inline-body" class="divide-y divide-slate-100"></tbody></table></div>
+            <div class="flex justify-end pt-4"><button type="button" onclick="cerrarDetalleDiaInline()" class="rounded-xl text-sm font-semibold px-5 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700">Cerrar</button></div>
         </div>
     </div>
 

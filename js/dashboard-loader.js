@@ -25,9 +25,36 @@
         el.classList.remove('hidden');
     }
 
-    function pintarSaldoFijo() {
+    function pintarSaldo(presupuesto, saldo) {
         var estado = document.getElementById('kpi-saldo-estado');
-        if (estado) estado.textContent = 'Presupuesto menos gasto';
+        var card = document.getElementById('card-saldo');
+        var valor = document.getElementById('kpi-saldo');
+        var base = 'p-4 rounded-lg border border-slate-100 shadow-sm flex flex-col justify-center gap-1 min-h-[96px]';
+        var texto = 'Presupuesto menos gasto';
+        var cardExtra = 'bg-emerald-50/60';
+        var valorColor = 'text-2xl font-bold text-[#10b981] tabular-nums leading-none';
+        if (!(presupuesto > 0)) {
+            texto = 'Sin presupuesto asignado';
+            cardExtra = 'bg-slate-50';
+            valorColor = 'text-2xl font-bold text-slate-500 tabular-nums leading-none';
+        } else if (saldo <= 0) {
+            texto = 'Sin saldo disponible';
+            cardExtra = 'bg-red-50';
+            valorColor = 'text-2xl font-bold text-red-600 tabular-nums leading-none';
+        } else if ((saldo / presupuesto) < 0.2) {
+            texto = 'Saldo bajo — menos del 20%';
+            cardExtra = 'bg-amber-50';
+            valorColor = 'text-2xl font-bold text-amber-700 tabular-nums leading-none';
+        } else {
+            texto = 'Saldo saludable';
+        }
+        if (card) card.className = base + ' ' + cardExtra;
+        if (valor) valor.className = valorColor;
+        if (estado) estado.textContent = texto;
+    }
+
+    function pintarSaldoFijo() {
+        pintarSaldo(0, 0);
     }
 
     async function cargarResumen() {
@@ -51,7 +78,7 @@
             setTexto('kpi-presupuesto', formatoCOP.format(presupuesto));
             setTexto('kpi-gastado', formatoCOP.format(gastado));
             setTexto('kpi-saldo', formatoCOP.format(saldo));
-            pintarSaldoFijo();
+            pintarSaldo(presupuesto, saldo);
 
             setTexto('estado-operativos', estado.operativos != null ? estado.operativos : 0);
             setTexto('estado-reparacion', estado.en_reparacion != null ? estado.en_reparacion : 0);
