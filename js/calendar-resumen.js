@@ -16,7 +16,6 @@
     var equiposPorId = {};
     var espacios = [];
     var eventos = [];
-    var porMes = new Array(12).fill(0);
     var totalesPorEspacio = {};
 
     function escaparHtml(texto) {
@@ -88,7 +87,6 @@
         });
         totalesPorEspacio = {};
         espacios.forEach(function (e) { totalesPorEspacio[String(e.id)] = e.total || 0; });
-        porMes = Array.isArray(data.por_mes) && data.por_mes.length === 12 ? data.por_mes.slice() : new Array(12).fill(0);
         eventos = (data.eventos || []).map(function (e) {
             var f = fechaISO(e.fecha || e.fecha_ejecucion);
             return {
@@ -235,7 +233,6 @@
 
     function construirIndice(eventosLista) {
         var mapa = {};
-        porMes = new Array(12).fill(0);
         var conteoEsp = {};
         eventosLista.forEach(function (e) {
             var f = parsearFecha(e.fecha);
@@ -244,7 +241,6 @@
             var clave = String(esp.id) + '|' + f.getMonth() + '-' + f.getDate();
             if (!mapa[clave]) mapa[clave] = [];
             mapa[clave].push(e);
-            porMes[f.getMonth()] += 1;
             conteoEsp[String(esp.id)] = (conteoEsp[String(esp.id)] || 0) + 1;
         });
         if (!Object.keys(totalesPorEspacio).length) totalesPorEspacio = conteoEsp;
@@ -357,23 +353,6 @@
             tr.appendChild(tdT);
             tbody.appendChild(tr);
         });
-    }
-
-    function renderKPIs(indice) {
-        var elE = document.getElementById('kpi-espacios');
-        var elV = document.getElementById('kpi-eventos');
-        var elC = document.getElementById('kpi-cobertura');
-        var totalEv = eventos.length;
-        var conDatos = Object.keys(totalesPorEspacio).filter(function (k) { return (totalesPorEspacio[k] || 0) > 0; }).length;
-        if (!conDatos) {
-            var vistos = {};
-            Object.keys(indice).forEach(function (k) { vistos[k.split('|')[0]] = true; });
-            conDatos = Object.keys(vistos).length;
-        }
-        var cob = espacios.length ? Math.round((conDatos / espacios.length) * 100) : 0;
-        if (elE) elE.textContent = String(espacios.length);
-        if (elV) elV.textContent = String(totalEv);
-        if (elC) elC.textContent = cob + '%';
     }
 
     function renderMonthNav() {
@@ -505,7 +484,6 @@
         renderHead();
         renderBody(indice);
         renderListaMovil();
-        renderKPIs(indice);
         renderMonthNav();
         var estado = document.getElementById('resumen-calendario-estado');
         if (estado) estado.textContent = eventos.length + ' mantenimiento(s) completado(s) en ' + anioActual + ' · ' + espacios.length + ' espacios.' + (origen === 'agregado' ? ' (1 request)' : ' (legacy)');

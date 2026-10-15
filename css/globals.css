@@ -160,7 +160,7 @@ th[scope="col"] { white-space: nowrap; }
 
 /* ============================================================================
    Resumen Mantenimiento estilo Excel — filas espacios, columnas año
-   Estructura: toolbar (título+KPIs+nav) / matriz única / lista móvil
+   Estructura: toolbar (titulo+nav) / matriz unica / lista movil
    ============================================================================ */
 :root {
     --cal-month-h: 37px;
@@ -171,17 +171,12 @@ th[scope="col"] { white-space: nowrap; }
 .cal-toolbar { display: flex; flex-direction: column; gap: 12px; margin-bottom: 12px; }
 .cal-toolbar-main { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 12px; padding: 4px 2px; }
 .cal-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
-.cal-kpis { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
-.cal-kpi { background: #fff; border: 1px solid var(--color-slate-200); border-radius: 14px; padding: 10px 14px; display: flex; flex-direction: column; gap: 2px; box-shadow: 0 1px 2px rgba(15, 23, 42, 0.05); }
-.cal-kpi-label { font-size: 0.75rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.08em; color: var(--color-slate-500); }
-.cal-kpi-value { font-size: 1.35rem; font-weight: 900; color: var(--color-dark); line-height: 1.1; font-variant-numeric: tabular-nums; }
-.cal-kpi-sub { font-size: 0.75rem; font-weight: 500; color: var(--color-slate-500); }
-.cal-subbar { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px; }
+.cal-subbar { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px; margin-top: 0; }
 .cal-month-nav { display: flex; flex-wrap: wrap; gap: 6px; }
 .cal-month-nav button { min-height: 32px; min-width: 44px; padding: 4px 10px; font-size: 0.75rem; font-weight: 800; letter-spacing: 0.06em; border: 1px solid var(--color-slate-200); background: #fff; color: var(--color-slate-600); border-radius: 9999px; cursor: pointer; transition: background 0.15s ease, color 0.15s ease; }
 .cal-month-nav button:hover { background: var(--color-dark); color: #fff; border-color: var(--color-dark); }
 .cal-month-nav button:focus-visible { outline: 3px solid var(--color-teal); outline-offset: 2px; }
-.cal-matrix-card { background: #fff; border: 1px solid var(--color-slate-200); border-radius: 16px; box-shadow: 0 1px 2px rgba(15, 23, 42, 0.06); overflow: hidden; }
+.cal-matrix-card { background: #fff; border: 1px solid var(--color-slate-200); border-radius: 16px; box-shadow: 0 1px 2px rgba(15, 23, 42, 0.06); overflow: hidden; margin-top: 0; }
 .cal-resumen-scroll { overflow: auto; max-height: 68vh; background: #fff; }
 .cal-resumen-scroll:focus-visible { outline: 3px solid var(--color-teal); outline-offset: -3px; }
 .cal-resumen { border-collapse: separate; border-spacing: 0; width: max-content; min-width: 100%; font-size: 0.75rem; }
@@ -218,7 +213,6 @@ th[scope="col"] { white-space: nowrap; }
 @media (max-width: 768px) {
     .cal-matrix thead th { font-size: 0.6rem; }
     .cal-matrix tbody th { min-width: 7rem; }
-    .cal-kpis { grid-template-columns: 1fr; }
     .cal-toolbar-main { align-items: stretch; flex-direction: column; }
     :root { --cal-first-col: 148px; }
 }

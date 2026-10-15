@@ -13,6 +13,29 @@ let bloquesCatalogGlobal = [];
 let modoEdicionEquipo = false;
 let equipoEnEdicionId = null;
 
+const PISO_MIN = 1;
+const PISO_MAX = 7;
+
+function primerDigito(texto) {
+    if (texto == null) return null;
+    const m = String(texto).match(/\d/);
+    return m ? parseInt(m[0], 10) : null;
+}
+
+function validarEspacioLocal(nombre, codigo, piso) {
+    const p = Number(piso);
+    if (!Number.isInteger(p) || p < PISO_MIN || p > PISO_MAX) {
+        return `Piso debe estar entre ${PISO_MIN} y ${PISO_MAX}`;
+    }
+    for (const etiqueta of [nombre, codigo]) {
+        const d = primerDigito(etiqueta);
+        if (d !== null && d !== p) {
+            return `Incoherencia aula/piso: '${etiqueta}' inicia en ${d} pero piso=${p}`;
+        }
+    }
+    return null;
+}
+
 // ========================================
 // FUNCIONES DE LECTURA Y CARGA
 // ========================================
@@ -645,6 +668,12 @@ async function submitCrearEspacio(event) {
 
         if (!codigoEspacio || !nombre || piso === "" || !bloqueId || !tipoEspacioId) {
             mostrarNotificacion("error", "Por favor completa todos los campos del formulario");
+            return;
+        }
+
+        const errorRegla = validarEspacioLocal(nombre, codigoEspacio, piso);
+        if (errorRegla) {
+            mostrarNotificacion("error", errorRegla);
             return;
         }
 
@@ -1742,7 +1771,8 @@ function actualizarOpcionesPisoFiltro() {
     const pisos = new Set();
     equiposCargadosGlobal.forEach(equipo => {
         const piso = equipo.espacio && typeof equipo.espacio === "object" ? equipo.espacio.piso : null;
-        if (piso != null && piso !== "") pisos.add(String(piso));
+        const n = Number(piso);
+        if (Number.isInteger(n) && n >= PISO_MIN && n <= PISO_MAX) pisos.add(String(n));
     });
 
     datalist.innerHTML = "";
@@ -1809,9 +1839,11 @@ function poblarPisosPorBloque(bloqueId) {
         return;
     }
 
-    // Extraer pisos únicos del bloque seleccionado
+    // Extraer pisos únicos del bloque seleccionado (restringido 1-7)
     const espaciosDelBloque = espaciosCatalogGlobal.filter(e => String(e.bloque_id) === String(bloqueId));
-    const pisosUnicos = [...new Set(espaciosDelBloque.map(e => e.piso))].sort((a, b) => a - b);
+    const pisosUnicos = [...new Set(espaciosDelBloque.map(e => Number(e.piso)))]
+        .filter(n => Number.isInteger(n) && n >= PISO_MIN && n <= PISO_MAX)
+        .sort((a, b) => a - b);
 
     if (pisosUnicos.length === 0) {
         selectPiso.disabled = true;
@@ -2195,6 +2227,12 @@ async function submitCrearEspacioGestion() {
 
     if (!codigo || !nombre || isNaN(bloqueId)) {
         mostrarNotificacion("error", "Completa código, nombre y bloque");
+        return;
+    }
+
+    const errorReglaGestion = validarEspacioLocal(nombre, codigo, piso);
+    if (errorReglaGestion) {
+        mostrarNotificacion("error", errorReglaGestion);
         return;
     }
 
