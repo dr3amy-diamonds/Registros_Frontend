@@ -117,7 +117,7 @@
         const hoy = new Date();
         hoy.setHours(0, 0, 0, 0);
         if (f && f < hoy) return 'Vencido';
-        return estado; // Pendiente / En progreso → programado
+        return estado; // Pendiente → programado
     }
 
     function esCompletado(estado) {

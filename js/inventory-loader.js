@@ -368,15 +368,10 @@ function obtenerBadgeEstado(estado) {
             icono: "fas fa-check",
             texto: "Operativo"
         },
-        "En Reparación": {
-            clase: "bg-amber-100 text-amber-700",
-            icono: "fas fa-tools",
-            texto: "En Reparación"
-        },
         "En reparacion": {
             clase: "bg-amber-100 text-amber-700",
             icono: "fas fa-tools",
-            texto: "En Reparación"
+            texto: "En reparacion"
         },
         "Inactivo": {
             clase: "bg-slate-100 text-slate-700",
@@ -433,8 +428,7 @@ function normalizarEstadoEquipo(estado) {
     if (!estado) return "";
     const mapa = {
         "operativo": "Operativo",
-        "en reparacion": "En reparación",
-        "en reparación": "En reparación",
+        "en reparacion": "En reparacion",
         "inactivo": "Inactivo",
         "dado de baja": "Dado de baja",
     };
@@ -1080,7 +1074,7 @@ function badgeEstadoEquipoInline(estado) {
     var cls = "bg-slate-100 text-slate-600";
     var icon = "fas fa-question";
     if (v === "Operativo") { cls = "bg-green-100 text-green-700"; icon = "fas fa-check"; }
-    else if (v === "En reparación") { cls = "bg-amber-100 text-amber-700"; icon = "fas fa-tools"; }
+    else if (v === "En reparacion") { cls = "bg-amber-100 text-amber-700"; icon = "fas fa-tools"; }
     else if (v === "Dado de baja") { cls = "bg-red-100 text-red-700"; icon = "fas fa-ban"; }
     return '<span class="inline-flex items-center gap-1 ' + cls + ' px-2.5 py-1 rounded-full text-xs font-bold whitespace-nowrap"><i class="' + icon + '"></i> ' + escaparHtmlInline(v) + "</span>";
 }

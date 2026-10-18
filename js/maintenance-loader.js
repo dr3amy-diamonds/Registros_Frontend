@@ -90,7 +90,6 @@ function resolverEstadoOrden(mantenimiento, programacion) {
             const fechaProg = parsearFechaSolo(programacion.fecha_programada);
             const hoy = hoySinHora();
             if (fechaProg && fechaProg < hoy) return 'Vencido';
-            if (fechaProg && fechaProg.getTime() === hoy.getTime()) return 'En progreso';
         }
         return estadoProg;
     }
@@ -99,14 +98,12 @@ function resolverEstadoOrden(mantenimiento, programacion) {
     const hoy = hoySinHora();
     if (!fecha) return 'Completado';
     if (fecha > hoy) return 'Pendiente';
-    if (fecha.getTime() === hoy.getTime()) return 'En progreso';
     return 'Completado';
 }
 
 function clasesBadgeEstado(estado) {
     const mapa = {
         Pendiente: 'bg-amber-100 text-amber-700',
-        'En progreso': 'bg-blue-100 text-blue-700',
         Completado: 'bg-emerald-100 text-emerald-700',
         Cancelado: 'bg-slate-200 text-slate-600',
         Vencido: 'bg-red-100 text-red-700'
@@ -117,7 +114,6 @@ function clasesBadgeEstado(estado) {
 function iconoEstado(estado) {
     const mapa = {
         Pendiente: 'fa-clock',
-        'En progreso': 'fa-spinner',
         Completado: 'fa-check-circle',
         Cancelado: 'fa-ban',
         Vencido: 'fa-exclamation-triangle'

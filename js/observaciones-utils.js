@@ -87,7 +87,7 @@ function normalizarEstadoFinalObservacion(raw) {
         // "Ninguno" solo no es estado válido; se evalúa abajo por si contiene palabra clave.
     }
     if (t.includes("operativo")) return "Operativo";
-    if (t.includes("reparaci") || t.includes("observaci")) return "En reparación";
+    if (t.includes("reparaci") || t.includes("observaci")) return "En reparacion";
     if (t.includes("baja") || t.includes("fuera") || t.includes("inactivo")) return "Dado de baja";
     return null;
 }
