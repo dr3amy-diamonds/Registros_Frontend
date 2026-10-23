@@ -6,8 +6,10 @@
     function inicializarSidebar() {
         const sidebar = document.getElementById("sidebar") || document.getElementById("main-sidebar");
         const overlay = document.getElementById("sidebar-overlay");
-        const userRole = localStorage.getItem("userRole");
+        const userRole = localStorage.getItem("rol") || localStorage.getItem("userRole");
         const currentPath = window.location.pathname.toLowerCase();
+
+        aplicarRestriccionesVisualesRol();
 
         if (!sidebar || !overlay) {
             vincularBotonCerrarSesion();
@@ -30,7 +32,7 @@
         }
 
         function limpiarEInyectarNavTecnico() {
-            if (userRole !== "Tecnico") {
+            if (!esTecnico()) {
                 return;
             }
 
@@ -143,7 +145,22 @@
         }
         window.accionInventario = accionInventario;
 
+        function esTecnico() {
+            return String(userRole || "").normalize("NFD").replaceAll(/\p{Diacritic}/gu, "").trim().toLowerCase() === "tecnico";
+        }
+
+        function aplicarRestriccionesVisualesRol() {
+            if (!esTecnico()) return;
+            document.querySelectorAll("[data-solo-gestion]").forEach((elemento) => {
+                elemento.classList.add("hidden");
+            });
+        }
+
         function inyectarAccionesSecundarias() {
+            if (esTecnico()) {
+                document.getElementById('sidebar-acciones-secundarias')?.remove();
+                return;
+            }
             if (document.getElementById('sidebar-acciones-secundarias')) return;
             const nav = obtenerNavContainer();
             if (!nav) return;

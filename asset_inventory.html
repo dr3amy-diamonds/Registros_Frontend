@@ -258,9 +258,10 @@
                             </div>
                         </section>
                         <div class="flex flex-wrap justify-end gap-3 pb-1">
-                            <button id="dInlineBtnActivar" onclick="activateTechnicalSheet()" class="bg-emerald-600 hover:bg-emerald-700 text-white px-5 py-2.5 rounded-xl text-sm font-bold transition hidden"><i class="fas fa-play"></i> Activar Equipo</button>
-                            <button onclick="editTechnicalSheet()" class="bg-uccDark hover:bg-uccDark/90 text-white px-5 py-2.5 rounded-xl text-sm font-bold transition"><i class="fas fa-pen-to-square"></i> Editar Equipo</button>
-                            <button onclick="decommissionTechnicalSheet()" class="bg-red-600 hover:bg-red-700 text-white px-5 py-2.5 rounded-xl text-sm font-bold transition"><i class="fas fa-power-off"></i> Dar de Baja</button>
+                            <button id="dInlineBtnActivar" data-solo-gestion onclick="activateTechnicalSheet()" class="bg-emerald-600 hover:bg-emerald-700 text-white px-5 py-2.5 rounded-xl text-sm font-bold transition hidden"><i class="fas fa-play"></i> Activar Equipo</button>
+                            <button data-solo-gestion onclick="abrirModalTraslado(window.currentEquipoId)" class="bg-sky-600 hover:bg-sky-700 text-white px-5 py-2.5 rounded-xl text-sm font-bold transition"><i class="fas fa-location-arrow"></i> Trasladar Equipo</button>
+                            <button data-solo-gestion onclick="editTechnicalSheet()" class="bg-uccDark hover:bg-uccDark/90 text-white px-5 py-2.5 rounded-xl text-sm font-bold transition"><i class="fas fa-pen-to-square"></i> Editar Equipo</button>
+                            <button data-solo-gestion onclick="decommissionTechnicalSheet()" class="bg-red-600 hover:bg-red-700 text-white px-5 py-2.5 rounded-xl text-sm font-bold transition"><i class="fas fa-power-off"></i> Dar de Baja</button>
                         </div>
                     </div>
                 </div>
@@ -296,18 +297,18 @@
                                  <select id="select-marca" required class="flex-1 w-full bg-white border border-slate-300 rounded-xl px-4 py-3 text-sm text-slate-700 font-medium focus:outline-none focus:ring-2 focus:ring-[#00acc9] transition-all shadow-sm appearance-none">
                                      <option value="">Cargando marcas...</option>
                                  </select>
-                                 <button type="button" onclick="openGestionMarcasModal()" title="Gestionar marcas" class="shrink-0 px-3 py-3 bg-uccDark hover:bg-slate-800 text-white rounded-xl shadow-sm transition-all flex items-center justify-center">
+                                 <button type="button" data-solo-gestion onclick="openGestionMarcasModal()" title="Gestionar marcas" class="shrink-0 px-3 py-3 bg-uccDark hover:bg-slate-800 text-white rounded-xl shadow-sm transition-all flex items-center justify-center">
                                      <i class="fas fa-cog"></i>
                                  </button>
                              </div>
                          </div>
-                         <div>
+                         <div id="grupo-espacio-activo">
                              <label for="select-espacio-equipo" class="block text-xs font-black uppercase tracking-widest text-slate-600 mb-3">Ubicación (Espacio/Aula)</label>
                              <div class="flex gap-2 items-stretch">
                                  <select id="select-espacio-equipo" required class="flex-1 w-full bg-white border border-slate-300 rounded-xl px-4 py-3 text-sm text-slate-700 font-medium focus:outline-none focus:ring-2 focus:ring-[#00acc9] transition-all shadow-sm appearance-none">
                                      <option value="">Cargando espacios...</option>
                                  </select>
-                                 <button type="button" onclick="openGestionEspaciosModal()" title="Gestionar espacios" class="shrink-0 px-3 py-3 bg-uccDark hover:bg-slate-800 text-white rounded-xl shadow-sm transition-all flex items-center justify-center">
+                                 <button type="button" data-solo-gestion onclick="openGestionEspaciosModal()" title="Gestionar espacios" class="shrink-0 px-3 py-3 bg-uccDark hover:bg-slate-800 text-white rounded-xl shadow-sm transition-all flex items-center justify-center">
                                      <i class="fas fa-cog"></i>
                                  </button>
                              </div>
@@ -318,7 +319,7 @@
                                  <select id="select-tipo-equipo" required class="flex-1 w-full bg-white border border-slate-300 rounded-xl px-4 py-3 text-sm text-slate-700 font-medium focus:outline-none focus:ring-2 focus:ring-[#00acc9] transition-all shadow-sm appearance-none">
                                      <option value="">Cargando tipos de equipo...</option>
                                  </select>
-                                 <button type="button" id="btn-gestion-tipos-equipo" onclick="openGestionTiposEquipoModal()" title="Gestionar tipos de equipo" class="hidden shrink-0 px-3 py-3 bg-uccDark hover:bg-slate-800 text-white rounded-xl shadow-sm transition-all flex items-center justify-center">
+                                 <button type="button" id="btn-gestion-tipos-equipo" data-solo-gestion onclick="openGestionTiposEquipoModal()" title="Gestionar tipos de equipo" class="hidden shrink-0 px-3 py-3 bg-uccDark hover:bg-slate-800 text-white rounded-xl shadow-sm transition-all flex items-center justify-center">
                                      <i class="fas fa-cog"></i>
                                  </button>
                              </div>
@@ -340,6 +341,10 @@
                              </select>
                          </div>
                          <div>
+                             <label for="inputTonelaje" class="block text-xs font-black uppercase tracking-widest text-slate-600 mb-3">Tonelaje (TR)</label>
+                             <input id="inputTonelaje" type="number" min="0" step="0.01" placeholder="Ej: 3.58" class="w-full bg-white border border-slate-300 rounded-xl px-4 py-3 text-sm text-slate-700 font-medium focus:outline-none focus:ring-2 focus:ring-[#00acc9] transition-all shadow-sm">
+                         </div>
+                         <div>
                              <label for="inputNumeroSerie" class="block text-xs font-black uppercase tracking-widest text-slate-600 mb-3">Número de Serie</label>
                              <input id="inputNumeroSerie" type="text" placeholder="Ej: LG-2024-001" required class="w-full bg-white border border-slate-300 rounded-xl px-4 py-3 text-sm text-slate-700 font-medium focus:outline-none focus:ring-2 focus:ring-[#00acc9] transition-all shadow-sm">
                          </div>
@@ -353,7 +358,7 @@
                                  <select id="selectRefrigerante" required class="flex-1 w-full bg-white border border-slate-300 rounded-xl px-4 py-3 text-sm text-slate-700 font-medium focus:outline-none focus:ring-2 focus:ring-[#00acc9] transition-all shadow-sm appearance-none">
                                      <option value="">Cargando refrigerantes...</option>
                                  </select>
-                                 <button type="button" id="btn-gestion-refrigerantes" onclick="openGestionRefrigerantesModal()" title="Gestionar refrigerantes" class="hidden shrink-0 px-3 py-3 bg-uccDark hover:bg-slate-800 text-white rounded-xl shadow-sm transition-all flex items-center justify-center">
+                                 <button type="button" id="btn-gestion-refrigerantes" data-solo-gestion onclick="openGestionRefrigerantesModal()" title="Gestionar refrigerantes" class="hidden shrink-0 px-3 py-3 bg-uccDark hover:bg-slate-800 text-white rounded-xl shadow-sm transition-all flex items-center justify-center">
                                      <i class="fas fa-cog"></i>
                                  </button>
                              </div>
@@ -366,14 +371,22 @@
                              <label for="inputFechaInstalacion" class="block text-xs font-black uppercase tracking-widest text-slate-600 mb-3">Fecha de Instalación</label>
                              <input id="inputFechaInstalacion" type="date" class="w-full bg-white border border-slate-300 rounded-xl px-4 py-3 text-sm text-slate-700 font-medium focus:outline-none focus:ring-2 focus:ring-[#00acc9] transition-all shadow-sm">
                          </div>
-                    </div>
+                         <div>
+                             <label for="inputUltimaFecha" class="block text-xs font-black uppercase tracking-widest text-slate-600 mb-3">Último Mantenimiento</label>
+                             <input id="inputUltimaFecha" type="date" class="w-full bg-white border border-slate-300 rounded-xl px-4 py-3 text-sm text-slate-700 font-medium focus:outline-none focus:ring-2 focus:ring-[#00acc9] transition-all shadow-sm">
+                         </div>
+                         <div>
+                             <label for="inputProximaFecha" class="block text-xs font-black uppercase tracking-widest text-slate-600 mb-3">Próximo Mantenimiento</label>
+                             <input id="inputProximaFecha" type="date" class="w-full bg-white border border-slate-300 rounded-xl px-4 py-3 text-sm text-slate-700 font-medium focus:outline-none focus:ring-2 focus:ring-[#00acc9] transition-all shadow-sm">
+                         </div>
+                     </div>
 
                     <div class="flex flex-col md:flex-row gap-4 justify-end pt-6 border-t border-slate-200">
                         <button type="button" onclick="closeCrearActivoModal()" class="bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold px-6 py-3 rounded-xl transition flex items-center justify-center gap-2">
                             <i class="fas fa-times"></i>
                             <span>Cancelar</span>
                         </button>
-                        <button type="submit" id="btn-submit-activo" class="bg-uccLight hover:bg-[#00b8d4] text-white font-bold px-6 py-3 rounded-xl shadow-lg transition-all flex items-center justify-center gap-2">
+                        <button type="submit" id="btn-submit-activo" data-solo-gestion class="bg-uccLight hover:bg-[#00b8d4] text-white font-bold px-6 py-3 rounded-xl shadow-lg transition-all flex items-center justify-center gap-2">
                             <i class="fas fa-check"></i>
                             <span id="texto-btn-submit-activo">Registrar Activo</span>
                         </button>
@@ -884,9 +897,10 @@
 
                 <!-- Acciones -->
                 <div class="flex flex-wrap justify-end gap-3 pt-2">
-                    <button id="btn-activar-equipo" onclick="activateTechnicalSheet()" class="bg-emerald-600 hover:bg-emerald-700 text-white px-5 py-2.5 rounded-xl text-sm font-bold transition flex items-center gap-2 hidden"><i class="fas fa-play"></i> Activar Equipo</button>
-                    <button onclick="editTechnicalSheet()" class="bg-uccDark hover:bg-uccDark/90 text-white px-5 py-2.5 rounded-xl text-sm font-bold transition flex items-center gap-2"><i class="fas fa-pen-to-square"></i> Editar Equipo</button>
-                    <button onclick="decommissionTechnicalSheet()" class="bg-red-600 hover:bg-red-700 text-white px-5 py-2.5 rounded-xl text-sm font-bold transition flex items-center gap-2"><i class="fas fa-power-off"></i> Dar de Baja</button>
+                    <button id="btn-activar-equipo" data-solo-gestion onclick="activateTechnicalSheet()" class="bg-emerald-600 hover:bg-emerald-700 text-white px-5 py-2.5 rounded-xl text-sm font-bold transition flex items-center gap-2 hidden"><i class="fas fa-play"></i> Activar Equipo</button>
+                    <button data-solo-gestion onclick="abrirModalTraslado(window.currentEquipoId)" class="bg-sky-600 hover:bg-sky-700 text-white px-5 py-2.5 rounded-xl text-sm font-bold transition flex items-center gap-2"><i class="fas fa-location-arrow"></i> Trasladar Equipo</button>
+                    <button data-solo-gestion onclick="editTechnicalSheet()" class="bg-uccDark hover:bg-uccDark/90 text-white px-5 py-2.5 rounded-xl text-sm font-bold transition flex items-center gap-2"><i class="fas fa-pen-to-square"></i> Editar Equipo</button>
+                    <button data-solo-gestion onclick="decommissionTechnicalSheet()" class="bg-red-600 hover:bg-red-700 text-white px-5 py-2.5 rounded-xl text-sm font-bold transition flex items-center gap-2"><i class="fas fa-power-off"></i> Dar de Baja</button>
                 </div>
             </div>
         </div>
@@ -906,6 +920,36 @@
             <div class="flex justify-end pt-4"><button type="button" onclick="cerrarDetalleDiaInline()" class="rounded-xl text-sm font-semibold px-5 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700">Cerrar</button></div>
         </div>
     </div>
+
+<div id="modal-trasladar-equipo" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm hidden items-center justify-center z-50 p-4" role="dialog" aria-modal="true" aria-labelledby="titulo-modal-traslado">
+    <div class="bg-white w-full max-w-lg rounded-2xl shadow-2xl overflow-hidden">
+        <div class="flex items-center justify-between gap-4 px-6 py-4 border-b border-slate-200">
+            <div>
+                <h2 id="titulo-modal-traslado" class="text-base font-black text-uccDark uppercase tracking-widest">Trasladar Equipo</h2>
+                <p class="text-xs text-slate-500 font-medium mt-1">Cambio de ubicación con trazabilidad</p>
+            </div>
+            <button type="button" onclick="cerrarModalTraslado()" class="text-slate-500 hover:text-uccDark text-2xl font-black leading-none" aria-label="Cerrar">×</button>
+        </div>
+        <form id="form-trasladar-equipo" class="p-6 space-y-5">
+            <div class="rounded-xl border border-slate-200 bg-slate-50 px-4 py-3">
+                <p class="text-[10px] font-black uppercase tracking-widest text-slate-500">Activo</p>
+                <p id="traslado-equipo-codigo" class="text-sm font-bold text-uccDark mt-1">---</p>
+                <p id="traslado-origen" class="text-xs text-slate-500 mt-0.5">---</p>
+            </div>
+            <div>
+                <label for="select-espacio-destino" class="block text-xs font-black uppercase tracking-widest text-slate-600 mb-2">Espacio de destino</label>
+                <select id="select-espacio-destino" required class="w-full bg-white border border-slate-300 rounded-xl px-4 py-3 text-sm text-slate-700 font-medium focus:outline-none focus:ring-2 focus:ring-[#00acc9] transition-all shadow-sm">
+                    <option value="">Cargando espacios...</option>
+                </select>
+            </div>
+            <p id="traslado-error" class="hidden text-xs font-semibold text-red-600"></p>
+            <div class="flex justify-end gap-3 pt-2 border-t border-slate-200">
+                <button type="button" onclick="cerrarModalTraslado()" class="bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold px-5 py-2.5 rounded-xl transition">Cancelar</button>
+                <button type="submit" id="btn-confirmar-traslado" class="bg-uccLight hover:bg-[#00b8d4] text-white font-bold px-5 py-2.5 rounded-xl shadow-lg transition disabled:opacity-50 disabled:cursor-not-allowed">Trasladar</button>
+            </div>
+        </form>
+    </div>
+</div>
 
 <script src="js/config.js"></script>
 <script src="js/confirmation-modal.js"></script>

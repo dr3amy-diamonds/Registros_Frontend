@@ -16,6 +16,42 @@ let equipoEnEdicionId = null;
 const PISO_MIN = 1;
 const PISO_MAX = 7;
 
+function esRolTecnico() {
+    const rol = (localStorage.getItem("rol") || localStorage.getItem("userRole") || "")
+        .normalize("NFD")
+        .replaceAll(/\p{Diacritic}/gu, "")
+        .trim()
+        .toLowerCase();
+    return rol === "tecnico";
+}
+
+function aplicarRestriccionesRol() {
+    if (!esRolTecnico()) return;
+    document.querySelectorAll("[data-solo-gestion]").forEach((elemento) => {
+        elemento.classList.add("hidden");
+    });
+}
+
+async function obtenerTodosLosEspacios() {
+    const espacios = [];
+    const limit = 100;
+    let skip = 0;
+    let total = Infinity;
+
+    while (skip < total) {
+        const response = await fetch(`${API_BASE_URL}/espacios/?skip=${skip}&limit=${limit}`);
+        if (!response.ok) throw new Error(`Error HTTP ${response.status} al cargar espacios`);
+        const data = await response.json();
+        const items = Array.isArray(data) ? data : (data.items || []);
+        total = Array.isArray(data) ? items.length : Number(data.total || items.length);
+        espacios.push(...items);
+        if (!items.length) break;
+        skip += limit;
+    }
+
+    return espacios;
+}
+
 function primerDigito(texto) {
     if (texto == null) return null;
     const m = String(texto).match(/\d/);
@@ -44,143 +80,150 @@ function validarEspacioLocal(nombre, codigo, piso) {
  * Carga todas las tablas maestras necesarias para poblar selectores en formularios
  * Realiza peticiones concurrentes a: marcas, bloques, espacios y tipos de equipo
  */
-function cargarSelectoresFormularios() {
+async function cargarSelectoresFormularios() {
     console.log("📋 Cargando datos maestros para selectores...");
 
-    // Cargar Marcas en selector de equipo
-    fetch(`${API_BASE_URL}/marcas/`)
-        .then(r => r.json())
-        .then(marcas => {
+    const cargarMarcas = async () => {
+        try {
+            const respuesta = await fetch(`${API_BASE_URL}/marcas/`);
+            if (!respuesta.ok) throw new Error(`Error HTTP ${respuesta.status}`);
+            const marcas = await respuesta.json();
             const select = document.getElementById("select-marca");
             if (select) {
                 select.innerHTML = '<option value="">Selecciona una marca</option>';
-                marcas.forEach(marca => {
+                marcas.forEach((marca) => {
                     const option = document.createElement("option");
                     option.value = marca.id;
                     option.textContent = marca.nombre;
                     select.appendChild(option);
                 });
-                console.log(`✅ Cargadas ${marcas.length} marcas`);
             }
-        })
-        .catch(err => {
+        } catch (err) {
             console.error("❌ Error al cargar marcas:", err);
             const select = document.getElementById("select-marca");
             if (select) select.innerHTML = '<option value="">Error al cargar marcas</option>';
-        });
+        }
+    };
 
-    // Cargar Espacios en selector de equipo
-    fetch(`${API_BASE_URL}/espacios/?limit=100`)
-        .then(r => r.json())
-        .then(data => {
-            const espacios = Array.isArray(data) ? data : (data.items || []);
+    const cargarEspacios = async () => {
+        try {
+            const espacios = await obtenerTodosLosEspacios();
             const select = document.getElementById("select-espacio-equipo");
             if (select) {
                 select.innerHTML = '<option value="">Selecciona un espacio</option>';
-                espacios.forEach(espacio => {
+                espacios.forEach((espacio) => {
                     const option = document.createElement("option");
                     option.value = espacio.id;
-                    option.textContent = `${espacio.nombre} (Piso ${espacio.piso})`;
+                    option.textContent = `${espacio.nombre} (Piso ${espacio.piso ?? "N/A"})`;
                     select.appendChild(option);
                 });
-                console.log(`✅ Cargados ${espacios.length} espacios para equipo`);
             }
-        })
-        .catch(err => {
+        } catch (err) {
             console.error("❌ Error al cargar espacios:", err);
             const select = document.getElementById("select-espacio-equipo");
             if (select) select.innerHTML = '<option value="">Error al cargar espacios</option>';
-        });
+        }
+    };
 
-    // Cargar Bloques en selector de espacio
-    fetch(`${API_BASE_URL}/bloques/`)
-        .then(r => r.json())
-        .then(data => {
+    const cargarBloques = async () => {
+        try {
+            const respuesta = await fetch(`${API_BASE_URL}/bloques/`);
+            if (!respuesta.ok) throw new Error(`Error HTTP ${respuesta.status}`);
+            const data = await respuesta.json();
             const bloques = Array.isArray(data) ? data : (data.items || []);
             const select = document.getElementById("select-bloque-espacio");
             if (select) {
                 select.innerHTML = '<option value="">Selecciona un bloque</option>';
-                bloques.forEach(bloque => {
+                bloques.forEach((bloque) => {
                     const option = document.createElement("option");
                     option.value = bloque.id;
                     option.textContent = bloque.nombre_bloque;
                     select.appendChild(option);
                 });
-                console.log(`✅ Cargados ${bloques.length} bloques`);
             }
-        })
-        .catch(err => {
+        } catch (err) {
             console.error("❌ Error al cargar bloques:", err);
             const select = document.getElementById("select-bloque-espacio");
             if (select) select.innerHTML = '<option value="">Error al cargar bloques</option>';
-        });
+        }
+    };
 
-    // Cargar Tipos de Espacio en selector del formulario principal de espacio
-    fetch(`${API_BASE_URL}/tipos-espacios/`)
-        .then(r => r.json())
-        .then(tiposEspacio => {
+    const cargarTiposEspacio = async () => {
+        try {
+            const respuesta = await fetch(`${API_BASE_URL}/tipos-espacios/`);
+            if (!respuesta.ok) throw new Error(`Error HTTP ${respuesta.status}`);
+            const tiposEspacio = await respuesta.json();
             const select = document.getElementById("select-tipo-espacio");
             if (select) {
                 select.innerHTML = '<option value="">Selecciona tipo de espacio</option>';
-                tiposEspacio.forEach(tipo => {
+                tiposEspacio.forEach((tipo) => {
                     const option = document.createElement("option");
                     option.value = tipo.id;
                     option.textContent = tipo.nombre;
                     select.appendChild(option);
                 });
             }
-            console.log(`✅ Cargados ${tiposEspacio.length} tipos de espacio`);
-        })
-        .catch(err => {
+        } catch (err) {
             console.error("❌ Error al cargar tipos de espacio:", err);
             const select = document.getElementById("select-tipo-espacio");
             if (select) select.innerHTML = '<option value="">Error al cargar tipos</option>';
-        });
+        }
+    };
 
-    // Cargar Tipos de Equipo en selector
-    fetch(`${API_BASE_URL}/tipos-equipo/`)
-        .then(r => r.json())
-        .then(data => {
+    const cargarTiposEquipo = async () => {
+        try {
+            const respuesta = await fetch(`${API_BASE_URL}/tipos-equipo/`);
+            if (!respuesta.ok) throw new Error(`Error HTTP ${respuesta.status}`);
+            const data = await respuesta.json();
             const tiposEquipo = Array.isArray(data) ? data : (data.items || []);
             const select = document.getElementById("select-tipo-equipo");
             if (select) {
                 select.innerHTML = '<option value="">Selecciona tipo de equipo</option>';
-                tiposEquipo.forEach(tipo => {
+                tiposEquipo.forEach((tipo) => {
                     const option = document.createElement("option");
                     option.value = tipo.id;
                     option.textContent = tipo.nombre;
                     select.appendChild(option);
                 });
-                console.log(`✅ Cargados ${tiposEquipo.length} tipos de equipo`);
             }
-        })
-        .catch(err => {
+        } catch (err) {
             console.error("❌ Error al cargar tipos de equipo:", err);
             const select = document.getElementById("select-tipo-equipo");
             if (select) select.innerHTML = '<option value="">Error al cargar tipos</option>';
-        });
+        }
+    };
 
-    // Cargar Refrigerantes en selector
-    fetch(`${API_BASE_URL}/tipos-gas-refrigerante/`)
-        .then(r => r.json())
-        .then(data => {
+    const cargarRefrigerantes = async () => {
+        try {
+            const respuesta = await fetch(`${API_BASE_URL}/tipos-gas-refrigerante/`);
+            if (!respuesta.ok) throw new Error(`Error HTTP ${respuesta.status}`);
+            const data = await respuesta.json();
             const refrigerantes = Array.isArray(data) ? data : (data.items || []);
             const select = document.getElementById("selectRefrigerante");
             if (select) {
                 select.innerHTML = '<option value="">Selecciona un refrigerante</option>';
-                refrigerantes.forEach(ref => {
+                refrigerantes.forEach((ref) => {
                     const option = document.createElement("option");
                     option.value = ref.nombre;
                     option.textContent = ref.nombre;
                     select.appendChild(option);
                 });
             }
-        })
-        .catch(err => {
+        } catch (err) {
             console.error("❌ Error al cargar refrigerantes:", err);
             const select = document.getElementById("selectRefrigerante");
             if (select) select.innerHTML = '<option value="">Error al cargar refrigerantes</option>';
-        });
+        }
+    };
+
+    await Promise.all([
+        cargarMarcas(),
+        cargarEspacios(),
+        cargarBloques(),
+        cargarTiposEspacio(),
+        cargarTiposEquipo(),
+        cargarRefrigerantes(),
+    ]);
 }
 
 /**
@@ -549,11 +592,15 @@ function irPaginaSiguiente() {
 function actualizarTituloModalActivo() {
     const titulo = document.getElementById("titulo-modal-activo");
     const textoBtn = document.getElementById("texto-btn-submit-activo");
+    const grupoEspacio = document.getElementById("grupo-espacio-activo");
     if (titulo) {
         titulo.textContent = modoEdicionEquipo ? "Editar Equipo" : "Registrar Nuevo Equipo";
     }
     if (textoBtn) {
         textoBtn.textContent = modoEdicionEquipo ? "Guardar Cambios" : "Registrar Activo";
+    }
+    if (grupoEspacio) {
+        grupoEspacio.classList.toggle("hidden", modoEdicionEquipo);
     }
 }
 
@@ -564,6 +611,10 @@ function resetearModoFormularioActivo() {
 }
 
 function openCrearActivoModal() {
+    if (esRolTecnico()) {
+        mostrarNotificacion("error", "El rol Técnico no puede crear ni modificar equipos.");
+        return;
+    }
     const modal = document.getElementById("modal-crear-activo");
     if (modal) {
         if (!modoEdicionEquipo) {
@@ -588,34 +639,80 @@ function closeCrearActivoModal() {
     }
 }
 
-/**
- * Pre-llena el formulario de activo con datos de un equipo existente
- * @param {Object} equipo
- * @param {number} intento
- */
-function rellenarFormularioEquipo(equipo, intento = 0) {
-    const setVal = (id, val) => {
-        const el = document.getElementById(id);
-        if (el && val !== undefined && val !== null) el.value = val;
-    };
-
-    setVal("inputCodigoActivo", equipo.codigo_activo ?? "");
-    setVal("input-modelo", equipo.modelo ?? "");
-    setVal("inputNumeroSerie", equipo.numero_serie ?? "");
-    setVal("inputVoltaje", equipo.voltaje ?? "");
-    setVal("selectRefrigerante", equipo.refrigerante ?? "");
-    setVal("inputFechaInstalacion", equipo.fecha_instalacion ?? "");
-
-    if (equipo.marca_id) setVal("select-marca", equipo.marca_id);
-    if (equipo.espacio_id) setVal("select-espacio-equipo", equipo.espacio_id);
-    if (equipo.tipo_equipo_id) setVal("select-tipo-equipo", equipo.tipo_equipo_id);
-    if (equipo.capacidad_btu) setVal("selectCapacidad", String(equipo.capacidad_btu));
-
-    const selectMarca = document.getElementById("select-marca");
-    const pendienteOpciones = selectMarca && selectMarca.options.length <= 1 && intento < 4;
-    if (pendienteOpciones) {
-        setTimeout(() => rellenarFormularioEquipo(equipo, intento + 1), 250);
+function normalizarFechaInput(valor) {
+    if (valor === null || valor === undefined || valor === "") return "";
+    if (typeof valor === "string") {
+        const coincidencia = valor.match(/^\d{4}-\d{2}-\d{2}/);
+        return coincidencia ? coincidencia[0] : "";
     }
+    const fecha = new Date(valor);
+    if (Number.isNaN(fecha.getTime())) return "";
+    const anio = fecha.getFullYear();
+    const mes = String(fecha.getMonth() + 1).padStart(2, "0");
+    const dia = String(fecha.getDate()).padStart(2, "0");
+    return `${anio}-${mes}-${dia}`;
+}
+
+function asignarValorFormulario(id, valor) {
+    const elemento = document.getElementById(id);
+    if (!elemento) return;
+    elemento.value = valor === null || valor === undefined ? "" : String(valor);
+}
+
+function seleccionarOpcionFormulario(id, valor, etiqueta) {
+    const select = document.getElementById(id);
+    if (!select) return;
+    if (valor === null || valor === undefined || valor === "") {
+        select.value = "";
+        return;
+    }
+    const texto = String(valor);
+    const existe = Array.from(select.options).some((option) => option.value === texto);
+    if (!existe) {
+        const option = document.createElement("option");
+        option.value = texto;
+        option.textContent = etiqueta || texto;
+        select.appendChild(option);
+    }
+    select.value = texto;
+}
+
+/**
+ * Pre-llena el formulario de activo con datos de un equipo existente.
+ * @param {Object} equipo
+ */
+function rellenarFormularioEquipo(equipo) {
+    const marcaId = equipo.marca_id ?? (equipo.marca && equipo.marca.id) ?? "";
+    const tipoEquipoId = equipo.tipo_equipo_id ?? (equipo.tipo && equipo.tipo.id) ?? "";
+    const espacioId = equipo.espacio_id ?? (equipo.espacio && equipo.espacio.id) ?? "";
+    const capacidad = equipo.capacidad_btu ?? "";
+    const tonelajeNumero = Number(equipo.tonelaje);
+    const tonelaje = equipo.tonelaje === null || equipo.tonelaje === undefined || equipo.tonelaje === "" || !Number.isFinite(tonelajeNumero)
+        ? ""
+        : tonelajeNumero.toFixed(2);
+
+    asignarValorFormulario("inputCodigoActivo", equipo.codigo_activo);
+    asignarValorFormulario("input-modelo", equipo.modelo);
+    asignarValorFormulario("inputNumeroSerie", equipo.numero_serie);
+    asignarValorFormulario("inputVoltaje", equipo.voltaje);
+    asignarValorFormulario("inputTonelaje", tonelaje);
+    asignarValorFormulario("inputFechaCompra", normalizarFechaInput(equipo.fecha_compra));
+    asignarValorFormulario("inputFechaInstalacion", normalizarFechaInput(equipo.fecha_instalacion));
+    asignarValorFormulario("inputUltimaFecha", normalizarFechaInput(equipo.ultima_fecha));
+    asignarValorFormulario("inputProximaFecha", normalizarFechaInput(equipo.proxima_fecha));
+
+    seleccionarOpcionFormulario("select-marca", marcaId);
+    seleccionarOpcionFormulario("select-tipo-equipo", tipoEquipoId);
+    seleccionarOpcionFormulario("select-espacio-equipo", espacioId);
+    const capacidadNumero = Number(capacidad);
+    seleccionarOpcionFormulario(
+        "selectCapacidad",
+        capacidad,
+        capacidad !== "" && Number.isFinite(capacidadNumero)
+            ? `${capacidadNumero.toLocaleString("es-CO")} BTU`
+            : String(capacidad || ""),
+    );
+    seleccionarOpcionFormulario("selectRefrigerante", equipo.refrigerante);
 }
 
 // ========================================
@@ -730,6 +827,10 @@ const capacidadATonelaje = {
  */
 async function submitCrearActivoFormulario(event) {
     event.preventDefault();
+    if (esRolTecnico()) {
+        mostrarNotificacion("error", "El rol Técnico no puede crear ni modificar equipos.");
+        return;
+    }
 
     try {
         const codigoActivoInput = document.getElementById("inputCodigoActivo").value.trim();
@@ -744,30 +845,40 @@ async function submitCrearActivoFormulario(event) {
         const refrigerante = document.getElementById("selectRefrigerante").value;
         const fechaCompra = document.getElementById("inputFechaCompra").value;
         const fechaInstalacion = document.getElementById("inputFechaInstalacion").value;
+        const ultimaFecha = document.getElementById("inputUltimaFecha").value;
+        const proximaFecha = document.getElementById("inputProximaFecha").value;
+        const tonelajeInput = document.getElementById("inputTonelaje").value.trim();
+        const tonelajeCalculado = tonelajeInput !== ""
+            ? Number.parseFloat(tonelajeInput)
+            : capacidadATonelaje[capacidadBtu.toString()];
+        const tonelaje = Number.isFinite(tonelajeCalculado) ? tonelajeCalculado : null;
+        const esEdicion = Boolean(modoEdicionEquipo && equipoEnEdicionId);
 
         // Validación básica
-        if (!codigoActivoInput || isNaN(marcaId) || isNaN(espacioId) || isNaN(capacidadBtu) || !numeroSerie || !modeloValue || isNaN(voltaje) || !refrigerante) {
+        const espacioInvalido = !esEdicion && isNaN(espacioId);
+        if (!codigoActivoInput || isNaN(marcaId) || espacioInvalido || isNaN(capacidadBtu) || !numeroSerie || !modeloValue || isNaN(voltaje) || !refrigerante) {
             mostrarNotificacion("error", "Por favor completa todos los campos del formulario");
             return;
         }
 
         const payload = {
              codigo_activo: String(codigoActivoInput),
-             marca_id: marcaId,              // Lectura real desde selector
-             espacio_id: espacioId,          // Lectura real desde selector
-             tipo_equipo_id: tipoEquipoId,   // Lectura real desde selector
+             marca_id: marcaId,
+             espacio_id: espacioId,
+             tipo_equipo_id: tipoEquipoId,
              capacidad_btu: capacidadBtu,
              modelo: modeloValue,
              numero_serie: numeroSerie,
              voltaje: voltaje,
              refrigerante: refrigerante,
              estado: "Operativo",
-             tonelaje: capacidadATonelaje[capacidadBtu.toString()] || null,
+             tonelaje: tonelaje,
              fecha_compra: fechaCompra || null,
-             fecha_instalacion: fechaInstalacion || null
+             fecha_instalacion: fechaInstalacion || null,
+             ultima_fecha: ultimaFecha || null,
+             proxima_fecha: proximaFecha || null
          };
 
-        const esEdicion = modoEdicionEquipo && equipoEnEdicionId;
         const url = esEdicion
             ? `${API_BASE_URL}/equipos/${equipoEnEdicionId}/`
             : `${API_BASE_URL}/equipos/`;
@@ -778,14 +889,16 @@ async function submitCrearActivoFormulario(event) {
                 codigo_activo: String(codigoActivoInput),
                 modelo: modeloValue,
                 capacidad_btu: capacidadBtu,
-                tonelaje: capacidadATonelaje[capacidadBtu.toString()] || null,
+                tonelaje: tonelaje,
                 numero_serie: numeroSerie,
                 voltaje: voltaje,
                 refrigerante: refrigerante,
                 marca_id: marcaId,
                 tipo_equipo_id: tipoEquipoId,
-                espacio_id: espacioId,
-                fecha_instalacion: fechaInstalacion || null
+                fecha_compra: fechaCompra || null,
+                fecha_instalacion: fechaInstalacion || null,
+                ultima_fecha: ultimaFecha || null,
+                proxima_fecha: proximaFecha || null
             }
             : payload;
 
@@ -1485,13 +1598,17 @@ async function cargarHistorialIntervenciones(equipoId, forzarVacio = false) {
  * Edita el equipo actualmente abierto
  */
 async function editTechnicalSheet() {
+    if (esRolTecnico()) {
+        mostrarNotificacion("error", "El rol Técnico no puede modificar equipos.");
+        return;
+    }
     if (!window.currentEquipoId) {
         mostrarNotificacion("error", "No hay equipo seleccionado");
         return;
     }
 
     try {
-        const response = await fetch(`${API_BASE_URL}/equipos/${window.currentEquipoId}/`);
+        const response = await fetchConTokenInline(`${API_BASE_URL}/equipos/${window.currentEquipoId}/`);
         if (!response.ok) {
             throw new Error("No se pudo cargar el equipo para editar");
         }
@@ -1503,8 +1620,10 @@ async function editTechnicalSheet() {
         equipoEnEdicionId = equipo.id;
         window.currentEquipoId = equipo.id;
 
-        cargarSelectoresFormularios();
+        await cargarSelectoresFormularios();
         openCrearActivoModal();
+        const form = document.getElementById("form-crear-activo");
+        if (form) form.reset();
         rellenarFormularioEquipo(equipo);
     } catch (error) {
         console.error("❌ Error al abrir edición:", error);
@@ -1512,10 +1631,160 @@ async function editTechnicalSheet() {
     }
 }
 
+let equipoTrasladoId = null;
+
+function mostrarErrorTraslado(mensaje) {
+    const error = document.getElementById("traslado-error");
+    if (!error) return;
+    error.textContent = mensaje || "";
+    error.classList.toggle("hidden", !mensaje);
+}
+
+function cerrarModalTraslado() {
+    const modal = document.getElementById("modal-trasladar-equipo");
+    if (modal) {
+        modal.classList.add("hidden");
+        modal.classList.remove("flex");
+    }
+    const form = document.getElementById("form-trasladar-equipo");
+    if (form) form.reset();
+    const boton = document.getElementById("btn-confirmar-traslado");
+    if (boton) {
+        boton.disabled = false;
+        boton.textContent = "Trasladar";
+    }
+    mostrarErrorTraslado("");
+    equipoTrasladoId = null;
+}
+
+async function abrirModalTraslado(equipoId) {
+    if (esRolTecnico()) {
+        mostrarNotificacion("error", "El rol Técnico no puede trasladar equipos.");
+        return;
+    }
+
+    const id = Number(equipoId || window.currentEquipoId);
+    if (!id) {
+        mostrarNotificacion("error", "No hay equipo seleccionado");
+        return;
+    }
+
+    const modal = document.getElementById("modal-trasladar-equipo");
+    const select = document.getElementById("select-espacio-destino");
+    const boton = document.getElementById("btn-confirmar-traslado");
+    const codigo = document.getElementById("traslado-equipo-codigo");
+    const origen = document.getElementById("traslado-origen");
+    if (!modal || !select) return;
+
+    equipoTrasladoId = id;
+    mostrarErrorTraslado("");
+    if (codigo) codigo.textContent = "Cargando activo...";
+    if (origen) origen.textContent = "Consultando ubicación actual...";
+    select.innerHTML = '<option value="">Cargando espacios...</option>';
+    select.disabled = true;
+    if (boton) boton.disabled = true;
+
+    modal.classList.remove("hidden");
+    modal.classList.add("flex");
+
+    try {
+        const [respuestaEquipo, espacios] = await Promise.all([
+            fetchConTokenInline(`${API_BASE_URL}/equipos/${id}/`),
+            obtenerTodosLosEspacios(),
+        ]);
+
+        if (!respuestaEquipo.ok) throw new Error("No se pudo cargar el equipo");
+        if (equipoTrasladoId !== id) return;
+        const equipo = await respuestaEquipo.json();
+        const espacioActualId = equipo.espacio_id ?? (equipo.espacio && equipo.espacio.id);
+        const nombreEspacio = (equipo.espacio && equipo.espacio.nombre) || equipo.espacio_nombre || "Sin espacio asignado";
+        const pisoEspacio = equipo.espacio && equipo.espacio.piso !== undefined ? ` · Piso ${equipo.espacio.piso}` : "";
+
+        if (codigo) codigo.textContent = `${equipo.codigo_activo || "Equipo"} · ${equipo.modelo || "Sin modelo"}`;
+        if (origen) origen.textContent = `Ubicación actual: ${nombreEspacio}${pisoEspacio}`;
+
+        const destinos = espacios.filter((espacio) => String(espacio.id) !== String(espacioActualId));
+        select.innerHTML = '<option value="">Selecciona un espacio</option>';
+        destinos.forEach((espacio) => {
+            const option = document.createElement("option");
+            option.value = espacio.id;
+            option.textContent = `${espacio.nombre} · Piso ${espacio.piso ?? "N/A"}`;
+            select.appendChild(option);
+        });
+
+        if (!destinos.length) {
+            select.innerHTML = '<option value="">No hay otros espacios disponibles</option>';
+            if (boton) boton.disabled = true;
+        } else if (boton) {
+            boton.disabled = false;
+        }
+    } catch (error) {
+        console.error("❌ Error al abrir traslado:", error);
+        mostrarErrorTraslado(error.message || "No se pudo preparar el traslado");
+        select.innerHTML = '<option value="">Error al cargar espacios</option>';
+    } finally {
+        select.disabled = false;
+    }
+}
+
+async function submitTrasladoEquipo(event) {
+    event.preventDefault();
+    if (esRolTecnico()) {
+        mostrarNotificacion("error", "El rol Técnico no puede trasladar equipos.");
+        return;
+    }
+
+    const select = document.getElementById("select-espacio-destino");
+    const boton = document.getElementById("btn-confirmar-traslado");
+    const destinoId = Number(select && select.value);
+    if (!equipoTrasladoId || !destinoId) {
+        mostrarErrorTraslado("Selecciona un espacio de destino válido.");
+        return;
+    }
+
+    mostrarErrorTraslado("");
+    if (boton) {
+        boton.disabled = true;
+        boton.textContent = "Trasladando...";
+    }
+
+    try {
+        const response = await fetch(`${API_BASE_URL}/equipos/${equipoTrasladoId}/trasladar`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${localStorage.getItem("token")}`,
+            },
+            body: JSON.stringify({ espacio_destino_id: destinoId }),
+        });
+
+        const data = await response.json().catch(() => ({}));
+        if (!response.ok) {
+            throw new Error(extraerMensajeError(data) || "Error al trasladar el equipo");
+        }
+
+        mostrarNotificacion("exito", "Equipo trasladado correctamente");
+        cerrarModalTraslado();
+        closeTechnicalSheetModal();
+        cargarInventarioCompleto();
+    } catch (error) {
+        console.error("❌ Error al trasladar equipo:", error);
+        mostrarErrorTraslado(error.message || "No se pudo trasladar el equipo");
+        if (boton) {
+            boton.disabled = false;
+            boton.textContent = "Trasladar";
+        }
+    }
+}
+
 /**
  * Cambia el estado del equipo a "Inactivo" (dar de baja)
  */
 async function decommissionTechnicalSheet() {
+    if (esRolTecnico()) {
+        mostrarNotificacion("error", "El rol Técnico no puede dar de baja equipos.");
+        return;
+    }
     if (!window.currentEquipoId) {
         mostrarNotificacion("error", "No hay equipo seleccionado");
         return;
@@ -1536,7 +1805,8 @@ async function decommissionTechnicalSheet() {
         const response = await fetch(`${API_BASE_URL}/equipos/${window.currentEquipoId}/estado/Inactivo`, {
             method: "PATCH",
             headers: {
-                "Content-Type": "application/json"
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${localStorage.getItem("token")}`,
             }
         });
         
@@ -1562,6 +1832,10 @@ async function decommissionTechnicalSheet() {
  * Activa el equipo cambiando su estado a "Operativo"
  */
 async function activateTechnicalSheet() {
+    if (esRolTecnico()) {
+        mostrarNotificacion("error", "El rol Técnico no puede reactivar equipos.");
+        return;
+    }
     if (!window.currentEquipoId) {
         mostrarNotificacion("error", "No hay equipo seleccionado");
         return;
@@ -1582,7 +1856,8 @@ async function activateTechnicalSheet() {
         const response = await fetch(`${API_BASE_URL}/equipos/${window.currentEquipoId}/estado/Operativo`, {
             method: "PATCH",
             headers: {
-                "Content-Type": "application/json"
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${localStorage.getItem("token")}`,
             }
         });
         
@@ -1971,6 +2246,10 @@ const CLASE_BTN_ELIMINAR_GESTION = "p-2 rounded-lg text-slate-400 hover:text-red
 const CLASE_INPUT_INLINE_GESTION = "flex-1 border border-slate-200 hover:border-slate-300 focus:border-uccLight focus:ring-2 focus:ring-cyan-100 transition-all rounded-xl px-4 py-2.5 text-slate-800 bg-white text-sm font-medium";
 
 function openGestionMarcasModal() {
+    if (esRolTecnico()) {
+        mostrarNotificacion("error", "El rol Técnico no puede gestionar marcas.");
+        return;
+    }
     const modal = document.getElementById("modal-gestion-marcas");
     if (!modal) return;
     modal.classList.remove("hidden");
@@ -2147,6 +2426,10 @@ async function cargarBloquesGestionEspacios() {
 }
 
 function openGestionEspaciosModal() {
+    if (esRolTecnico()) {
+        mostrarNotificacion("error", "El rol Técnico no puede gestionar espacios.");
+        return;
+    }
     const modal = document.getElementById("modal-gestion-espacios");
     if (!modal) return;
     modal.classList.remove("hidden");
@@ -2505,14 +2788,20 @@ function esSuperusuarioInventario() {
     return rol.includes("jefe de infraestructura");
 }
 
+function esGestorCatalogoInsumos() {
+    const rol = (localStorage.getItem("rol") || localStorage.getItem("userRole") || "").toLowerCase();
+    return rol.includes("jefe de infraestructura") || rol.includes("auxiliar de infraestructura");
+}
+
 function aplicarVisibilidadGestionTiposEquipo() {
     const esSuper = esSuperusuarioInventario();
+    const puedeGestionarInsumos = esGestorCatalogoInsumos();
     const btnTipos = document.getElementById("btn-gestion-tipos-equipo");
     const btnRefrig = document.getElementById("btn-gestion-refrigerantes");
     const btnComponentes = document.getElementById("btn-gestion-tipos-componente");
     if (btnTipos) btnTipos.classList.toggle("hidden", !esSuper);
     if (btnRefrig) btnRefrig.classList.toggle("hidden", !esSuper);
-    if (btnComponentes) btnComponentes.classList.toggle("hidden", !esSuper);
+    if (btnComponentes) btnComponentes.classList.toggle("hidden", !puedeGestionarInsumos);
 }
 
 function openGestionTiposEquipoModal() {
@@ -2844,8 +3133,8 @@ async function eliminarRefrigerante(id) {
 // ========================================
 
 function openGestionTiposComponenteModal() {
-    if (!esSuperusuarioInventario()) {
-        mostrarNotificacion("error", "Solo el superusuario puede gestionar tipos de insumos.");
+    if (!esGestorCatalogoInsumos()) {
+        mostrarNotificacion("error", "Solo Jefe o Auxiliar de Infraestructura pueden gestionar el catálogo de insumos.");
         return;
     }
     const modal = document.getElementById("modal-gestion-tipos-componente");
@@ -2871,7 +3160,9 @@ async function renderizarListaTiposComponente() {
     lista.innerHTML = '<p class="text-xs text-slate-400 text-center py-6"><i class="fas fa-spinner fa-spin mr-1"></i> Cargando...</p>';
 
     try {
-        const response = await fetch(`${API_BASE_URL}/tipo_componentes/`);
+        const response = await fetch(`${API_BASE_URL}/tipo_componentes/`, {
+            headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+        });
         if (!response.ok) throw new Error(extraerMensajeError(await response.json()));
         const tipos = await response.json();
 
@@ -3008,6 +3299,7 @@ async function eliminarTipoComponente(id) {
 document.addEventListener("DOMContentLoaded", () => {
     console.log("📋 Inicializando cargador de inventario...");
     aplicarVisibilidadGestionTiposEquipo();
+    aplicarRestriccionesRol();
     cargarSelectoresFormularios();
     cargarFiltrosInventario();
     cargarInventarioCompleto();
@@ -3016,6 +3308,20 @@ document.addEventListener("DOMContentLoaded", () => {
     const formCrearActivo = document.getElementById("form-crear-activo");
     if (formCrearActivo) {
         formCrearActivo.addEventListener("submit", submitCrearActivoFormulario);
+    }
+
+    const formTraslado = document.getElementById("form-trasladar-equipo");
+    if (formTraslado) {
+        formTraslado.addEventListener("submit", submitTrasladoEquipo);
+    }
+
+    const selectCapacidad = document.getElementById("selectCapacidad");
+    if (selectCapacidad) {
+        selectCapacidad.addEventListener("change", () => {
+            const inputTonelaje = document.getElementById("inputTonelaje");
+            if (!inputTonelaje) return;
+            inputTonelaje.value = capacidadATonelaje[selectCapacidad.value] ?? "";
+        });
     }
 
     // Event listeners para filtros encadenados
