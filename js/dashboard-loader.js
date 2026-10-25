@@ -29,28 +29,37 @@
         var estado = document.getElementById('kpi-saldo-estado');
         var card = document.getElementById('card-saldo');
         var valor = document.getElementById('kpi-saldo');
-        var base = 'p-4 rounded-lg border border-slate-100 shadow-sm flex flex-col justify-center gap-1 min-h-[96px]';
-        var texto = 'Presupuesto menos gasto';
-        var cardExtra = 'bg-emerald-50/60';
-        var valorColor = 'text-2xl font-bold text-[#10b981] tabular-nums leading-none';
+        var pill = document.getElementById('kpi-saldo-pill');
+        var base = 'panel kpi-card';
+        var texto = 'Saldo saludable';
+        var pillClase = 'status-pill status-success';
+        var pillTexto = 'Saludable';
+        var valorColor = 'text-2xl font-semibold text-emerald-700 tabular-nums leading-none';
+
         if (!(presupuesto > 0)) {
             texto = 'Sin presupuesto asignado';
-            cardExtra = 'bg-slate-50';
-            valorColor = 'text-2xl font-bold text-slate-500 tabular-nums leading-none';
+            pillClase = 'status-pill status-neutral';
+            pillTexto = 'Sin presupuesto';
+            valorColor = 'text-2xl font-semibold text-slate-500 tabular-nums leading-none';
         } else if (saldo <= 0) {
             texto = 'Sin saldo disponible';
-            cardExtra = 'bg-red-50';
-            valorColor = 'text-2xl font-bold text-red-600 tabular-nums leading-none';
+            pillClase = 'status-pill status-danger';
+            pillTexto = 'Sin saldo';
+            valorColor = 'text-2xl font-semibold text-rose-700 tabular-nums leading-none';
         } else if ((saldo / presupuesto) < 0.2) {
             texto = 'Saldo bajo — menos del 20%';
-            cardExtra = 'bg-amber-50';
-            valorColor = 'text-2xl font-bold text-amber-700 tabular-nums leading-none';
-        } else {
-            texto = 'Saldo saludable';
+            pillClase = 'status-pill status-warning';
+            pillTexto = 'Saldo bajo';
+            valorColor = 'text-2xl font-semibold text-amber-700 tabular-nums leading-none';
         }
-        if (card) card.className = base + ' ' + cardExtra;
+
+        if (card) card.className = base;
         if (valor) valor.className = valorColor;
         if (estado) estado.textContent = texto;
+        if (pill) {
+            pill.className = pillClase;
+            pill.textContent = pillTexto;
+        }
     }
 
     function pintarSaldoFijo() {

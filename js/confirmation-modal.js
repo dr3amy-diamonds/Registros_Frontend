@@ -15,34 +15,34 @@ function inyectarModalConfirmacion() {
 
     const modalHTML = `
         <div id="modal-confirmacion-global" role="dialog" aria-modal="true" aria-labelledby="confirmacion-titulo" aria-describedby="confirmacion-mensaje" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm hidden flex items-center justify-center z-[100] p-4" style="display: none;">
-            <div class="bg-white w-full max-w-md rounded-2xl shadow-2xl border border-slate-100 overflow-hidden transform transition-all">
+            <div class="bg-white w-full max-w-md rounded-xl shadow-lg border border-slate-200 overflow-hidden">
                 <!-- Encabezado del modal -->
-                <div id="confirmacion-header" class="px-6 py-4 border-b border-slate-100 flex items-center gap-3">
-                    <div id="confirmacion-icon-container" class="flex items-center justify-center w-12 h-12 rounded-xl bg-amber-100">
-                        <i id="confirmacion-icon" class="fas fa-exclamation-triangle text-amber-600 text-xl"></i>
+                <div id="confirmacion-header" class="px-4 py-3 border-b border-slate-200 flex items-center gap-3">
+                    <div id="confirmacion-icon-container" class="flex items-center justify-center w-10 h-10 rounded-lg bg-amber-100">
+                        <i id="confirmacion-icon" class="fas fa-exclamation-triangle text-amber-600 text-lg"></i>
                     </div>
                     <div class="flex-1 min-w-0">
-                        <h3 id="confirmacion-titulo" class="text-lg font-black text-slate-800 tracking-tight">
+                        <h3 id="confirmacion-titulo" class="text-base font-semibold text-slate-800">
                             Confirmar acción
                         </h3>
                     </div>
                 </div>
 
                 <!-- Cuerpo del modal -->
-                <div class="px-6 py-5">
+                <div class="px-4 py-4">
                     <p id="confirmacion-mensaje" class="text-sm text-slate-600 leading-relaxed">
                         ¿Está seguro de que desea continuar con esta acción?
                     </p>
                 </div>
 
                 <!-- Botones de acción -->
-                <div class="px-6 py-4 bg-slate-50 border-t border-slate-100 flex flex-col-reverse sm:flex-row gap-3 sm:justify-end">
-                    <button type="button" id="btn-confirmacion-cancelar" class="w-full sm:w-auto bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold px-6 py-2.5 rounded-xl transition flex items-center justify-center gap-2">
-                        <i class="fas fa-times text-sm"></i>
+                <div class="px-4 py-3 bg-slate-50 border-t border-slate-200 flex flex-col-reverse sm:flex-row gap-3 sm:justify-end">
+                    <button type="button" id="btn-confirmacion-cancelar" class="btn-secondary w-full sm:w-auto">
+                        <i class="fas fa-times text-xs" aria-hidden="true"></i>
                         <span>Cancelar</span>
                     </button>
-                    <button type="button" id="btn-confirmacion-aceptar" class="w-full sm:w-auto bg-uccDark hover:bg-slate-800 text-white font-bold px-6 py-2.5 rounded-xl shadow-lg transition flex items-center justify-center gap-2">
-                        <i class="fas fa-check text-sm"></i>
+                    <button type="button" id="btn-confirmacion-aceptar" class="btn-primary w-full sm:w-auto">
+                        <i class="fas fa-check text-xs" aria-hidden="true"></i>
                         <span id="texto-btn-aceptar">Confirmar</span>
                     </button>
                 </div>
@@ -98,14 +98,14 @@ function solicitarConfirmacion(opciones = {}) {
         // Aplicar estilos según severidad
         if (config.esPeligroso) {
             // Estilo destructivo (rojo)
-            iconContainer.className = 'flex items-center justify-center w-12 h-12 rounded-xl bg-red-100';
-            icon.className = 'fas fa-exclamation-triangle text-red-600 text-xl';
-            btnAceptar.className = 'w-full sm:w-auto bg-red-600 hover:bg-red-700 text-white font-bold px-6 py-2.5 rounded-xl shadow-lg transition flex items-center justify-center gap-2';
+            iconContainer.className = 'flex items-center justify-center w-10 h-10 rounded-lg bg-red-100';
+            icon.className = 'fas fa-exclamation-triangle text-red-600 text-lg';
+            btnAceptar.className = 'btn-danger w-full sm:w-auto';
         } else {
-            // Estilo estándar (amber)
-            iconContainer.className = 'flex items-center justify-center w-12 h-12 rounded-xl bg-amber-100';
-            icon.className = 'fas fa-exclamation-triangle text-amber-600 text-xl';
-            btnAceptar.className = 'w-full sm:w-auto bg-uccDark hover:bg-slate-800 text-white font-bold px-6 py-2.5 rounded-xl shadow-lg transition flex items-center justify-center gap-2';
+            // Estilo estándar (cyan)
+            iconContainer.className = 'flex items-center justify-center w-10 h-10 rounded-lg bg-amber-100';
+            icon.className = 'fas fa-exclamation-triangle text-amber-600 text-lg';
+            btnAceptar.className = 'btn-primary w-full sm:w-auto';
         }
 
         // Función para cerrar modal y limpiar eventos

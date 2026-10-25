@@ -5,7 +5,7 @@
 const API_BASE_URL = "http://127.0.0.1:8000/api/v1";
 
 let paginaActual = 1;
-const registrosPorPagina = 50;
+const registrosPorPagina = 25;
 let equiposCargadosGlobal = [];
 let equiposCompletosGlobal = []; // Catálogo completo sin filtrar
 let espaciosCatalogGlobal = [];
@@ -309,12 +309,12 @@ function obtenerDependenciaEquipo(equipo) {
 
 function obtenerBadgeDependencia(dependencia) {
     const esChiller = dependencia === "Chiller";
-    return `<span class="inline-flex items-center gap-1 ${esChiller ? "bg-cyan-50 text-cyan-700" : "bg-slate-100 text-slate-600"} px-2 py-0.5 rounded-full text-xs font-bold">${dependencia}</span>`;
+    return `<span class="inline-flex items-center px-2 py-0.5 rounded-full border text-xs font-medium ${esChiller ? "bg-cyan-50 text-cyan-700 border-cyan-200" : "bg-slate-50 text-slate-600 border-slate-200"}">${dependencia}</span>`;
 }
 
 function crearFilaEquipo(equipo) {
     const fila = document.createElement("tr");
-    fila.className = "hover:bg-slate-50/50 transition cursor-pointer";
+    fila.className = "hover:bg-slate-50 transition cursor-pointer";
     fila.setAttribute("data-equipo-id", equipo.id);
     fila.setAttribute("data-codigo-activo", equipo.codigo_activo);
 
@@ -332,21 +332,21 @@ function crearFilaEquipo(equipo) {
     fila.setAttribute("data-estado", normalizarEstadoEquipo(equipo.estado));
 
     fila.innerHTML = `
-        <td class="py-3 px-4 font-semibold text-slate-700 text-sm col-ubicacion">
-            <span class="block leading-snug">${ubicacion.nombre}</span>
-            <span class="text-slate-400 block text-xs leading-snug">${ubicacion.piso}</span>
+        <td class="py-2.5 px-3 col-ubicacion">
+            <span class="block font-medium text-slate-700 text-sm leading-snug truncate">${ubicacion.nombre}</span>
+            <span class="block text-slate-400 text-xs leading-snug">${ubicacion.piso}</span>
         </td>
-        <td class="py-3 px-4 font-semibold text-slate-600 text-sm">
-            <span class="bg-slate-100 text-slate-700 px-2 py-0.5 rounded-md text-xs font-semibold">
+        <td class="py-2.5 px-3">
+            <span class="inline-flex items-center rounded-full border border-slate-200 bg-slate-50 px-2 py-0.5 text-xs font-medium text-slate-700">
                 ${tipoEquipo}
             </span>
         </td>
-        <td class="py-3 px-4 text-sm">
+        <td class="py-2.5 px-3 text-sm">
             ${obtenerBadgeDependencia(dependencia)}
         </td>
-        <td class="py-3 px-4 text-center text-sm">
-            <button onclick="mostrarDetalleInline(${equipo.id})" class="inline-flex items-center justify-center gap-1.5 bg-slate-100 hover:bg-slate-200 px-3 py-1.5 rounded-lg text-xs font-bold transition" style="min-height:36px" title="Ver detalles técnicos">
-                <i class="fas fa-eye text-[#00acc9]"></i>
+        <td class="py-2.5 px-3 text-center">
+            <button onclick="mostrarDetalleInline(${equipo.id})" class="btn-secondary btn-xs" title="Ver detalles técnicos" aria-label="Ver detalles del activo ${equipo.codigo_activo ?? equipo.id}">
+                <i class="fas fa-eye" aria-hidden="true"></i>
                 <span>Ver detalles</span>
             </button>
         </td>
@@ -406,39 +406,68 @@ function obtenerNombreTipoEquipo(equipo) {
  */
 function obtenerBadgeEstado(estado) {
     const estadosConfig = {
-        "Operativo": {
-            clase: "bg-green-100 text-green-700",
-            icono: "fas fa-check",
-            texto: "Operativo"
-        },
-        "En reparacion": {
-            clase: "bg-amber-100 text-amber-700",
-            icono: "fas fa-tools",
-            texto: "En reparacion"
-        },
-        "Inactivo": {
-            clase: "bg-slate-100 text-slate-700",
-            icono: "fas fa-pause",
-            texto: "Inactivo"
-        },
-        "Dado de baja": {
-            clase: "bg-red-100 text-red-700",
-            icono: "fas fa-ban",
-            texto: "Dado de baja"
-        }
+        "Operativo": { clase: "status-pill status-success", icono: "fas fa-check", texto: "Operativo" },
+        "En reparacion": { clase: "status-pill status-warning", icono: "fas fa-tools", texto: "En reparación" },
+        "Inactivo": { clase: "status-pill status-neutral", icono: "fas fa-pause", texto: "Inactivo" },
+        "Dado de baja": { clase: "status-pill status-danger", icono: "fas fa-ban", texto: "Dado de baja" }
     };
 
     const config = estadosConfig[estado] || {
-        clase: "bg-slate-100 text-slate-700",
+        clase: "status-pill status-neutral",
         icono: "fas fa-question",
         texto: estado || "Desconocido"
     };
 
     return `
-        <span class="inline-flex items-center gap-1 ${config.clase} px-3 py-1 rounded-full text-xs font-bold">
-            <i class="${config.icono} w-3"></i> ${config.texto}
+        <span class="${config.clase}">
+            <i class="${config.icono}" aria-hidden="true"></i> ${config.texto}
         </span>
     `;
+}
+
+function equipoEstaInactivo(estado) {
+    const est = String(estado || "").trim().toLowerCase();
+    return est === "inactivo" || est === "dado de baja";
+}
+
+/**
+ * Devuelve la única acción válida según el estado del equipo:
+ * Inactivo/Dado de baja -> Activar; cualquier otro estado -> Dar de Baja.
+ */
+function obtenerAccionEstadoEquipoHtml(estado) {
+    if (equipoEstaInactivo(estado)) {
+        return '<button type="button" data-solo-gestion onclick="activateTechnicalSheet()" class="bg-emerald-600 hover:bg-emerald-700 text-white px-5 py-2.5 rounded-xl text-sm font-bold transition"><i class="fas fa-play"></i> Activar Equipo</button>';
+    }
+    return '<button type="button" data-solo-gestion onclick="decommissionTechnicalSheet()" class="bg-rose-600 hover:bg-rose-700 text-white px-5 py-2.5 rounded-xl text-sm font-bold transition"><i class="fas fa-power-off"></i> Dar de Baja</button>';
+}
+
+/**
+ * Refleja el nuevo estado en las vistas ya cargadas sin recargar el inventario.
+ */
+function aplicarEstadoLocalEquipo(equipoId, nuevoEstado) {
+    const id = String(equipoId);
+    [equiposCompletosGlobal, equiposCargadosGlobal].forEach((lista) => {
+        lista.forEach((equipo) => {
+            if (String(equipo.id) === id) equipo.estado = nuevoEstado;
+        });
+    });
+
+    equiposCargadosGlobal = [...equiposCargadosGlobal];
+    renderizarTablaPaginada();
+
+    const pillInline = document.getElementById("dInlineStatusPill");
+    if (pillInline) pillInline.innerHTML = obtenerBadgeEstado(nuevoEstado);
+
+    const accionInline = document.getElementById("dInlineEstadoAccion");
+    if (accionInline) accionInline.innerHTML = obtenerAccionEstadoEquipoHtml(nuevoEstado);
+
+    const pillModal = document.getElementById("technicalSheetStatusPill");
+    if (pillModal) pillModal.innerHTML = obtenerBadgeEstado(nuevoEstado);
+
+    const accionModal = document.getElementById("modalEstadoAccion");
+    if (accionModal) accionModal.innerHTML = obtenerAccionEstadoEquipoHtml(nuevoEstado);
+
+    aplicarRestriccionesRol();
 }
 
 /**
@@ -479,7 +508,7 @@ function normalizarEstadoEquipo(estado) {
 }
 
 /**
- * Renderiza la tabla principal con paginación local (50 registros por página)
+ * Renderiza la tabla principal con paginación local (25 registros por página)
  */
 function renderizarTablaPaginada() {
     const tablaBody = document.getElementById("tablaEquiposBody");
@@ -543,7 +572,7 @@ function actualizarTextoPaginacion(inicio, fin, total) {
         return;
     }
 
-    paginacion.innerHTML = `Mostrando <strong>${inicio + 1}</strong> a <strong>${Math.min(fin, total)}</strong> de <strong>${total}</strong> resultados`;
+    paginacion.textContent = `Mostrando ${inicio + 1}–${Math.min(fin, total)} de ${total} resultados`;
 }
 
 /**
@@ -1030,22 +1059,9 @@ async function openTechnicalSheet(equipoId) {
             }
         });
         
-        // Control dinámico de botones
-        const btnActivar = document.getElementById("btn-activar-equipo");
-        const btnDarBaja = document.querySelector("#modal-hoja-vida button[onclick='decommissionTechnicalSheet()']");
-        
-        if (btnActivar && btnDarBaja) {
-            const estado = equipo.estado;
-            if (estado === "Inactivo" || estado === "inactivo" || estado === "Dado de baja" || estado === "dado de baja") {
-                // Equipo inactivo/dado de baja: mostrar activar, ocultar dar de baja
-                btnActivar.classList.remove("hidden");
-                btnDarBaja.classList.add("hidden");
-            } else {
-                // Equipo activo: mostrar dar de baja, ocultar activar
-                btnActivar.classList.add("hidden");
-                btnDarBaja.classList.remove("hidden");
-            }
-        }
+        // Control dinámico de la acción según el estado
+        const accionModal = document.getElementById("modalEstadoAccion");
+        if (accionModal) accionModal.innerHTML = obtenerAccionEstadoEquipoHtml(equipo.estado);
 
         await cargarHistorialIntervenciones(equipoId);
 
@@ -1115,12 +1131,8 @@ async function mostrarDetalleInline(equipoId) {
         setInlineTexto("dInlineCountdown", "Información disponible");
         var pill = document.getElementById("dInlineStatusPill");
         if (pill) pill.innerHTML = obtenerBadgeEstado(equipo.estado);
-        var btnActivar = document.getElementById("dInlineBtnActivar");
-        if (btnActivar) {
-            const est = String(equipo.estado || "").toLowerCase();
-            if (est === "inactivo" || est === "dado de baja") btnActivar.classList.remove("hidden");
-            else btnActivar.classList.add("hidden");
-        }
+        var accionInline = document.getElementById("dInlineEstadoAccion");
+        if (accionInline) accionInline.innerHTML = obtenerAccionEstadoEquipoHtml(equipo.estado);
         await cargarHistorialInline(equipoId);
         // Sincroniza también el modal clásico por compatibilidad
         try { await openTechnicalSheetSilent(equipo); } catch (e) { /* solo inline */ }
@@ -1224,8 +1236,8 @@ function describirTrabajoInline(item) {
         html = '<p class="text-sm text-slate-700 leading-relaxed whitespace-pre-wrap">' + escaparHtmlInline(r.trabajo || "Sin descripción") + "</p>";
     }
     var extras = "";
-    if (r.hallazgos) extras += '<div class="mt-1"><p class="text-[10px] font-black uppercase tracking-wider text-slate-400">Hallazgos</p><p class="text-xs text-slate-600">' + escaparHtmlInline(r.hallazgos) + "</p></div>";
-    if (r.recomendaciones) extras += '<div class="mt-1"><p class="text-[10px] font-black uppercase tracking-wider text-slate-400">Recomendaciones</p><p class="text-xs text-slate-600">' + escaparHtmlInline(r.recomendaciones) + "</p></div>";
+        if (r.hallazgos) extras += '<div class="mt-1"><p class="text-[10px] font-semibold uppercase tracking-wider text-slate-400">Hallazgos</p><p class="text-xs text-slate-600">' + escaparHtmlInline(r.hallazgos) + "</p></div>";
+        if (r.recomendaciones) extras += '<div class="mt-1"><p class="text-[10px] font-semibold uppercase tracking-wider text-slate-400">Recomendaciones</p><p class="text-xs text-slate-600">' + escaparHtmlInline(r.recomendaciones) + "</p></div>";
     if (extras) {
         html += '<details class="mt-1.5 text-xs"><summary class="cursor-pointer text-[#00acc9] font-bold hover:underline">Ver hallazgos y recomendaciones</summary><div class="mt-1 space-y-1">' + extras + "</div></details>";
     }
@@ -1580,12 +1592,12 @@ async function cargarHistorialIntervenciones(equipoId, forzarVacio = false) {
                 ? new Date(item.fecha_mantenimiento + "T00:00:00").toLocaleDateString("es-CO")
                 : "—";
             fila.innerHTML = `
-                <td class="px-6 py-3 text-slate-700 font-medium">${fecha}</td>
-                <td class="px-6 py-3 text-slate-600">${item.tecnico_nombre || "—"}</td>
-                <td class="px-6 py-3">
-                    <span class="bg-cyan-50 text-uccLight px-2 py-1 rounded-md text-xs font-bold">${item.tipo_nombre || "—"}</span>
+                <td class="px-4 py-2.5 text-slate-700 font-medium">${fecha}</td>
+                <td class="px-4 py-2.5 text-slate-600">${item.tecnico_nombre || "—"}</td>
+                <td class="px-4 py-2.5">
+                    <span class="status-pill status-info">${item.tipo_nombre || "—"}</span>
                 </td>
-                <td class="px-6 py-3 text-slate-600 text-sm align-top">${formatearObservacionesMantenimiento(item.detalle_mantenimiento)}</td>
+                <td class="px-4 py-2.5 text-slate-600 text-sm align-top">${formatearObservacionesMantenimiento(item.detalle_mantenimiento)}</td>
             `;
             tbody.appendChild(fila);
         });
@@ -1819,8 +1831,7 @@ async function decommissionTechnicalSheet() {
         console.log("✅ Equipo desactivado exitosamente:", resultado);
         
         mostrarNotificacion("exito", "Equipo desactivado correctamente");
-        closeTechnicalSheetModal();
-        cargarInventarioCompleto();
+        aplicarEstadoLocalEquipo(window.currentEquipoId, "Inactivo");
 
     } catch (error) {
         console.error("❌ Error al desactivar equipo:", error);
@@ -1870,8 +1881,7 @@ async function activateTechnicalSheet() {
         console.log("✅ Equipo activado exitosamente:", resultado);
         
         mostrarNotificacion("exito", "Equipo activado correctamente");
-        closeTechnicalSheetModal();
-        cargarInventarioCompleto();
+        aplicarEstadoLocalEquipo(window.currentEquipoId, "Operativo");
 
     } catch (error) {
         console.error("❌ Error al activar equipo:", error);
@@ -1978,9 +1988,9 @@ function mostrarEquiposFiltrados(equiposFiltrados) {
     if (equiposFiltrados.length === 0) {
         tablaBody.innerHTML = `
             <tr>
-                <td colspan="4" class="px-8 py-12 text-center">
+                <td colspan="4" class="px-4 py-10 text-center">
                     <div class="flex flex-col items-center justify-center">
-                        <i class="fas fa-inbox text-4xl text-slate-300 mb-3"></i>
+                        <i class="fas fa-inbox text-2xl text-slate-300 mb-2" aria-hidden="true"></i>
                         <p class="text-sm text-slate-500">No hay equipos de climatización instalados en esta ubicación</p>
                     </div>
                 </td>
@@ -2205,7 +2215,7 @@ function mostrarNotificacion(tipo, mensaje) {
 
     const toast = document.createElement("div");
     const esExito = tipo === "exito";
-    toast.className = `px-5 py-4 rounded-xl shadow-2xl border text-sm font-semibold flex items-start gap-3 animate-pulse ${
+    toast.className = `px-5 py-4 rounded-xl shadow-lg border text-sm font-semibold flex items-start gap-3 ${
         esExito
             ? "bg-emerald-50 border-emerald-200 text-emerald-800"
             : "bg-red-50 border-red-200 text-red-800"

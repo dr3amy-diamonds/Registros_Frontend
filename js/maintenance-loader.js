@@ -66,8 +66,15 @@ function resolverEquipoParaOrden(equipoId, equipoAnidado) {
 
 function parsearFechaSolo(fechaStr) {
     if (!fechaStr) return null;
-    const parte = String(fechaStr).split('T')[0];
-    const [y, m, d] = parte.split('-').map(Number);
+    const parte = String(fechaStr).split('T')[0].trim();
+    let y;
+    let m;
+    let d;
+    if (parte.includes('/')) {
+        [d, m, y] = parte.split('/').map(Number);
+    } else {
+        [y, m, d] = parte.split('-').map(Number);
+    }
     if (!y || !m || !d) return null;
     return new Date(y, m - 1, d);
 }
@@ -105,8 +112,8 @@ function clasesBadgeEstado(estado) {
     const mapa = {
         Pendiente: 'bg-amber-100 text-amber-700',
         Completado: 'bg-emerald-100 text-emerald-700',
-        Cancelado: 'bg-slate-200 text-slate-600',
-        Vencido: 'bg-red-100 text-red-700'
+        Cancelado: 'bg-slate-100 text-slate-600',
+        Vencido: 'bg-rose-100 text-rose-700'
     };
     return mapa[estado] || 'bg-slate-100 text-slate-600';
 }
@@ -114,11 +121,22 @@ function clasesBadgeEstado(estado) {
 function iconoEstado(estado) {
     const mapa = {
         Pendiente: 'fa-clock',
-        Completado: 'fa-check-circle',
+        Completado: 'fa-check',
         Cancelado: 'fa-ban',
         Vencido: 'fa-exclamation-triangle'
     };
     return mapa[estado] || 'fa-circle';
+}
+
+function marcaTiempoOrden(fechaStr) {
+    const fecha = parsearFechaSolo(fechaStr);
+    return fecha ? fecha.getTime() : 0;
+}
+
+function compararOrdenesPorFechaDesc(a, b) {
+    const diferencia = marcaTiempoOrden(b.fecha) - marcaTiempoOrden(a.fecha);
+    if (diferencia !== 0) return diferencia;
+    return Number(b.programacion_id || b.id || 0) - Number(a.programacion_id || a.id || 0);
 }
 
 /* ── Toasts AiresFlow ─────────────────────────────────────────────────────── */
@@ -229,11 +247,7 @@ function fusionarOrdenes(mantenimientos, programaciones) {
         }
     });
 
-    return ordenes.sort((a, b) => {
-        const fa = parsearFechaSolo(a.fecha)?.getTime() || 0;
-        const fb = parsearFechaSolo(b.fecha)?.getTime() || 0;
-        return fb - fa;
-    });
+    return ordenes.sort(compararOrdenesPorFechaDesc);
 }
 
 /* ── Catálogos y selectores ───────────────────────────────────────────────── */
@@ -387,6 +401,7 @@ function obtenerOrdenesFiltradas() {
         return coincideBusqueda && coincideEstado && coincideFecha;
     });
 
+    mantenimientosFiltrados.sort(compararOrdenesPorFechaDesc);
     return mantenimientosFiltrados;
 }
 
@@ -441,10 +456,10 @@ function renderizarTablaYPaginacion() {
             tr.innerHTML = `
                 <td class="px-8 py-5 font-bold text-uccDark">${escaparHtml(orden.codigo_activo)}</td>
                 <td class="px-8 py-5 text-slate-600">${escaparHtml(orden.aula)}</td>
-                <td class="px-8 py-5"><span class="bg-blue-100 text-blue-700 px-3 py-1 rounded-full text-xs font-bold">${escaparHtml(orden.tipo_nombre)}</span></td>
-                <td class="px-8 py-5 font-semibold text-slate-700">${formatearFechaDisplay(orden.fecha)}</td>
+                <td class="px-8 py-5"><span class="inline-flex items-center bg-slate-100 text-slate-700 font-medium text-xs px-2.5 py-0.5 rounded-md whitespace-nowrap">${escaparHtml(orden.tipo_nombre)}</span></td>
+                <td class="px-8 py-5 font-semibold text-slate-700 tabular-nums">${formatearFechaDisplay(orden.fecha)}</td>
                 <td class="px-8 py-5 text-slate-600">${escaparHtml(orden.tecnico_nombre)}</td>
-                <td class="px-8 py-5"><span class="inline-flex items-center gap-1 ${badge} px-3 py-1 rounded-full text-xs font-bold"><i class="fas ${icono} w-3"></i> ${escaparHtml(orden.estado)}</span></td>
+                <td class="px-8 py-5"><span class="inline-flex items-center gap-1 ${badge} text-xs font-semibold px-2.5 py-0.5 rounded-full whitespace-nowrap"><i class="fas ${icono} w-3" aria-hidden="true"></i> ${escaparHtml(orden.estado)}</span></td>
                 <td class="px-8 py-5 text-center">
                     <button type="button" data-orden-id="${idModal}" aria-label="Ver ficha de la orden ${idModal}" class="btn-ver-ficha inline-flex items-center justify-center bg-slate-100 hover:bg-slate-200 px-4 py-2 rounded-lg text-xs font-bold transition min-h-[44px]">
                         <i class="fas fa-eye text-uccTeal" aria-hidden="true"></i>

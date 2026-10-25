@@ -14,116 +14,121 @@
 
 <body class="bg-slate-50 flex h-screen overflow-hidden font-sans">
 
-    <!-- Overlay para cerrar sidebar en móvil -->
+    <a href="#contenido" class="skip-link">Saltar al contenido</a>
+
     <div id="sidebar-overlay" class="fixed inset-0 bg-slate-900/50 z-40 hidden backdrop-blur-sm transition-opacity"></div>
 
-    <!-- Sidebar Unificado -->
-    <aside id="main-sidebar" class="w-64 bg-white flex flex-col shadow-2xl overflow-y-auto fixed inset-y-0 left-0 z-50 transform -translate-x-full transition-transform duration-300 ease-in-out">
-        <!-- Cabecera Blanca con Logo -->
-        <div class="p-6 relative flex flex-col items-center justify-center border-b border-slate-200 min-h-40">
-            <button id="btn-close-sidebar" class="absolute top-4 right-4 text-slate-400 hover:text-red-500 transition"><i class="fas fa-times text-xl"></i></button>
-            <img src="img/ucc.png" alt="UCC Logo" class="h-24 object-contain mb-2">
-            <h2 class="text-center text-sm font-black text-uccDark tracking-tighter">Sistema de Gestión de Aires</h2>
+    <aside id="main-sidebar" class="w-64 bg-white flex flex-col border-r border-slate-200 overflow-y-auto fixed inset-y-0 left-0 z-50 transform -translate-x-full transition-transform duration-300 ease-in-out">
+        <div class="p-5 relative flex flex-col items-center justify-center border-b border-slate-200 min-h-40">
+            <button id="btn-close-sidebar" type="button" aria-label="Cerrar menú de navegación" class="absolute top-3 right-3 text-slate-400 hover:text-slate-700 transition"><i class="fas fa-times text-lg" aria-hidden="true"></i></button>
+            <img src="img/ucc.png" alt="Universidad Cooperativa de Colombia" class="h-20 object-contain mb-2">
+            <h2 class="text-center text-sm font-semibold text-uccDark">Sistema de Gestión de Aires</h2>
         </div>
 
-        <nav class="flex-1 px-4 py-8 space-y-1">
-            <a href="/dashboard" class="flex items-center gap-3 px-4 py-3 text-slate-700 hover:bg-slate-100 rounded-xl transition font-medium text-sm">
-                <i class="fas fa-chart-line w-5"></i>
+        <nav class="flex-1 px-3 py-5 space-y-1" aria-label="Navegación principal">
+            <a href="/dashboard" class="flex items-center gap-3 px-3 py-2.5 text-slate-700 hover:bg-slate-100 rounded-lg transition font-medium text-sm">
+                <i class="fas fa-chart-line w-5" aria-hidden="true"></i>
                 <span>Dashboard</span>
             </a>
-            <a href="/inventario" class="flex items-center gap-3 px-4 py-3 bg-uccLight text-uccDark rounded-xl shadow-lg font-bold text-sm">
-                <i class="fas fa-snowflake w-5"></i>
+            <a href="/inventario" aria-current="page" class="flex items-center gap-3 px-3 py-2.5 bg-cyan-50 text-uccDark border border-cyan-200 rounded-lg font-semibold text-sm">
+                <i class="fas fa-snowflake w-5" aria-hidden="true"></i>
                 <span>Inventario</span>
             </a>
-            <a href="/programacion" class="flex items-center gap-3 px-4 py-3 text-slate-700 hover:bg-slate-100 rounded-xl transition font-medium text-sm">
-                <i class="fas fa-calendar-check w-5"></i>
+            <a href="/programacion" class="flex items-center gap-3 px-3 py-2.5 text-slate-700 hover:bg-slate-100 rounded-lg transition font-medium text-sm">
+                <i class="fas fa-calendar-check w-5" aria-hidden="true"></i>
                 <span>Programación</span>
             </a>
-            <a href="/auditoria" class="flex items-center gap-3 px-4 py-3 text-slate-700 hover:bg-slate-100 rounded-xl transition font-medium text-sm">
-                <i class="fas fa-history w-5"></i>
+            <a href="/auditoria" class="flex items-center gap-3 px-3 py-2.5 text-slate-700 hover:bg-slate-100 rounded-lg transition font-medium text-sm">
+                <i class="fas fa-history w-5" aria-hidden="true"></i>
                 <span>Auditoría</span>
             </a>
-            <a href="/reporte-tecnico" class="flex items-center gap-3 px-4 py-3 text-slate-700 hover:bg-slate-100 rounded-xl transition font-medium text-sm">
-                <i class="fas fa-clipboard-list w-5"></i>
+            <a href="/reporte-tecnico" class="flex items-center gap-3 px-3 py-2.5 text-slate-700 hover:bg-slate-100 rounded-lg transition font-medium text-sm">
+                <i class="fas fa-clipboard-list w-5" aria-hidden="true"></i>
                 <span>Reporte Servicio</span>
             </a>
-            <a href="/exportar" class="flex items-center gap-3 px-4 py-3 text-slate-700 hover:bg-slate-100 rounded-xl transition font-medium text-sm">
-                <i class="fas fa-download w-5"></i>
+            <a href="/exportar" class="flex items-center gap-3 px-3 py-2.5 text-slate-700 hover:bg-slate-100 rounded-lg transition font-medium text-sm">
+                <i class="fas fa-download w-5" aria-hidden="true"></i>
                 <span>Exportar Datos</span>
             </a>
-            <a href="/usuarios" class="flex items-center gap-3 px-4 py-3 text-slate-700 hover:bg-slate-100 rounded-xl transition font-medium text-sm">
-                <i class="fas fa-shield-alt w-5"></i>
+            <a href="/usuarios" class="flex items-center gap-3 px-3 py-2.5 text-slate-700 hover:bg-slate-100 rounded-lg transition font-medium text-sm">
+                <i class="fas fa-shield-alt w-5" aria-hidden="true"></i>
                 <span>Control de Acceso</span>
             </a>
         </nav>
 
-        <div class="p-4 border-t border-slate-200">
-            <button onclick="logout()" class="w-full flex items-center gap-3 px-4 py-3 text-slate-700 hover:bg-slate-100 rounded-xl transition font-medium text-sm justify-center">
-                <i class="fas fa-sign-out-alt w-5"></i>
+        <div class="p-3 border-t border-slate-200">
+            <button onclick="logout()" class="w-full flex items-center gap-3 px-3 py-2.5 text-slate-700 hover:bg-slate-100 rounded-lg transition font-medium text-sm justify-center">
+                <i class="fas fa-sign-out-alt w-5" aria-hidden="true"></i>
                 <span>Cerrar Sesión</span>
             </button>
         </div>
     </aside>
 
-    <!-- Contenido Principal -->
-    <main class="flex-1 flex flex-col h-screen overflow-hidden">
+    <main id="contenido" class="flex-1 flex flex-col h-screen overflow-hidden">
 
-        <!-- Header -->
-        <header class="bg-white border-b border-slate-200 px-4 py-2 flex items-center justify-between shadow-sm sticky top-0 z-30 shrink-0">
+        <header class="bg-white border-b border-slate-200 px-4 sm:px-4 lg:px-8 py-3 flex items-center justify-between sticky top-0 z-30 shrink-0">
             <div class="flex items-center gap-3">
-                <button id="btn-menu-toggle" type="button" class="text-slate-500 hover:text-[#00acc9] transition focus:outline-none bg-slate-100 hover:bg-slate-200 p-2 rounded-lg">
-                    <i class="fas fa-bars text-xl"></i>
+                <button id="btn-menu-toggle" type="button" aria-label="Abrir menú de navegación" aria-expanded="false" aria-controls="main-sidebar" class="text-slate-500 hover:text-uccTeal transition bg-slate-100 hover:bg-slate-200 p-2 rounded-lg">
+                    <i class="fas fa-bars text-lg" aria-hidden="true"></i>
                 </button>
-                <img src="img/ucc.png" alt="UCC Logo" class="h-8 object-contain hidden sm:block">
+                <img src="img/ucc.png" alt="Universidad Cooperativa de Colombia" class="h-8 object-contain hidden sm:block">
             </div>
-            <div class="text-right">
-                <p class="text-xs font-bold uppercase tracking-widest text-slate-500">Gestión Técnica en Tiempo Real</p>
-            </div>
+            <p class="text-[11px] font-semibold uppercase tracking-wider text-slate-500">Gestión técnica en tiempo real</p>
         </header>
 
-        <!-- Contenido fijo sin scroll externo: 75% equilibrado, scroll solo dentro -->
         <div class="flex-1 overflow-hidden min-h-0">
-            <div class="px-4 py-3 w-full max-w-6xl mx-auto h-full min-h-0 flex flex-col overflow-hidden">
-                <!-- Encabezado de Sección -->
-                <div class="mb-2 shrink-0">
-                    <!-- Título -->
-                    <div class="mb-2 flex flex-wrap items-baseline gap-x-2 gap-y-0">
-                        <h1 class="text-xl font-bold text-uccDark tracking-tight">Inventario Técnico</h1>
-                        <p class="text-xs text-slate-500 font-medium">Base de datos de activos instalados en campus Montería</p>
+            <div class="px-4 sm:px-4 lg:px-8 py-5 w-full max-w-7xl mx-auto h-full min-h-0 flex flex-col overflow-hidden">
+                <div class="mb-3 shrink-0">
+                    <div class="mb-3">
+                        <h1 class="text-xl sm:text-2xl font-semibold text-slate-900">Inventario Técnico</h1>
+                        <p class="text-sm text-slate-500 mt-1">Base de datos de activos instalados en campus Montería</p>
                     </div>
-                    <!-- Filtros fijos: 1 fila horizontal -->
-                    <div class="flex flex-wrap items-center gap-2 p-2 bg-white rounded-lg border border-slate-200 shadow-sm">
-                        <select id="assetBlockFilter" aria-label="Bloque" class="flex-1 min-w-[160px] border border-slate-200 rounded-lg px-3 py-1.5 text-sm bg-slate-50/50 min-h-[38px] cursor-pointer focus:outline-none focus:ring-2 focus:ring-uccLight">
-                            <option value="">Todos los bloques</option>
-                        </select>
-                        <select id="filterPiso" aria-label="Piso" class="flex-1 min-w-[140px] border border-slate-200 rounded-lg px-3 py-1.5 text-sm bg-slate-50/50 min-h-[38px] cursor-pointer focus:outline-none focus:ring-2 focus:ring-uccLight" disabled>
-                            <option value="">Todos los pisos</option>
-                        </select>
-                        <select id="assetAulaFilter" aria-label="Aula o espacio" class="flex-1 min-w-[160px] border border-slate-200 rounded-lg px-3 py-1.5 text-sm bg-slate-50/50 min-h-[38px] cursor-pointer focus:outline-none focus:ring-2 focus:ring-uccLight" disabled>
-                            <option value="">Todas las aulas</option>
-                        </select>
-                        <button type="button" id="btn-limpiar-filtros" onclick="limpiarFiltrosInventario()" aria-label="Limpiar filtros" style="min-height:38px" class="text-sm font-semibold text-slate-500 hover:text-[#00acc9] px-2">Limpiar ✕</button>
+                    <div class="panel p-3">
+                        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 items-end">
+                            <div>
+                                <label for="assetBlockFilter" class="field-label">Bloque</label>
+                                <select id="assetBlockFilter" class="field-select cursor-pointer">
+                                    <option value="">Todos los bloques</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label for="filterPiso" class="field-label">Piso</label>
+                                <select id="filterPiso" class="field-select cursor-pointer" disabled>
+                                    <option value="">Todos los pisos</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label for="assetAulaFilter" class="field-label">Aula o espacio</label>
+                                <select id="assetAulaFilter" class="field-select cursor-pointer" disabled>
+                                    <option value="">Todas las aulas</option>
+                                </select>
+                            </div>
+                            <div>
+                                <button type="button" id="btn-limpiar-filtros" onclick="limpiarFiltrosInventario()" class="btn-ghost w-full">
+                                    <i class="fas fa-eraser text-xs" aria-hidden="true"></i>
+                                    Limpiar filtros
+                                </button>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
-                <!-- Contenedor tabla (vista lista) -->
                 <div id="contenedor-tabla" class="flex-1 min-h-0 flex flex-col overflow-hidden">
-                <!-- Tabla de Inventario con scroll interno -->
-                <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden flex-1 min-h-0 flex flex-col">
+                <div class="panel overflow-hidden flex-1 min-h-0 flex flex-col">
                     <div class="overflow-y-auto overflow-x-auto flex-1 min-h-0">
-                    <table class="w-full text-sm table-fixed">
+                    <table class="w-full text-sm table-fixed min-w-[720px]">
                         <colgroup>
-                            <col style="width: 35%">
-                            <col style="width: 25%">
+                            <col style="width: 42%">
+                            <col style="width: 26%">
                             <col style="width: 20%">
-                            <col style="width: 20%">
+                            <col style="width: 12%">
                         </colgroup>
                         <thead class="bg-slate-50 border-b border-slate-200 sticky top-0 z-10">
-                            <tr class="text-xs font-bold uppercase tracking-widest text-slate-500">
-                                <th scope="col" class="py-3 px-4 text-left">Ubicación</th>
-                                <th scope="col" class="py-3 px-4 text-left">Tipo Equipo</th>
-                                <th scope="col" class="py-3 px-4 text-left">Dependencia</th>
-                                <th scope="col" class="py-3 px-4 text-center">Acciones</th>
+                            <tr class="text-[11px] font-semibold uppercase tracking-wider text-slate-500">
+                                <th scope="col" class="py-2.5 px-3 text-left">Ubicación</th>
+                                <th scope="col" class="py-2.5 px-3 text-left">Tipo de equipo</th>
+                                <th scope="col" class="py-2.5 px-3 text-left">Dependencia</th>
+                                <th scope="col" class="py-2.5 px-3 text-center">Acciones</th>
                             </tr>
                         </thead>
                         <tbody id="tablaEquiposBody" class="divide-y divide-slate-100">
@@ -132,17 +137,16 @@
                     </div>
                 </div>
 
-                <!-- Paginación fija -->
-                <div class="mt-2 shrink-0 flex flex-col sm:flex-row items-center justify-between gap-2">
-                    <p id="texto-paginacion-equipos" class="text-sm text-slate-600 font-medium">Cargando resultados...</p>
+                <div class="mt-3 shrink-0 flex flex-col sm:flex-row items-center justify-between gap-2">
+                    <p id="texto-paginacion-equipos" class="text-xs text-slate-600" aria-live="polite">Cargando resultados…</p>
                     <div class="flex gap-2 items-center">
-                        <button type="button" id="btn-pagina-anterior" onclick="irPaginaAnterior()" style="min-height:38px"
-                            class="px-4 py-1.5 border border-slate-200 rounded-lg text-sm font-bold text-slate-700 hover:bg-slate-50 transition disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-transparent">
+                        <button type="button" id="btn-pagina-anterior" onclick="irPaginaAnterior()" aria-label="Página anterior del inventario"
+                            class="btn-secondary text-xs min-h-[32px] px-3 py-1.5">
                             ← Anterior
                         </button>
-                        <span id="indicador-pagina-actual" class="text-sm font-bold text-slate-600 min-w-[5.5rem] text-center">Página 1</span>
-                        <button type="button" id="btn-pagina-siguiente" onclick="irPaginaSiguiente()" style="min-height:38px"
-                            class="px-4 py-1.5 border border-slate-200 rounded-lg text-sm font-bold text-slate-700 hover:bg-slate-50 transition disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-transparent">
+                        <span id="indicador-pagina-actual" class="text-xs font-medium text-slate-600 min-w-[5.5rem] text-center">Página 1</span>
+                        <button type="button" id="btn-pagina-siguiente" onclick="irPaginaSiguiente()" aria-label="Página siguiente del inventario"
+                            class="btn-secondary text-xs min-h-[32px] px-3 py-1.5">
                             Siguiente →
                         </button>
                     </div>
@@ -152,74 +156,74 @@
                 <!-- Vista detalle inline Opción C: reemplaza tabla en el mismo espacio -->
                 <div id="vista-detalle-inline" class="hidden flex-1 min-h-0 flex-col overflow-hidden">
                     <div class="shrink-0 flex flex-wrap items-center gap-3 mb-2">
-                        <button type="button" onclick="volverAListaInventario()" class="inline-flex items-center gap-2 bg-white border border-slate-200 hover:bg-slate-50 text-slate-700 px-4 py-2 rounded-xl text-sm font-bold shadow-sm transition" style="min-height:38px">
+                        <button type="button" onclick="volverAListaInventario()" class="inline-flex items-center gap-2 bg-white border border-slate-200 hover:bg-slate-50 text-slate-700 px-4 py-2 rounded-xl text-sm font-bold transition" style="min-height:38px">
                             <i class="fas fa-arrow-left text-[#00acc9]"></i> Volver a la lista
                         </button>
                         <div class="min-w-0">
-                            <p class="text-[10px] font-bold uppercase tracking-widest text-slate-500">Ficha del activo</p>
+                            <p class="text-[11px] font-bold uppercase tracking-wider text-slate-500">Ficha del activo</p>
                             <h2 id="dInlineSubtitle" class="text-base font-bold text-uccDark truncate">---</h2>
                         </div>
                         <span id="dInlineStatusPill" class="ml-auto inline-flex items-center gap-2 text-xs font-bold"></span>
                     </div>
                     <div class="flex-1 min-h-0 overflow-y-auto space-y-4 pr-1">
-                        <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+                        <div class="bg-white rounded-xl border border-slate-200 overflow-hidden">
                             <div class="grid grid-cols-1 lg:grid-cols-12">
                                 <div class="lg:col-span-3 bg-uccDark text-white px-4 py-2 lg:py-3 flex flex-col justify-center">
-                                    <p class="text-[10px] font-bold uppercase tracking-widest text-[#00acc9] mb-0">ID de Inventario</p>
+                                    <p class="text-[11px] font-bold uppercase tracking-wider text-[#00acc9] mb-0">ID de Inventario</p>
                                     <h3 id="dInlineId" class="text-base lg:text-lg font-bold tracking-tight leading-tight break-all">---</h3>
                                 </div>
                                 <div class="lg:col-span-9 p-4 lg:p-5 grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-5">
                                     <section>
-                                        <h4 class="text-[11px] font-bold text-slate-500 uppercase tracking-widest mb-3 pb-2 border-b border-slate-100">Especificaciones Técnicas</h4>
+                                        <h4 class="text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-3 pb-2 border-b border-slate-100">Especificaciones Técnicas</h4>
                                         <dl class="space-y-3 text-sm">
                                             <div class="grid grid-cols-2 gap-3">
-                                                <div><dt class="text-[10px] font-bold text-slate-400 uppercase mb-0.5">Marca</dt><dd id="dInlineBrand" class="font-bold text-uccDark">---</dd></div>
-                                                <div><dt class="text-[10px] font-bold text-slate-400 uppercase mb-0.5">Modelo</dt><dd id="dInlineModel" class="font-bold text-uccDark">---</dd></div>
+                                                <div><dt class="text-[11px] font-bold text-slate-400 uppercase mb-0.5">Marca</dt><dd id="dInlineBrand" class="font-bold text-uccDark">---</dd></div>
+                                                <div><dt class="text-[11px] font-bold text-slate-400 uppercase mb-0.5">Modelo</dt><dd id="dInlineModel" class="font-bold text-uccDark">---</dd></div>
                                             </div>
-                                            <div><dt class="text-[10px] font-bold text-slate-400 uppercase mb-0.5">Número de Serie</dt><dd id="dInlineSerial" class="font-bold text-uccDark font-mono">---</dd></div>
-                                            <div><dt class="text-[10px] font-bold text-slate-400 uppercase mb-0.5">Tipo de Equipo</dt><dd id="dInlineType" class="font-bold text-uccDark">---</dd></div>
+                                            <div><dt class="text-[11px] font-bold text-slate-400 uppercase mb-0.5">Número de Serie</dt><dd id="dInlineSerial" class="font-bold text-uccDark font-mono">---</dd></div>
+                                            <div><dt class="text-[11px] font-bold text-slate-400 uppercase mb-0.5">Tipo de Equipo</dt><dd id="dInlineType" class="font-bold text-uccDark">---</dd></div>
                                         </dl>
                                     </section>
                                     <section>
-                                        <h4 class="text-[11px] font-bold text-slate-500 uppercase tracking-widest mb-3 pb-2 border-b border-slate-100">Parámetros Operacionales</h4>
+                                        <h4 class="text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-3 pb-2 border-b border-slate-100">Parámetros Operacionales</h4>
                                         <dl class="grid grid-cols-2 gap-3 text-sm">
-                                            <div><dt class="text-[10px] font-bold text-slate-400 uppercase mb-0.5">Potencia</dt><dd id="dInlineBtu" class="font-bold text-uccDark">---</dd></div>
-                                            <div><dt class="text-[10px] font-bold text-slate-400 uppercase mb-0.5">Tonelaje</dt><dd id="dInlineTr" class="font-bold text-uccDark">---</dd></div>
-                                            <div><dt class="text-[10px] font-bold text-slate-400 uppercase mb-0.5">Voltaje</dt><dd id="dInlineVoltage" class="font-bold text-uccDark">---</dd></div>
-                                            <div><dt class="text-[10px] font-bold text-slate-400 uppercase mb-0.5">Refrigerante</dt><dd id="dInlineRefrigerant" class="font-bold text-uccDark">---</dd></div>
+                                            <div><dt class="text-[11px] font-bold text-slate-400 uppercase mb-0.5">Potencia</dt><dd id="dInlineBtu" class="font-bold text-uccDark">---</dd></div>
+                                            <div><dt class="text-[11px] font-bold text-slate-400 uppercase mb-0.5">Tonelaje</dt><dd id="dInlineTr" class="font-bold text-uccDark">---</dd></div>
+                                            <div><dt class="text-[11px] font-bold text-slate-400 uppercase mb-0.5">Voltaje</dt><dd id="dInlineVoltage" class="font-bold text-uccDark">---</dd></div>
+                                            <div><dt class="text-[11px] font-bold text-slate-400 uppercase mb-0.5">Refrigerante</dt><dd id="dInlineRefrigerant" class="font-bold text-uccDark">---</dd></div>
                                         </dl>
                                     </section>
                                 </div>
                             </div>
                         </div>
                         <div class="grid grid-cols-1 md:grid-cols-3 gap-4 items-stretch">
-                            <section class="bg-white rounded-2xl shadow-sm border border-slate-200 p-4">
-                                <h5 class="text-[11px] font-bold text-slate-500 uppercase tracking-widest mb-3">Ubicación Técnica</h5>
+                            <section class="bg-white rounded-xl border border-slate-200 p-4">
+                                <h5 class="text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-3">Ubicación Técnica</h5>
                                 <dl class="space-y-2 text-sm">
                                     <div class="flex items-start justify-between gap-3 py-2 border-b border-slate-100"><dt class="text-xs font-semibold text-slate-500">Bloque</dt><dd id="dInlineBlock" class="text-xs font-bold text-uccDark text-right">---</dd></div>
                                     <div class="flex items-start justify-between gap-3 py-2 border-b border-slate-100"><dt class="text-xs font-semibold text-slate-500">Piso</dt><dd id="dInlineFloor" class="text-xs font-bold text-uccDark text-right">---</dd></div>
                                     <div class="flex items-start justify-between gap-3 py-2"><dt class="text-xs font-semibold text-slate-500">Espacio</dt><dd id="dInlineSpace" class="text-xs font-bold text-uccDark text-right">---</dd></div>
                                 </dl>
                             </section>
-                            <section class="bg-white rounded-2xl shadow-sm border border-slate-200 p-4">
-                                <h5 class="text-[11px] font-bold text-slate-500 uppercase tracking-widest mb-3">Ciclo de Vida</h5>
+                            <section class="bg-white rounded-xl border border-slate-200 p-4">
+                                <h5 class="text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-3">Ciclo de Vida</h5>
                                 <dl class="space-y-2 text-sm">
                                     <div class="flex items-start justify-between gap-3 py-2 border-b border-slate-100"><dt class="text-xs font-semibold text-slate-500">Instalación</dt><dd id="dInlineInstallDate" class="text-xs font-bold text-uccDark text-right">---</dd></div>
                                     <div class="flex items-start justify-between gap-3 py-2 border-b border-slate-100"><dt class="text-xs font-semibold text-slate-500">Último Servicio</dt><dd id="dInlineLastService" class="text-xs font-bold text-uccDark text-right">---</dd></div>
                                     <div class="flex items-start justify-between gap-3 py-2"><dt class="text-xs font-semibold text-slate-500">Garantía</dt><dd id="dInlineWarranty" class="text-xs font-bold text-emerald-600 text-right">---</dd></div>
                                 </dl>
                             </section>
-                            <section class="bg-uccDark rounded-2xl shadow-lg p-3 text-white flex flex-col justify-center gap-0 relative overflow-hidden min-h-full">
+                            <section class="bg-uccDark rounded-xl p-3 text-white flex flex-col justify-center gap-0 relative overflow-hidden min-h-full">
                                 <div class="absolute top-0 left-0 right-0 h-1 bg-[#00acc9]"></div>
-                                <h5 class="text-[11px] font-bold uppercase tracking-widest text-white/70 mb-0">Próximo Mantenimiento</h5>
+                                <h5 class="text-[11px] font-bold uppercase tracking-wider text-white/70 mb-0">Próximo Mantenimiento</h5>
                                 <div><h4 id="dInlineNextMaintenance" class="text-base lg:text-lg font-bold tracking-tight tabular-nums leading-tight">---</h4><p id="dInlineCountdown" class="text-[11px] text-white/60 font-medium mt-0.5">---</p></div>
                             </section>
                         </div>
-                        <section class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+                        <section class="bg-white rounded-xl border border-slate-200 overflow-hidden">
                             <div class="px-5 py-3 border-b border-slate-100 bg-slate-50/80 flex flex-wrap items-center gap-3">
-                                <h3 class="text-[11px] font-bold text-uccDark uppercase tracking-widest">Historial anual del equipo</h3>
+                                <h3 class="text-[11px] font-bold text-uccDark uppercase tracking-wider">Historial anual del equipo</h3>
                                 <div class="ml-auto flex items-center gap-2">
-                                    <label for="select-anio-inline" class="text-[11px] font-bold uppercase tracking-widest text-slate-500">Año</label>
+                                    <label for="select-anio-inline" class="text-[11px] font-bold uppercase tracking-wider text-slate-500">Año</label>
                                     <select id="select-anio-inline" class="border border-slate-200 rounded-lg px-3 py-1.5 text-sm bg-white min-h-[38px] cursor-pointer"></select>
                                 </div>
                             </div>
@@ -229,7 +233,7 @@
                             </div>
                             <div class="p-4 space-y-4">
                                 <div>
-                                    <h4 id="titulo-matriz-prev-inline" class="text-[11px] font-bold text-uccDark uppercase tracking-widest mb-2">Mantenimiento preventivo</h4>
+                                    <h4 id="titulo-matriz-prev-inline" class="text-[11px] font-bold text-uccDark uppercase tracking-wider mb-2">Mantenimiento preventivo</h4>
                                     <div class="cal-matrix-wrap rounded-xl border border-slate-200">
                                         <table class="cal-matrix" aria-label="Cuadrícula anual de preventivos">
                                             <thead id="matriz-prev-head-inline"></thead>
@@ -238,7 +242,7 @@
                                     </div>
                                 </div>
                                 <div>
-                                    <h4 id="titulo-matriz-corr-inline" class="text-[11px] font-bold text-uccDark uppercase tracking-widest mb-2">Mantenimiento correctivo</h4>
+                                    <h4 id="titulo-matriz-corr-inline" class="text-[11px] font-bold text-uccDark uppercase tracking-wider mb-2">Mantenimiento correctivo</h4>
                                     <div class="cal-matrix-wrap rounded-xl border border-slate-200">
                                         <table class="cal-matrix" aria-label="Cuadrícula anual de correctivos">
                                             <thead id="matriz-corr-head-inline"></thead>
@@ -247,21 +251,20 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="px-5 py-3 border-t border-b border-slate-100 bg-slate-50/80"><h3 class="text-[11px] font-bold text-uccDark uppercase tracking-widest">Historial de intervenciones</h3></div>
+                            <div class="px-5 py-3 border-t border-b border-slate-100 bg-slate-50/80"><h3 class="text-[11px] font-bold text-uccDark uppercase tracking-wider">Historial de intervenciones</h3></div>
                             <div class="overflow-x-auto">
                                 <div style="max-height:320px;overflow-y:auto">
                                     <table class="w-full text-sm">
-                                        <thead class="sticky top-0 bg-white z-10"><tr class="text-[10px] font-bold text-slate-400 uppercase tracking-widest border-b border-slate-100"><th class="px-5 py-3 text-left whitespace-nowrap" style="width:48px">No</th><th class="px-5 py-3 text-left whitespace-nowrap" style="width:110px">Fecha</th><th class="px-5 py-3 text-left" style="min-width:280px">Descripción</th><th class="px-5 py-3 text-left whitespace-nowrap" style="width:130px">Estado del equipo</th><th class="px-5 py-3 text-left whitespace-nowrap" style="width:140px">Responsable</th><th class="px-5 py-3 text-left whitespace-nowrap" style="width:110px">Gasto total</th><th class="px-5 py-3 text-left whitespace-nowrap" style="width:150px">Tipo de mantenimiento</th></tr></thead>
+                                        <thead class="sticky top-0 bg-white z-10"><tr class="text-[11px] font-bold text-slate-400 uppercase tracking-wider border-b border-slate-100"><th class="px-5 py-3 text-left whitespace-nowrap" style="width:48px">No</th><th class="px-5 py-3 text-left whitespace-nowrap" style="width:110px">Fecha</th><th class="px-5 py-3 text-left" style="min-width:280px">Descripción</th><th class="px-5 py-3 text-left whitespace-nowrap" style="width:130px">Estado del equipo</th><th class="px-5 py-3 text-left whitespace-nowrap" style="width:140px">Responsable</th><th class="px-5 py-3 text-left whitespace-nowrap" style="width:110px">Gasto total</th><th class="px-5 py-3 text-left whitespace-nowrap" style="width:150px">Tipo de mantenimiento</th></tr></thead>
                                         <tbody id="dInlineHistory" class="divide-y divide-slate-100"></tbody>
                                     </table>
                                 </div>
                             </div>
                         </section>
                         <div class="flex flex-wrap justify-end gap-3 pb-1">
-                            <button id="dInlineBtnActivar" data-solo-gestion onclick="activateTechnicalSheet()" class="bg-emerald-600 hover:bg-emerald-700 text-white px-5 py-2.5 rounded-xl text-sm font-bold transition hidden"><i class="fas fa-play"></i> Activar Equipo</button>
+                            <div id="dInlineEstadoAccion" class="contents"></div>
                             <button data-solo-gestion onclick="abrirModalTraslado(window.currentEquipoId)" class="bg-sky-600 hover:bg-sky-700 text-white px-5 py-2.5 rounded-xl text-sm font-bold transition"><i class="fas fa-location-arrow"></i> Trasladar Equipo</button>
                             <button data-solo-gestion onclick="editTechnicalSheet()" class="bg-uccDark hover:bg-uccDark/90 text-white px-5 py-2.5 rounded-xl text-sm font-bold transition"><i class="fas fa-pen-to-square"></i> Editar Equipo</button>
-                            <button data-solo-gestion onclick="decommissionTechnicalSheet()" class="bg-red-600 hover:bg-red-700 text-white px-5 py-2.5 rounded-xl text-sm font-bold transition"><i class="fas fa-power-off"></i> Dar de Baja</button>
                         </div>
                     </div>
                 </div>
@@ -271,66 +274,66 @@
 
     <!-- Modal Crear Nuevo Activo -->
     <div id="modal-crear-activo" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm hidden flex items-center justify-center z-50 p-4">
-        <div class="bg-slate-50 w-full max-w-4xl rounded-2xl shadow-2xl overflow-hidden">
-            <div class="bg-white border-b border-slate-200 px-10 py-5 flex items-center justify-between shadow-sm sticky top-0 z-10">
+        <div class="bg-slate-50 w-full max-w-4xl max-h-[90dvh] flex flex-col rounded-xl overflow-hidden border border-slate-200">
+            <div class="bg-white border-b border-slate-200 px-5 py-4 flex items-center justify-between sticky top-0 z-10">
                 <div class="flex items-center gap-4">
-                    <img src="img/ucc.png" alt="Logo UCC" class="h-12 object-contain">
+                    <img src="img/ucc.png" alt="Logo UCC" class="h-10 object-contain">
                     <div class="h-8 w-px bg-slate-200"></div>
                     <div>
-                        <span id="titulo-modal-activo" class="text-uccDark font-black text-sm tracking-widest uppercase">Registrar Nuevo Equipo</span>
-                        <p class="text-[10px] font-bold text-slate-500 uppercase tracking-widest mt-1">Sistema de Gestión de Aires</p>
+                        <span id="titulo-modal-activo" class="text-slate-900 font-semibold text-sm">Registrar Nuevo Equipo</span>
+                        <p class="text-xs text-slate-500 mt-0.5">Sistema de Gestión de Aires</p>
                     </div>
                 </div>
-                <button onclick="closeCrearActivoModal()" class="text-slate-500 hover:text-uccDark text-2xl font-black leading-none">×</button>
+                <button type="button" onclick="closeCrearActivoModal()" aria-label="Cerrar" class="shrink-0 h-8 w-8 flex items-center justify-center rounded-lg text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition"><i class="fas fa-times" aria-hidden="true"></i></button>
             </div>
 
-            <div class="p-10 overflow-y-auto max-h-[85vh]">
+            <div class="p-5 overflow-y-auto flex-1 overscroll-contain">
                 <form id="form-crear-activo" class="space-y-8">
-                    <div class="grid grid-cols-2 gap-8">
+                    <div class="grid grid-cols-2 gap-5">
                          <div>
-                             <label for="inputCodigoActivo" class="block text-xs font-black uppercase tracking-widest text-slate-600 mb-3">Código ID del Activo</label>
-                             <input id="inputCodigoActivo" type="text" placeholder="Ej: AC-MON-101" required class="w-full bg-white border border-slate-300 rounded-xl px-4 py-3 text-sm text-slate-700 font-medium focus:outline-none focus:ring-2 focus:ring-[#00acc9] transition-all shadow-sm">
+                             <label for="inputCodigoActivo" class="field-label">Código ID del Activo</label>
+                             <input id="inputCodigoActivo" type="text" placeholder="Ej: AC-MON-101" required class="field">
                          </div>
                          <div>
-                             <label for="select-marca" class="block text-xs font-black uppercase tracking-widest text-slate-600 mb-3">Marca del Aire</label>
+                             <label for="select-marca" class="field-label">Marca del Aire</label>
                              <div class="flex gap-2 items-stretch">
-                                 <select id="select-marca" required class="flex-1 w-full bg-white border border-slate-300 rounded-xl px-4 py-3 text-sm text-slate-700 font-medium focus:outline-none focus:ring-2 focus:ring-[#00acc9] transition-all shadow-sm appearance-none">
+                                 <select id="select-marca" required class="field flex-1">
                                      <option value="">Cargando marcas...</option>
                                  </select>
-                                 <button type="button" data-solo-gestion onclick="openGestionMarcasModal()" title="Gestionar marcas" class="shrink-0 px-3 py-3 bg-uccDark hover:bg-slate-800 text-white rounded-xl shadow-sm transition-all flex items-center justify-center">
+                                 <button type="button" data-solo-gestion onclick="openGestionMarcasModal()" title="Gestionar marcas" class="shrink-0 px-3 py-3 bg-uccDark hover:bg-slate-800 text-white rounded-xl transition-all flex items-center justify-center">
                                      <i class="fas fa-cog"></i>
                                  </button>
                              </div>
                          </div>
                          <div id="grupo-espacio-activo">
-                             <label for="select-espacio-equipo" class="block text-xs font-black uppercase tracking-widest text-slate-600 mb-3">Ubicación (Espacio/Aula)</label>
+                             <label for="select-espacio-equipo" class="field-label">Ubicación (Espacio/Aula)</label>
                              <div class="flex gap-2 items-stretch">
-                                 <select id="select-espacio-equipo" required class="flex-1 w-full bg-white border border-slate-300 rounded-xl px-4 py-3 text-sm text-slate-700 font-medium focus:outline-none focus:ring-2 focus:ring-[#00acc9] transition-all shadow-sm appearance-none">
+                                 <select id="select-espacio-equipo" required class="field flex-1">
                                      <option value="">Cargando espacios...</option>
                                  </select>
-                                 <button type="button" data-solo-gestion onclick="openGestionEspaciosModal()" title="Gestionar espacios" class="shrink-0 px-3 py-3 bg-uccDark hover:bg-slate-800 text-white rounded-xl shadow-sm transition-all flex items-center justify-center">
+                                 <button type="button" data-solo-gestion onclick="openGestionEspaciosModal()" title="Gestionar espacios" class="shrink-0 px-3 py-3 bg-uccDark hover:bg-slate-800 text-white rounded-xl transition-all flex items-center justify-center">
                                      <i class="fas fa-cog"></i>
                                  </button>
                              </div>
                          </div>
                          <div>
-                             <label for="select-tipo-equipo" class="block text-xs font-black uppercase tracking-widest text-slate-600 mb-3">Tipo de Equipo</label>
+                             <label for="select-tipo-equipo" class="field-label">Tipo de Equipo</label>
                              <div class="flex gap-2 items-stretch">
-                                 <select id="select-tipo-equipo" required class="flex-1 w-full bg-white border border-slate-300 rounded-xl px-4 py-3 text-sm text-slate-700 font-medium focus:outline-none focus:ring-2 focus:ring-[#00acc9] transition-all shadow-sm appearance-none">
+                                 <select id="select-tipo-equipo" required class="field flex-1">
                                      <option value="">Cargando tipos de equipo...</option>
                                  </select>
-                                 <button type="button" id="btn-gestion-tipos-equipo" data-solo-gestion onclick="openGestionTiposEquipoModal()" title="Gestionar tipos de equipo" class="hidden shrink-0 px-3 py-3 bg-uccDark hover:bg-slate-800 text-white rounded-xl shadow-sm transition-all flex items-center justify-center">
+                                 <button type="button" id="btn-gestion-tipos-equipo" data-solo-gestion onclick="openGestionTiposEquipoModal()" title="Gestionar tipos de equipo" class="hidden shrink-0 px-3 py-3 bg-uccDark hover:bg-slate-800 text-white rounded-xl transition-all flex items-center justify-center">
                                      <i class="fas fa-cog"></i>
                                  </button>
                              </div>
                          </div>
                          <div>
-                             <label for="input-modelo" class="block text-xs font-black uppercase tracking-widest text-slate-600 mb-3">Modelo</label>
-                             <input id="input-modelo" type="text" placeholder="Ej: Mini Split 12000 BTU" required class="w-full bg-white border border-slate-300 rounded-xl px-4 py-3 text-sm text-slate-700 font-medium focus:outline-none focus:ring-2 focus:ring-[#00acc9] transition-all shadow-sm">
+                             <label for="input-modelo" class="field-label">Modelo</label>
+                             <input id="input-modelo" type="text" placeholder="Ej: Mini Split 12000 BTU" required class="field">
                          </div>
                          <div>
-                             <label for="selectCapacidad" class="block text-xs font-black uppercase tracking-widest text-slate-600 mb-3">Capacidad en BTUs</label>
-                             <select id="selectCapacidad" required class="w-full bg-white border border-slate-300 rounded-xl px-4 py-3 text-sm text-slate-700 font-medium focus:outline-none focus:ring-2 focus:ring-[#00acc9] transition-all shadow-sm appearance-none">
+                             <label for="selectCapacidad" class="field-label">Capacidad en BTUs</label>
+                             <select id="selectCapacidad" required class="field appearance-none">
                                  <option value="">Selecciona una capacidad</option>
                                  <option value="12000">12,000 BTU</option>
                                  <option value="18000">18,000 BTU</option>
@@ -341,52 +344,52 @@
                              </select>
                          </div>
                          <div>
-                             <label for="inputTonelaje" class="block text-xs font-black uppercase tracking-widest text-slate-600 mb-3">Tonelaje (TR)</label>
-                             <input id="inputTonelaje" type="number" min="0" step="0.01" placeholder="Ej: 3.58" class="w-full bg-white border border-slate-300 rounded-xl px-4 py-3 text-sm text-slate-700 font-medium focus:outline-none focus:ring-2 focus:ring-[#00acc9] transition-all shadow-sm">
+                             <label for="inputTonelaje" class="field-label">Tonelaje (TR)</label>
+                             <input id="inputTonelaje" type="number" min="0" step="0.01" placeholder="Ej: 3.58" class="field">
                          </div>
                          <div>
-                             <label for="inputNumeroSerie" class="block text-xs font-black uppercase tracking-widest text-slate-600 mb-3">Número de Serie</label>
-                             <input id="inputNumeroSerie" type="text" placeholder="Ej: LG-2024-001" required class="w-full bg-white border border-slate-300 rounded-xl px-4 py-3 text-sm text-slate-700 font-medium focus:outline-none focus:ring-2 focus:ring-[#00acc9] transition-all shadow-sm">
+                             <label for="inputNumeroSerie" class="field-label">Número de Serie</label>
+                             <input id="inputNumeroSerie" type="text" placeholder="Ej: LG-2024-001" required class="field">
                          </div>
                          <div>
-                             <label for="inputVoltaje" class="block text-xs font-black uppercase tracking-widest text-slate-600 mb-3">Voltaje de Operación</label>
-                             <input id="inputVoltaje" type="text" placeholder="Ej: 220V" required class="w-full bg-white border border-slate-300 rounded-xl px-4 py-3 text-sm text-slate-700 font-medium focus:outline-none focus:ring-2 focus:ring-[#00acc9] transition-all shadow-sm">
+                             <label for="inputVoltaje" class="field-label">Voltaje de Operación</label>
+                             <input id="inputVoltaje" type="text" placeholder="Ej: 220V" required class="field">
                          </div>
                          <div>
-                             <label for="selectRefrigerante" class="block text-xs font-black uppercase tracking-widest text-slate-600 mb-3">Tipo de Gas Refrigerante</label>
+                             <label for="selectRefrigerante" class="field-label">Tipo de Gas Refrigerante</label>
                              <div class="flex gap-2 items-stretch">
-                                 <select id="selectRefrigerante" required class="flex-1 w-full bg-white border border-slate-300 rounded-xl px-4 py-3 text-sm text-slate-700 font-medium focus:outline-none focus:ring-2 focus:ring-[#00acc9] transition-all shadow-sm appearance-none">
+                                 <select id="selectRefrigerante" required class="field flex-1">
                                      <option value="">Cargando refrigerantes...</option>
                                  </select>
-                                 <button type="button" id="btn-gestion-refrigerantes" data-solo-gestion onclick="openGestionRefrigerantesModal()" title="Gestionar refrigerantes" class="hidden shrink-0 px-3 py-3 bg-uccDark hover:bg-slate-800 text-white rounded-xl shadow-sm transition-all flex items-center justify-center">
+                                 <button type="button" id="btn-gestion-refrigerantes" data-solo-gestion onclick="openGestionRefrigerantesModal()" title="Gestionar refrigerantes" class="hidden shrink-0 px-3 py-3 bg-uccDark hover:bg-slate-800 text-white rounded-xl transition-all flex items-center justify-center">
                                      <i class="fas fa-cog"></i>
                                  </button>
                              </div>
                          </div>
                          <div>
-                             <label for="inputFechaCompra" class="block text-xs font-black uppercase tracking-widest text-slate-600 mb-3">Fecha de Compra</label>
-                             <input id="inputFechaCompra" type="date" class="w-full bg-white border border-slate-300 rounded-xl px-4 py-3 text-sm text-slate-700 font-medium focus:outline-none focus:ring-2 focus:ring-[#00acc9] transition-all shadow-sm">
+                             <label for="inputFechaCompra" class="field-label">Fecha de Compra</label>
+                             <input id="inputFechaCompra" type="date" class="field">
                          </div>
                          <div>
-                             <label for="inputFechaInstalacion" class="block text-xs font-black uppercase tracking-widest text-slate-600 mb-3">Fecha de Instalación</label>
-                             <input id="inputFechaInstalacion" type="date" class="w-full bg-white border border-slate-300 rounded-xl px-4 py-3 text-sm text-slate-700 font-medium focus:outline-none focus:ring-2 focus:ring-[#00acc9] transition-all shadow-sm">
+                             <label for="inputFechaInstalacion" class="field-label">Fecha de Instalación</label>
+                             <input id="inputFechaInstalacion" type="date" class="field">
                          </div>
                          <div>
-                             <label for="inputUltimaFecha" class="block text-xs font-black uppercase tracking-widest text-slate-600 mb-3">Último Mantenimiento</label>
-                             <input id="inputUltimaFecha" type="date" class="w-full bg-white border border-slate-300 rounded-xl px-4 py-3 text-sm text-slate-700 font-medium focus:outline-none focus:ring-2 focus:ring-[#00acc9] transition-all shadow-sm">
+                             <label for="inputUltimaFecha" class="field-label">Último Mantenimiento</label>
+                             <input id="inputUltimaFecha" type="date" class="field">
                          </div>
                          <div>
-                             <label for="inputProximaFecha" class="block text-xs font-black uppercase tracking-widest text-slate-600 mb-3">Próximo Mantenimiento</label>
-                             <input id="inputProximaFecha" type="date" class="w-full bg-white border border-slate-300 rounded-xl px-4 py-3 text-sm text-slate-700 font-medium focus:outline-none focus:ring-2 focus:ring-[#00acc9] transition-all shadow-sm">
+                             <label for="inputProximaFecha" class="field-label">Próximo Mantenimiento</label>
+                             <input id="inputProximaFecha" type="date" class="field">
                          </div>
                      </div>
 
                     <div class="flex flex-col md:flex-row gap-4 justify-end pt-6 border-t border-slate-200">
-                        <button type="button" onclick="closeCrearActivoModal()" class="bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold px-6 py-3 rounded-xl transition flex items-center justify-center gap-2">
+                        <button type="button" onclick="closeCrearActivoModal()" class="btn-secondary">
                             <i class="fas fa-times"></i>
                             <span>Cancelar</span>
                         </button>
-                        <button type="submit" id="btn-submit-activo" data-solo-gestion class="bg-uccLight hover:bg-[#00b8d4] text-white font-bold px-6 py-3 rounded-xl shadow-lg transition-all flex items-center justify-center gap-2">
+                        <button type="submit" id="btn-submit-activo" data-solo-gestion class="btn-primary">
                             <i class="fas fa-check"></i>
                             <span id="texto-btn-submit-activo">Registrar Activo</span>
                         </button>
@@ -398,31 +401,31 @@
 
     <!-- Modal Gestión de Tipos de Equipo -->
     <div id="modal-gestion-tipos-equipo" class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm hidden flex items-center justify-center z-[60] p-4">
-        <div class="bg-white max-w-md w-full rounded-3xl shadow-2xl border border-slate-100 overflow-hidden flex flex-col max-h-[90vh]">
-            <div class="shrink-0 px-6 py-5 border-b border-slate-100 flex items-center justify-between gap-3 bg-white">
+        <div class="bg-white max-w-md w-full rounded-xl border border-slate-100 overflow-hidden flex flex-col max-h-[90dvh] overscroll-contain">
+            <div class="shrink-0 px-4 py-5 border-b border-slate-100 flex items-center justify-between gap-3 bg-white">
                 <div class="min-w-0">
-                    <p class="text-[10px] font-bold uppercase tracking-widest text-uccLight mb-0.5">Catálogo</p>
+                    <p class="text-[11px] font-bold uppercase tracking-wider text-uccLight mb-0.5">Catálogo</p>
                     <h3 class="text-slate-800 font-extrabold text-xl leading-tight truncate">Gestión de Tipos de Equipo</h3>
                 </div>
                 <button type="button" onclick="closeGestionTiposEquipoModal()" class="shrink-0 w-9 h-9 rounded-lg border border-slate-200 text-slate-400 hover:text-uccLight hover:bg-cyan-50/60 flex items-center justify-center transition-all" aria-label="Cerrar">
                     <i class="fas fa-times text-sm"></i>
                 </button>
             </div>
-            <div class="px-6 py-4 border-b border-slate-50 shrink-0 bg-white">
+            <div class="px-4 py-4 border-b border-slate-50 shrink-0 bg-white">
                 <div class="flex flex-col sm:flex-row gap-3 sm:items-end">
                     <div class="flex-1 min-w-0">
-                        <label for="input-nuevo-tipo-equipo" class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1">Nombre del tipo</label>
+                        <label for="input-nuevo-tipo-equipo" class="field-label">Nombre del tipo</label>
                         <input id="input-nuevo-tipo-equipo" type="text" maxlength="30" placeholder="Ej: Cassette"
-                            class="w-full border border-slate-200 focus:border-uccLight focus:ring-4 focus:ring-cyan-50 rounded-xl px-3 py-2.5 text-sm bg-slate-50/50 transition-all text-slate-700 placeholder-slate-400">
+                            class="field">
                     </div>
                     <button type="button" onclick="submitCrearTipoEquipo()"
-                        class="shrink-0 bg-uccLight hover:bg-[#00b8d4] text-white font-bold px-5 py-2.5 rounded-xl shadow-md transition-all flex items-center justify-center gap-2 text-sm whitespace-nowrap">
+                        class="btn-primary shrink-0 whitespace-nowrap">
                         <i class="fas fa-plus text-xs"></i>
                         <span>Agregar</span>
                     </button>
                 </div>
             </div>
-            <div class="px-6 py-4 flex-1 min-h-0 overflow-hidden flex flex-col bg-white">
+            <div class="px-4 py-4 flex-1 min-h-0 overflow-hidden flex flex-col bg-white">
                 <p class="text-xs font-bold uppercase tracking-wider text-slate-500 mb-2 shrink-0">Tipos registrados</p>
                 <div id="lista-tipos-equipo-gestion" class="max-h-[50vh] overflow-y-auto pr-2 flex-1">
                     <p class="text-sm text-slate-400 text-center py-6"><i class="fas fa-spinner fa-spin mr-2 text-uccLight"></i>Cargando...</p>
@@ -433,36 +436,36 @@
 
     <!-- Modal Gestión de Bloques -->
     <div id="modal-gestion-bloques" class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm hidden flex items-center justify-center z-[70] p-4">
-        <div class="bg-white max-w-md w-full rounded-3xl shadow-2xl border border-slate-100 overflow-hidden flex flex-col max-h-[90vh]">
-            <div class="shrink-0 px-6 py-5 border-b border-slate-100 flex items-center justify-between gap-3 bg-white">
+        <div class="bg-white max-w-md w-full rounded-xl border border-slate-100 overflow-hidden flex flex-col max-h-[90dvh] overscroll-contain">
+            <div class="shrink-0 px-4 py-5 border-b border-slate-100 flex items-center justify-between gap-3 bg-white">
                 <div class="min-w-0">
-                    <p class="text-[10px] font-bold uppercase tracking-widest text-uccLight mb-0.5">Ubicaciones</p>
+                    <p class="text-[11px] font-bold uppercase tracking-wider text-uccLight mb-0.5">Ubicaciones</p>
                     <h3 class="text-slate-800 font-extrabold text-xl leading-tight truncate">Gestión de Bloques</h3>
                 </div>
                 <button type="button" onclick="closeGestionBloquesModal()" class="shrink-0 w-9 h-9 rounded-lg border border-slate-200 text-slate-400 hover:text-uccLight hover:bg-cyan-50/60 flex items-center justify-center transition-all" aria-label="Cerrar">
                     <i class="fas fa-times text-sm"></i>
                 </button>
             </div>
-            <div class="px-6 py-4 border-b border-slate-50 shrink-0 bg-white space-y-3">
+            <div class="px-4 py-4 border-b border-slate-50 shrink-0 bg-white space-y-3">
                 <div>
-                    <label for="input-nuevo-bloque-codigo" class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1">Código del bloque</label>
+                    <label for="input-nuevo-bloque-codigo" class="field-label">Código del bloque</label>
                     <input id="input-nuevo-bloque-codigo" type="text" maxlength="15" placeholder="Ej: BLQ-D"
-                        class="w-full border border-slate-200 focus:border-uccLight focus:ring-4 focus:ring-cyan-50 rounded-xl px-3 py-2.5 text-sm bg-slate-50/50 transition-all text-slate-700 placeholder-slate-400">
+                        class="field">
                 </div>
                 <div class="flex flex-col sm:flex-row gap-3 sm:items-end">
                     <div class="flex-1 min-w-0">
-                        <label for="input-nuevo-bloque-nombre" class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1">Nombre del bloque</label>
+                        <label for="input-nuevo-bloque-nombre" class="field-label">Nombre del bloque</label>
                         <input id="input-nuevo-bloque-nombre" type="text" maxlength="65" placeholder="Ej: Bloque D"
-                            class="w-full border border-slate-200 focus:border-uccLight focus:ring-4 focus:ring-cyan-50 rounded-xl px-3 py-2.5 text-sm bg-slate-50/50 transition-all text-slate-700 placeholder-slate-400">
+                            class="field">
                     </div>
                     <button type="button" onclick="submitCrearBloque()"
-                        class="shrink-0 bg-uccLight hover:bg-[#00b8d4] text-white font-bold px-5 py-2.5 rounded-xl shadow-md transition-all flex items-center justify-center gap-2 text-sm whitespace-nowrap">
+                        class="btn-primary shrink-0 whitespace-nowrap">
                         <i class="fas fa-plus text-xs"></i>
                         <span>Agregar</span>
                     </button>
                 </div>
             </div>
-            <div class="px-6 py-4 flex-1 min-h-0 overflow-hidden flex flex-col bg-white">
+            <div class="px-4 py-4 flex-1 min-h-0 overflow-hidden flex flex-col bg-white">
                 <p class="text-xs font-bold uppercase tracking-wider text-slate-500 mb-2 shrink-0">Bloques registrados</p>
                 <div id="lista-bloques-gestion" class="max-h-[50vh] overflow-y-auto pr-2 flex-1">
                     <p class="text-sm text-slate-400 text-center py-6"><i class="fas fa-spinner fa-spin mr-2 text-uccLight"></i>Cargando...</p>
@@ -473,31 +476,31 @@
 
     <!-- Modal Gestión de Gas Refrigerante -->
     <div id="modal-gestion-refrigerantes" class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm hidden flex items-center justify-center z-[60] p-4">
-        <div class="bg-white max-w-md w-full rounded-3xl shadow-2xl border border-slate-100 overflow-hidden flex flex-col max-h-[90vh]">
-            <div class="shrink-0 px-6 py-5 border-b border-slate-100 flex items-center justify-between gap-3 bg-white">
+        <div class="bg-white max-w-md w-full rounded-xl border border-slate-100 overflow-hidden flex flex-col max-h-[90dvh] overscroll-contain">
+            <div class="shrink-0 px-4 py-5 border-b border-slate-100 flex items-center justify-between gap-3 bg-white">
                 <div class="min-w-0">
-                    <p class="text-[10px] font-bold uppercase tracking-widest text-uccLight mb-0.5">Catálogo</p>
+                    <p class="text-[11px] font-bold uppercase tracking-wider text-uccLight mb-0.5">Catálogo</p>
                     <h3 class="text-slate-800 font-extrabold text-xl leading-tight truncate">Gestión de Refrigerantes</h3>
                 </div>
                 <button type="button" onclick="closeGestionRefrigerantesModal()" class="shrink-0 w-9 h-9 rounded-lg border border-slate-200 text-slate-400 hover:text-uccLight hover:bg-cyan-50/60 flex items-center justify-center transition-all" aria-label="Cerrar">
                     <i class="fas fa-times text-sm"></i>
                 </button>
             </div>
-            <div class="px-6 py-4 border-b border-slate-50 shrink-0 bg-white">
+            <div class="px-4 py-4 border-b border-slate-50 shrink-0 bg-white">
                 <div class="flex flex-col sm:flex-row gap-3 sm:items-end">
                     <div class="flex-1 min-w-0">
-                        <label for="input-nuevo-refrigerante" class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1">Nombre del refrigerante</label>
+                        <label for="input-nuevo-refrigerante" class="field-label">Nombre del refrigerante</label>
                         <input id="input-nuevo-refrigerante" type="text" maxlength="20" placeholder="Ej: R410A"
-                            class="w-full border border-slate-200 focus:border-uccLight focus:ring-4 focus:ring-cyan-50 rounded-xl px-3 py-2.5 text-sm bg-slate-50/50 transition-all text-slate-700 placeholder-slate-400">
+                            class="field">
                     </div>
                     <button type="button" onclick="submitCrearRefrigerante()"
-                        class="shrink-0 bg-uccLight hover:bg-[#00b8d4] text-white font-bold px-5 py-2.5 rounded-xl shadow-md transition-all flex items-center justify-center gap-2 text-sm whitespace-nowrap">
+                        class="btn-primary shrink-0 whitespace-nowrap">
                         <i class="fas fa-plus text-xs"></i>
                         <span>Agregar</span>
                     </button>
                 </div>
             </div>
-            <div class="px-6 py-4 flex-1 min-h-0 overflow-hidden flex flex-col bg-white">
+            <div class="px-4 py-4 flex-1 min-h-0 overflow-hidden flex flex-col bg-white">
                 <p class="text-xs font-bold uppercase tracking-wider text-slate-500 mb-2 shrink-0">Refrigerantes registrados</p>
                 <div id="lista-refrigerantes-gestion" class="max-h-[50vh] overflow-y-auto pr-2 flex-1">
                     <p class="text-sm text-slate-400 text-center py-6"><i class="fas fa-spinner fa-spin mr-2 text-uccLight"></i>Cargando...</p>
@@ -508,31 +511,31 @@
 
     <!-- Modal Gestión de Tipos de Insumos / Componentes -->
     <div id="modal-gestion-tipos-componente" class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm hidden flex items-center justify-center z-[60] p-4">
-        <div class="bg-white max-w-md w-full rounded-3xl shadow-2xl border border-slate-100 overflow-hidden flex flex-col max-h-[90vh]">
-            <div class="shrink-0 px-6 py-5 border-b border-slate-100 flex items-center justify-between gap-3 bg-white">
+        <div class="bg-white max-w-md w-full rounded-xl border border-slate-100 overflow-hidden flex flex-col max-h-[90dvh] overscroll-contain">
+            <div class="shrink-0 px-4 py-5 border-b border-slate-100 flex items-center justify-between gap-3 bg-white">
                 <div class="min-w-0">
-                    <p class="text-[10px] font-bold uppercase tracking-widest text-uccLight mb-0.5">Catálogo</p>
+                    <p class="text-[11px] font-bold uppercase tracking-wider text-uccLight mb-0.5">Catálogo</p>
                     <h3 class="text-slate-800 font-extrabold text-xl leading-tight truncate">Gestión de Insumos y Componentes</h3>
                 </div>
                 <button type="button" onclick="closeGestionTiposComponenteModal()" class="shrink-0 w-9 h-9 rounded-lg border border-slate-200 text-slate-400 hover:text-uccLight hover:bg-cyan-50/60 flex items-center justify-center transition-all" aria-label="Cerrar">
                     <i class="fas fa-times text-sm"></i>
                 </button>
             </div>
-            <div class="px-6 py-4 border-b border-slate-50 shrink-0 bg-white">
+            <div class="px-4 py-4 border-b border-slate-50 shrink-0 bg-white">
                 <div class="flex flex-col sm:flex-row gap-3 sm:items-end">
                     <div class="flex-1 min-w-0">
-                        <label for="input-nuevo-tipo-componente" class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1">Nombre del insumo</label>
+                        <label for="input-nuevo-tipo-componente" class="field-label">Nombre del insumo</label>
                         <input id="input-nuevo-tipo-componente" type="text" maxlength="60" placeholder="Ej: Capacitor de Marcha"
-                            class="w-full border border-slate-200 focus:border-uccLight focus:ring-4 focus:ring-cyan-50 rounded-xl px-3 py-2.5 text-sm bg-slate-50/50 transition-all text-slate-700 placeholder-slate-400">
+                            class="field">
                     </div>
                     <button type="button" onclick="submitCrearTipoComponente()"
-                        class="shrink-0 bg-uccLight hover:bg-[#00b8d4] text-white font-bold px-5 py-2.5 rounded-xl shadow-md transition-all flex items-center justify-center gap-2 text-sm whitespace-nowrap">
+                        class="btn-primary shrink-0 whitespace-nowrap">
                         <i class="fas fa-plus text-xs"></i>
                         <span>Agregar</span>
                     </button>
                 </div>
             </div>
-            <div class="px-6 py-4 flex-1 min-h-0 overflow-hidden flex flex-col bg-white">
+            <div class="px-4 py-4 flex-1 min-h-0 overflow-hidden flex flex-col bg-white">
                 <p class="text-xs font-bold uppercase tracking-wider text-slate-500 mb-2 shrink-0">Insumos registrados</p>
                 <div id="lista-tipos-componente-gestion" class="max-h-[50vh] overflow-y-auto pr-2 flex-1">
                     <p class="text-sm text-slate-400 text-center py-6"><i class="fas fa-spinner fa-spin mr-2 text-uccLight"></i>Cargando...</p>
@@ -543,31 +546,31 @@
 
     <!-- Modal Gestión de Marcas -->
     <div id="modal-gestion-marcas" class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm hidden flex items-center justify-center z-[60] p-4">
-        <div class="bg-white max-w-md w-full rounded-3xl shadow-2xl border border-slate-100 overflow-hidden flex flex-col max-h-[90vh]">
-            <div class="shrink-0 px-6 py-5 border-b border-slate-100 flex items-center justify-between gap-3 bg-white">
+        <div class="bg-white max-w-md w-full rounded-xl border border-slate-100 overflow-hidden flex flex-col max-h-[90dvh] overscroll-contain">
+            <div class="shrink-0 px-4 py-5 border-b border-slate-100 flex items-center justify-between gap-3 bg-white">
                 <div class="min-w-0">
-                    <p class="text-[10px] font-bold uppercase tracking-widest text-uccLight mb-0.5">Catálogo</p>
+                    <p class="text-[11px] font-bold uppercase tracking-wider text-uccLight mb-0.5">Catálogo</p>
                     <h3 class="text-slate-800 font-extrabold text-xl leading-tight truncate">Gestión de Marcas</h3>
                 </div>
                 <button type="button" onclick="closeGestionMarcasModal()" class="shrink-0 w-9 h-9 rounded-lg border border-slate-200 text-slate-400 hover:text-uccLight hover:bg-cyan-50/60 flex items-center justify-center transition-all" aria-label="Cerrar">
                     <i class="fas fa-times text-sm"></i>
                 </button>
             </div>
-            <div class="px-6 py-4 border-b border-slate-50 shrink-0 bg-white">
+            <div class="px-4 py-4 border-b border-slate-50 shrink-0 bg-white">
                 <div class="flex flex-col sm:flex-row gap-3 sm:items-end">
                     <div class="flex-1 min-w-0">
-                        <label for="input-nueva-marca" class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1">Nombre de la marca</label>
+                        <label for="input-nueva-marca" class="field-label">Nombre de la marca</label>
                         <input id="input-nueva-marca" type="text" maxlength="20" placeholder="Ej: Samsung"
-                            class="w-full border border-slate-200 focus:border-uccLight focus:ring-4 focus:ring-cyan-50 rounded-xl px-3 py-2.5 text-sm bg-slate-50/50 transition-all text-slate-700 placeholder-slate-400">
+                            class="field">
                     </div>
                     <button type="button" onclick="submitCrearMarca()"
-                        class="shrink-0 bg-uccLight hover:bg-[#00b8d4] text-white font-bold px-5 py-2.5 rounded-xl shadow-md transition-all flex items-center justify-center gap-2 text-sm whitespace-nowrap">
+                        class="btn-primary shrink-0 whitespace-nowrap">
                         <i class="fas fa-plus text-xs"></i>
                         <span>Agregar</span>
                     </button>
                 </div>
             </div>
-            <div class="px-6 py-4 flex-1 min-h-0 overflow-hidden flex flex-col bg-white">
+            <div class="px-4 py-4 flex-1 min-h-0 overflow-hidden flex flex-col bg-white">
                 <p class="text-xs font-bold uppercase tracking-wider text-slate-500 mb-2 shrink-0">Marcas registradas</p>
                 <div id="lista-marcas-gestion" class="max-h-[50vh] overflow-y-auto pr-2 flex-1">
                     <p class="text-sm text-slate-400 text-center py-6"><i class="fas fa-spinner fa-spin mr-2 text-uccLight"></i>Cargando...</p>
@@ -578,50 +581,50 @@
 
     <!-- Modal Gestión de Espacios -->
     <div id="modal-gestion-espacios" class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm hidden flex items-center justify-center z-[60] p-4">
-        <div class="bg-white max-w-2xl w-full rounded-3xl shadow-2xl border border-slate-100 overflow-hidden flex flex-col max-h-[90vh]">
-            <div class="shrink-0 px-6 py-5 border-b border-slate-100 flex items-center justify-between gap-3 bg-white">
+        <div class="bg-white max-w-2xl w-full rounded-xl border border-slate-100 overflow-hidden flex flex-col max-h-[90dvh] overscroll-contain">
+            <div class="shrink-0 px-4 py-5 border-b border-slate-100 flex items-center justify-between gap-3 bg-white">
                 <div class="min-w-0">
-                    <p class="text-[10px] font-bold uppercase tracking-widest text-uccLight mb-0.5">Ubicaciones</p>
+                    <p class="text-[11px] font-bold uppercase tracking-wider text-uccLight mb-0.5">Ubicaciones</p>
                     <h3 class="text-slate-800 font-extrabold text-xl leading-tight">Gestión de Espacios del Campus</h3>
                 </div>
                 <button type="button" onclick="closeGestionEspaciosModal()" class="shrink-0 w-9 h-9 rounded-lg border border-slate-200 text-slate-400 hover:text-uccLight hover:bg-cyan-50/60 flex items-center justify-center transition-all" aria-label="Cerrar">
                     <i class="fas fa-times text-sm"></i>
                 </button>
             </div>
-            <div class="flex-1 min-h-0 overflow-y-auto max-h-[60vh] px-6 py-4 pr-4">
+            <div class="flex-1 min-h-0 overflow-y-auto max-h-[60vh] px-4 py-4 pr-4">
                 <section class="mb-5">
                     <p class="text-xs font-bold uppercase tracking-wider text-slate-500 mb-3">Nuevo espacio</p>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                         <div>
-                            <label for="input-nuevo-espacio-codigo" class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1">Código del espacio</label>
+                            <label for="input-nuevo-espacio-codigo" class="field-label">Código del espacio</label>
                             <input id="input-nuevo-espacio-codigo" type="text" maxlength="20" placeholder="Ej: A-204"
-                                class="w-full border border-slate-200 focus:border-uccLight focus:ring-4 focus:ring-cyan-50 rounded-xl px-3 py-2.5 text-sm bg-slate-50/50 transition-all text-slate-700 placeholder-slate-400">
+                                class="field">
                         </div>
                         <div>
-                            <label for="input-nuevo-espacio-nombre" class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1">Nombre del salón</label>
+                            <label for="input-nuevo-espacio-nombre" class="field-label">Nombre del salón</label>
                             <input id="input-nuevo-espacio-nombre" type="text" maxlength="65" placeholder="Ej: Aula 204"
-                                class="w-full border border-slate-200 focus:border-uccLight focus:ring-4 focus:ring-cyan-50 rounded-xl px-3 py-2.5 text-sm bg-slate-50/50 transition-all text-slate-700 placeholder-slate-400">
+                                class="field">
                         </div>
                         <div>
-                            <label for="input-nuevo-espacio-piso" class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1">Piso</label>
+                            <label for="input-nuevo-espacio-piso" class="field-label">Piso</label>
                             <input id="input-nuevo-espacio-piso" type="number" min="1" max="7" value="1" placeholder="1"
-                                class="w-full border border-slate-200 focus:border-uccLight focus:ring-4 focus:ring-cyan-50 rounded-xl px-3 py-2.5 text-sm bg-slate-50/50 transition-all text-slate-700 placeholder-slate-400">
+                                class="field">
                         </div>
                         <div>
-                            <label for="select-gestion-espacio-bloque" class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1">Bloque</label>
+                            <label for="select-gestion-espacio-bloque" class="field-label">Bloque</label>
                             <div class="flex gap-2 items-stretch">
                                 <select id="select-gestion-espacio-bloque"
-                                    class="flex-1 border border-slate-200 focus:border-uccLight focus:ring-4 focus:ring-cyan-50 rounded-xl px-3 py-2.5 text-sm bg-slate-50/50 transition-all text-slate-700 appearance-none">
+                                    class="field-select flex-1">
                                     <option value="">Selecciona bloque...</option>
                                 </select>
-                                <button type="button" onclick="openGestionBloquesModal()" title="Gestionar bloques" class="shrink-0 px-3 py-2.5 bg-uccDark hover:bg-slate-800 text-white rounded-xl shadow-sm transition-all flex items-center justify-center">
+                                <button type="button" onclick="openGestionBloquesModal()" title="Gestionar bloques" class="shrink-0 px-3 py-2.5 bg-uccDark hover:bg-slate-800 text-white rounded-xl transition-all flex items-center justify-center">
                                     <i class="fas fa-cog"></i>
                                 </button>
                             </div>
                         </div>
                     </div>
                     <button type="button" onclick="submitCrearEspacioGestion()"
-                        class="w-full bg-uccLight hover:bg-[#00b8d4] text-white font-bold px-5 py-2.5 rounded-xl shadow-md transition-all flex items-center justify-center gap-2 text-sm">
+                        class="btn-primary w-full">
                         <i class="fas fa-plus text-xs"></i>
                         <span>Agregar espacio</span>
                     </button>
@@ -638,54 +641,54 @@
 
     <!-- Modal Crear Nuevo Espacio -->
     <div id="modal-crear-espacio" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm hidden flex items-center justify-center z-50 p-4">
-        <div class="bg-slate-50 w-full max-w-2xl rounded-2xl shadow-2xl overflow-hidden">
-            <div class="bg-white border-b border-slate-200 px-10 py-5 flex items-center justify-between shadow-sm sticky top-0 z-10">
+        <div class="bg-slate-50 w-full max-w-2xl max-h-[90dvh] flex flex-col rounded-xl overflow-hidden border border-slate-200">
+            <div class="bg-white border-b border-slate-200 px-5 py-4 flex items-center justify-between sticky top-0 z-10">
                 <div class="flex items-center gap-4">
-                    <img src="img/ucc.png" alt="Logo UCC" class="h-12 object-contain">
+                    <img src="img/ucc.png" alt="Logo UCC" class="h-10 object-contain">
                     <div class="h-8 w-px bg-slate-200"></div>
                     <div>
-                        <span class="text-uccDark font-black text-sm tracking-widest uppercase">Crear Nuevo Espacio</span>
-                        <p class="text-[10px] font-bold text-slate-500 uppercase tracking-widest mt-1">Sistema de Gestión de Aires</p>
+                        <span class="text-slate-900 font-semibold text-sm">Crear Nuevo Espacio</span>
+                        <p class="text-xs text-slate-500 mt-0.5">Sistema de Gestión de Aires</p>
                     </div>
                 </div>
-                <button onclick="closeCrearEspacioModal()" class="text-slate-500 hover:text-uccDark text-2xl font-black leading-none">×</button>
+                <button type="button" onclick="closeCrearEspacioModal()" aria-label="Cerrar" class="shrink-0 h-8 w-8 flex items-center justify-center rounded-lg text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition"><i class="fas fa-times" aria-hidden="true"></i></button>
             </div>
 
-            <div class="p-10 overflow-y-auto max-h-[85vh]">
+            <div class="p-5 overflow-y-auto flex-1 overscroll-contain">
                 <form id="formCrearEspacio" onsubmit="submitCrearEspacio(event)" class="space-y-8">
-                    <div class="grid grid-cols-2 gap-8">
+                    <div class="grid grid-cols-2 gap-5">
                          <div>
-                             <label for="inputCodigoEspacio" class="block text-xs font-black uppercase tracking-widest text-slate-600 mb-3">Código del Espacio</label>
-                             <input id="inputCodigoEspacio" type="text" placeholder="Ej: ESP-LAB-001" required class="w-full bg-white border border-slate-300 rounded-xl px-4 py-3 text-sm text-slate-700 font-medium focus:outline-none focus:ring-2 focus:ring-[#00acc9] transition-all shadow-sm">
+                             <label for="inputCodigoEspacio" class="field-label">Código del Espacio</label>
+                             <input id="inputCodigoEspacio" type="text" placeholder="Ej: ESP-LAB-001" required class="field">
                          </div>
                          <div>
-                             <label for="inputNombreEspacio" class="block text-xs font-black uppercase tracking-widest text-slate-600 mb-3">Nombre del Espacio</label>
-                             <input id="inputNombreEspacio" type="text" placeholder="Ej: Laboratorio de Sistemas 1" required class="w-full bg-white border border-slate-300 rounded-xl px-4 py-3 text-sm text-slate-700 font-medium focus:outline-none focus:ring-2 focus:ring-[#00acc9] transition-all shadow-sm">
+                             <label for="inputNombreEspacio" class="field-label">Nombre del Espacio</label>
+                             <input id="inputNombreEspacio" type="text" placeholder="Ej: Laboratorio de Sistemas 1" required class="field">
                          </div>
                          <div>
-                             <label for="inputPisoEspacio" class="block text-xs font-black uppercase tracking-widest text-slate-600 mb-3">Número de Piso</label>
-                              <input id="inputPisoEspacio" type="number" placeholder="Ej: 1" min="1" max="7" required class="w-full bg-white border border-slate-300 rounded-xl px-4 py-3 text-sm text-slate-700 font-medium focus:outline-none focus:ring-2 focus:ring-[#00acc9] transition-all shadow-sm">
+                             <label for="inputPisoEspacio" class="field-label">Número de Piso</label>
+                              <input id="inputPisoEspacio" type="number" placeholder="Ej: 1" min="1" max="7" required class="field">
                          </div>
                          <div>
-                             <label for="select-bloque-espacio" class="block text-xs font-black uppercase tracking-widest text-slate-600 mb-3">Bloque</label>
-                             <select id="select-bloque-espacio" required class="w-full bg-white border border-slate-300 rounded-xl px-4 py-3 text-sm text-slate-700 font-medium focus:outline-none focus:ring-2 focus:ring-[#00acc9] transition-all shadow-sm appearance-none">
+                             <label for="select-bloque-espacio" class="field-label">Bloque</label>
+                             <select id="select-bloque-espacio" required class="field appearance-none">
                                  <option value="">Cargando bloques...</option>
                              </select>
                          </div>
                          <div>
-                             <label for="select-tipo-espacio" class="block text-xs font-black uppercase tracking-widest text-slate-600 mb-3">Tipo de Espacio</label>
-                             <select id="select-tipo-espacio" required class="w-full bg-white border border-slate-300 rounded-xl px-4 py-3 text-sm text-slate-700 font-medium focus:outline-none focus:ring-2 focus:ring-[#00acc9] transition-all shadow-sm appearance-none">
+                             <label for="select-tipo-espacio" class="field-label">Tipo de Espacio</label>
+                             <select id="select-tipo-espacio" required class="field appearance-none">
                                  <option value="">Cargando tipos...</option>
                              </select>
                          </div>
                     </div>
 
                     <div class="flex flex-col md:flex-row gap-4 justify-end pt-6 border-t border-slate-200">
-                         <button type="button" onclick="closeCrearEspacioModal()" class="bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold px-6 py-3 rounded-xl transition flex items-center justify-center gap-2">
+                         <button type="button" onclick="closeCrearEspacioModal()" class="btn-secondary">
                              <i class="fas fa-times"></i>
                              <span>Cancelar</span>
                          </button>
-                         <button type="submit" class="bg-slate-600 hover:bg-slate-700 text-white font-bold px-6 py-3 rounded-xl shadow-lg transition-all flex items-center justify-center gap-2">
+                         <button type="submit" class="btn-primary">
                              <i class="fas fa-check"></i>
                              <span>Crear Espacio</span>
                          </button>
@@ -697,15 +700,15 @@
 
     <!-- Modal Historial Técnico del Equipo -->
     <div id="modal-historial-equipo" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm hidden flex items-center justify-center z-50 p-4">
-        <div class="bg-white w-full max-w-4xl rounded-2xl shadow-2xl overflow-hidden">
-            <div class="px-6 py-4 border-b border-slate-200 flex items-center justify-between">
-                <h3 id="historialModalTitle" class="text-sm md:text-base font-black text-uccDark tracking-wide">Hoja de Vida Técnica</h3>
-                <button type="button" onclick="cerrarHistorialModal()" class="text-slate-500 hover:text-uccDark text-2xl font-black leading-none">×</button>
+        <div class="bg-white w-full max-w-4xl rounded-xl overflow-hidden max-h-[90dvh] flex flex-col border border-slate-200">
+            <div class="px-4 py-4 border-b border-slate-200 flex items-center justify-between">
+                <h3 id="historialModalTitle" class="text-sm md:text-base font-semibold text-uccDark tracking-wide">Hoja de Vida Técnica</h3>
+                <button type="button" onclick="cerrarHistorialModal()" aria-label="Cerrar" class="shrink-0 h-9 w-9 flex items-center justify-center rounded-lg text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition"><i class="fas fa-times" aria-hidden="true"></i></button>
             </div>
             <div class="max-h-[70vh] overflow-y-auto">
                 <div class="overflow-x-auto">
                     <table class="w-full text-left">
-                        <thead class="bg-slate-50 text-[10px] font-black uppercase tracking-widest text-slate-500 border-b border-slate-200">
+                        <thead class="bg-slate-50 text-[11px] font-semibold uppercase tracking-wider text-slate-500 border-b border-slate-200">
                             <tr>
                                 <th class="px-4 py-3">Fecha</th>
                                 <th class="px-4 py-3">Tipo</th>
@@ -723,16 +726,16 @@
 
     <!-- Modal Ficha Técnica del Equipo -->
     <div id="modal-hoja-vida" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm hidden flex items-center justify-center z-50 p-4" style="display: none;">
-        <div class="bg-slate-50 w-full max-w-6xl rounded-3xl shadow-2xl overflow-hidden max-h-[92vh] flex flex-col border border-slate-200/80">
+        <div class="bg-slate-50 w-full max-w-6xl rounded-xl overflow-hidden max-h-[90dvh] overscroll-contain flex flex-col border border-slate-200/80">
             <!-- Encabezado -->
-            <div class="bg-white px-8 py-5 border-b border-slate-200 flex items-center justify-between shrink-0">
+            <div class="bg-white px-5 py-4 border-b border-slate-200 flex items-center justify-between shrink-0">
                 <div class="flex items-center gap-5 min-w-0">
-                    <div class="hidden sm:flex h-12 w-12 items-center justify-center rounded-2xl bg-uccLight/10 text-uccLight shrink-0">
+                    <div class="hidden sm:flex h-12 w-12 items-center justify-center rounded-xl bg-uccLight/10 text-uccLight shrink-0">
                         <i class="fas fa-file-medical-alt text-lg"></i>
                     </div>
                     <div class="min-w-0">
-                        <p class="text-[10px] font-black uppercase tracking-[0.2em] text-uccLight mb-0.5">Ficha del activo</p>
-                        <h2 class="text-uccDark font-black text-lg tracking-tight truncate">Hoja de Vida Técnica</h2>
+                        <p class="text-[11px] font-semibold uppercase tracking-wider text-uccLight mb-0.5">Ficha del activo</p>
+                        <h2 class="text-uccDark font-semibold text-lg tracking-tight truncate">Hoja de Vida Técnica</h2>
                         <p id="technicalSheetSubtitle" class="text-sm text-slate-500 font-medium truncate mt-0.5">---</p>
                     </div>
                 </div>
@@ -741,43 +744,43 @@
                 </button>
             </div>
 
-            <div class="overflow-y-auto flex-1 p-6 md:p-8 space-y-6">
+            <div class="overflow-y-auto flex-1 p-4 md:p-4 space-y-4">
                 <!-- Identidad + especificaciones -->
-                <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+                <div class="bg-white rounded-xl border border-slate-200 overflow-hidden">
                     <div class="grid grid-cols-1 lg:grid-cols-12">
                         <!-- Panel identidad -->
-                        <div class="lg:col-span-4 bg-uccDark text-white p-8 md:p-10 flex flex-col justify-center border-b lg:border-b-0 lg:border-r border-slate-700/30">
-                            <p class="text-[10px] font-black uppercase tracking-[0.25em] text-uccLight mb-3">ID de Inventario</p>
-                            <h3 id="technicalSheetId" class="text-4xl md:text-5xl font-black tracking-tighter leading-none mb-6 break-all">---</h3>
-                            <div id="technicalSheetStatusPill" class="inline-flex items-center gap-2 bg-emerald-500/15 text-emerald-200 px-4 py-2 rounded-full w-fit text-xs font-bold">
-                                <span class="w-2 h-2 rounded-full bg-emerald-400"></span> Operativo
+                        <div class="lg:col-span-4 bg-uccDark text-white p-5 md:p-4 flex flex-col justify-center border-b lg:border-b-0 lg:border-r border-slate-700/30">
+                            <p class="text-[11px] font-semibold uppercase tracking-wider text-uccLight mb-3">ID de Inventario</p>
+                            <h3 id="technicalSheetId" class="text-2xl font-semibold tracking-tight leading-tight mb-4 break-all">---</h3>
+                            <div id="technicalSheetStatusPill" class="inline-flex items-center gap-2 w-fit">
+                                <span class="status-pill status-success"><i class="fas fa-check" aria-hidden="true"></i> Operativo</span>
                             </div>
                         </div>
 
                         <!-- Especificaciones y parámetros -->
-                        <div class="lg:col-span-8 p-8 md:p-10 grid grid-cols-1 md:grid-cols-2 gap-x-10 gap-y-8">
+                        <div class="lg:col-span-8 p-5 md:p-4 grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-5">
                             <section>
                                 <div class="flex items-center gap-2 mb-5 pb-3 border-b border-slate-100">
                                     <i class="fas fa-microchip text-uccLight text-sm"></i>
-                                    <h4 class="text-[11px] font-black text-slate-500 uppercase tracking-widest">Especificaciones Técnicas</h4>
+                                    <h4 class="text-[11px] font-semibold text-slate-500 uppercase tracking-wider">Especificaciones Técnicas</h4>
                                 </div>
                                 <dl class="space-y-4">
                                     <div class="grid grid-cols-2 gap-4">
                                         <div>
-                                            <dt class="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Marca</dt>
+                                            <dt class="text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-1">Marca</dt>
                                             <dd id="technicalSheetBrand" class="text-sm font-bold text-uccDark">---</dd>
                                         </div>
                                         <div>
-                                            <dt class="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Modelo</dt>
+                                            <dt class="text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-1">Modelo</dt>
                                             <dd id="technicalSheetModel" class="text-sm font-bold text-uccDark">---</dd>
                                         </div>
                                     </div>
                                     <div>
-                                        <dt class="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Número de Serie</dt>
+                                        <dt class="text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-1">Número de Serie</dt>
                                         <dd id="technicalSheetSerialNumber" class="text-sm font-bold text-uccDark font-mono">---</dd>
                                     </div>
                                     <div>
-                                        <dt class="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Tipo de Equipo</dt>
+                                        <dt class="text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-1">Tipo de Equipo</dt>
                                         <dd id="technicalSheetType" class="text-sm font-bold text-uccDark">---</dd>
                                     </div>
                                 </dl>
@@ -786,23 +789,23 @@
                             <section>
                                 <div class="flex items-center gap-2 mb-5 pb-3 border-b border-slate-100">
                                     <i class="fas fa-gauge-high text-uccLight text-sm"></i>
-                                    <h4 class="text-[11px] font-black text-slate-500 uppercase tracking-widest">Parámetros Operacionales</h4>
+                                    <h4 class="text-[11px] font-semibold text-slate-500 uppercase tracking-wider">Parámetros Operacionales</h4>
                                 </div>
                                 <dl class="grid grid-cols-2 gap-x-4 gap-y-4">
                                     <div>
-                                        <dt class="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Potencia</dt>
+                                        <dt class="text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-1">Potencia</dt>
                                         <dd id="technicalSheetBtu" class="text-sm font-bold text-uccDark">---</dd>
                                     </div>
                                     <div>
-                                        <dt class="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Tonelaje</dt>
+                                        <dt class="text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-1">Tonelaje</dt>
                                         <dd id="technicalSheetTr" class="text-sm font-bold text-uccDark">---</dd>
                                     </div>
                                     <div>
-                                        <dt class="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Voltaje</dt>
+                                        <dt class="text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-1">Voltaje</dt>
                                         <dd id="technicalSheetVoltage" class="text-sm font-bold text-uccDark">---</dd>
                                     </div>
                                     <div>
-                                        <dt class="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Refrigerante</dt>
+                                        <dt class="text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-1">Refrigerante</dt>
                                         <dd id="technicalSheetRefrigerant" class="text-sm font-bold text-uccDark">---</dd>
                                     </div>
                                 </dl>
@@ -813,12 +816,12 @@
 
                 <!-- Ubicación, ciclo de vida y próximo mantenimiento -->
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
-                    <section class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6">
+                    <section class="bg-white rounded-xl border border-slate-200 p-4">
                         <div class="flex items-center gap-2 mb-5">
                             <span class="flex h-8 w-8 items-center justify-center rounded-lg bg-uccLight/10 text-uccLight">
                                 <i class="fas fa-map-marker-alt text-xs"></i>
                             </span>
-                            <h5 class="text-[11px] font-black text-slate-500 uppercase tracking-widest">Ubicación Técnica</h5>
+                            <h5 class="text-[11px] font-semibold text-slate-500 uppercase tracking-wider">Ubicación Técnica</h5>
                         </div>
                         <dl class="space-y-3">
                             <div class="flex items-start justify-between gap-3 py-2.5 border-b border-slate-100">
@@ -836,12 +839,12 @@
                         </dl>
                     </section>
 
-                    <section class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6">
+                    <section class="bg-white rounded-xl border border-slate-200 p-4">
                         <div class="flex items-center gap-2 mb-5">
                             <span class="flex h-8 w-8 items-center justify-center rounded-lg bg-uccLight/10 text-uccLight">
                                 <i class="fas fa-calendar-check text-xs"></i>
                             </span>
-                            <h5 class="text-[11px] font-black text-slate-500 uppercase tracking-widest">Ciclo de Vida</h5>
+                            <h5 class="text-[11px] font-semibold text-slate-500 uppercase tracking-wider">Ciclo de Vida</h5>
                         </div>
                         <dl class="space-y-3">
                             <div class="flex items-start justify-between gap-3 py-2.5 border-b border-slate-100">
@@ -859,35 +862,35 @@
                         </dl>
                     </section>
 
-                    <section class="bg-uccDark rounded-2xl shadow-lg p-6 text-white flex flex-col justify-between relative overflow-hidden">
+                    <section class="bg-uccDark rounded-xl p-4 text-white flex flex-col justify-between relative overflow-hidden">
                         <div class="absolute top-0 left-0 right-0 h-1 bg-uccLight"></div>
                         <div class="flex items-center gap-2 mb-4 mt-1">
                             <span class="flex h-8 w-8 items-center justify-center rounded-lg bg-white/10 text-uccLight">
                                 <i class="fas fa-wrench text-xs"></i>
                             </span>
-                            <h5 class="text-[11px] font-black uppercase tracking-widest text-white/70">Próximo Mantenimiento</h5>
+                            <h5 class="text-[11px] font-semibold uppercase tracking-wider text-white/70">Próximo Mantenimiento</h5>
                         </div>
                         <div>
-                            <h4 id="technicalSheetNextMaintenance" class="text-3xl md:text-4xl font-black tracking-tight tabular-nums leading-tight">---</h4>
+                            <h4 id="technicalSheetNextMaintenance" class="text-2xl font-semibold tracking-tight tabular-nums leading-tight">---</h4>
                             <p id="technicalSheetCountdown" class="text-xs text-white/60 font-medium mt-3 leading-relaxed">---</p>
                         </div>
                     </section>
                 </div>
 
                 <!-- Historial -->
-                <section class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
-                    <div class="px-6 py-4 border-b border-slate-100 bg-slate-50/80 flex items-center gap-2">
+                <section class="bg-white rounded-xl border border-slate-200 overflow-hidden">
+                    <div class="px-4 py-4 border-b border-slate-100 bg-slate-50/80 flex items-center gap-2">
                         <i class="fas fa-history text-uccLight text-sm"></i>
-                        <h3 class="text-[11px] font-black text-uccDark uppercase tracking-widest">Historial de Intervenciones</h3>
+                        <h3 class="text-[11px] font-semibold text-uccDark uppercase tracking-wider">Historial de Intervenciones</h3>
                     </div>
                     <div class="overflow-x-auto">
                         <table class="w-full text-sm">
                             <thead>
-                                <tr class="text-[10px] font-black text-slate-400 uppercase tracking-widest border-b border-slate-100 bg-white">
-                                    <th class="px-6 py-3.5 text-left font-black">Fecha</th>
-                                    <th class="px-6 py-3.5 text-left font-black">Técnico</th>
-                                    <th class="px-6 py-3.5 text-left font-black">Tipo</th>
-                                    <th class="px-6 py-3.5 text-left font-black">Observaciones</th>
+                                <tr class="text-[11px] font-semibold text-slate-400 uppercase tracking-wider border-b border-slate-100 bg-white">
+                                    <th class="px-4 py-2.5 text-left font-semibold">Fecha</th>
+                                    <th class="px-4 py-2.5 text-left font-semibold">Técnico</th>
+                                    <th class="px-4 py-2.5 text-left font-semibold">Tipo</th>
+                                    <th class="px-4 py-2.5 text-left font-semibold">Observaciones</th>
                                 </tr>
                             </thead>
                             <tbody id="technicalSheetHistory" class="divide-y divide-slate-100"></tbody>
@@ -897,17 +900,16 @@
 
                 <!-- Acciones -->
                 <div class="flex flex-wrap justify-end gap-3 pt-2">
-                    <button id="btn-activar-equipo" data-solo-gestion onclick="activateTechnicalSheet()" class="bg-emerald-600 hover:bg-emerald-700 text-white px-5 py-2.5 rounded-xl text-sm font-bold transition flex items-center gap-2 hidden"><i class="fas fa-play"></i> Activar Equipo</button>
+                    <div id="modalEstadoAccion" class="contents"></div>
                     <button data-solo-gestion onclick="abrirModalTraslado(window.currentEquipoId)" class="bg-sky-600 hover:bg-sky-700 text-white px-5 py-2.5 rounded-xl text-sm font-bold transition flex items-center gap-2"><i class="fas fa-location-arrow"></i> Trasladar Equipo</button>
                     <button data-solo-gestion onclick="editTechnicalSheet()" class="bg-uccDark hover:bg-uccDark/90 text-white px-5 py-2.5 rounded-xl text-sm font-bold transition flex items-center gap-2"><i class="fas fa-pen-to-square"></i> Editar Equipo</button>
-                    <button data-solo-gestion onclick="decommissionTechnicalSheet()" class="bg-red-600 hover:bg-red-700 text-white px-5 py-2.5 rounded-xl text-sm font-bold transition flex items-center gap-2"><i class="fas fa-power-off"></i> Dar de Baja</button>
                 </div>
             </div>
         </div>
     </div>
 
     <div id="modal-detalle-dia-inline" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm hidden items-center justify-center z-50 p-4">
-        <div class="bg-white w-full max-w-2xl rounded-3xl shadow-2xl p-6 max-h-[85vh] overflow-y-auto">
+        <div class="bg-white w-full max-w-2xl rounded-xl p-4 max-h-[90dvh] overscroll-contain overflow-y-auto border border-slate-200">
             <div class="flex items-start justify-between mb-2">
                 <div>
                     <h2 class="text-base font-bold text-uccDark">Detalle del día</h2>
@@ -916,36 +918,36 @@
                 <button type="button" onclick="cerrarDetalleDiaInline()" class="text-slate-500 hover:text-slate-800 p-2" aria-label="Cerrar detalle">✕</button>
             </div>
             <p class="text-xs text-slate-500 mb-3">Solo lectura.</p>
-            <div class="overflow-x-auto"><table class="w-full text-sm"><thead><tr class="text-[10px] font-bold text-slate-400 uppercase tracking-widest border-b border-slate-100"><th class="px-4 py-3 text-left">Fecha</th><th class="px-4 py-3 text-left">Responsable</th><th class="px-4 py-3 text-left">Tipo</th><th class="px-4 py-3 text-left">Descripción</th><th class="px-4 py-3 text-left">Estado del equipo</th><th class="px-4 py-3 text-left">Gasto total</th></tr></thead><tbody id="tabla-detalle-dia-inline-body" class="divide-y divide-slate-100"></tbody></table></div>
+            <div class="overflow-x-auto"><table class="w-full text-sm"><thead><tr class="text-[11px] font-bold text-slate-400 uppercase tracking-wider border-b border-slate-100"><th class="px-4 py-3 text-left">Fecha</th><th class="px-4 py-3 text-left">Responsable</th><th class="px-4 py-3 text-left">Tipo</th><th class="px-4 py-3 text-left">Descripción</th><th class="px-4 py-3 text-left">Estado del equipo</th><th class="px-4 py-3 text-left">Gasto total</th></tr></thead><tbody id="tabla-detalle-dia-inline-body" class="divide-y divide-slate-100"></tbody></table></div>
             <div class="flex justify-end pt-4"><button type="button" onclick="cerrarDetalleDiaInline()" class="rounded-xl text-sm font-semibold px-5 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700">Cerrar</button></div>
         </div>
     </div>
 
 <div id="modal-trasladar-equipo" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm hidden items-center justify-center z-50 p-4" role="dialog" aria-modal="true" aria-labelledby="titulo-modal-traslado">
-    <div class="bg-white w-full max-w-lg rounded-2xl shadow-2xl overflow-hidden">
-        <div class="flex items-center justify-between gap-4 px-6 py-4 border-b border-slate-200">
+    <div class="bg-white w-full max-w-lg rounded-xl overflow-hidden border border-slate-200">
+        <div class="flex items-center justify-between gap-4 px-4 py-4 border-b border-slate-200">
             <div>
-                <h2 id="titulo-modal-traslado" class="text-base font-black text-uccDark uppercase tracking-widest">Trasladar Equipo</h2>
+                <h2 id="titulo-modal-traslado" class="text-base font-semibold text-uccDark uppercase tracking-wider">Trasladar Equipo</h2>
                 <p class="text-xs text-slate-500 font-medium mt-1">Cambio de ubicación con trazabilidad</p>
             </div>
-            <button type="button" onclick="cerrarModalTraslado()" class="text-slate-500 hover:text-uccDark text-2xl font-black leading-none" aria-label="Cerrar">×</button>
+            <button type="button" onclick="cerrarModalTraslado()" class="shrink-0 h-9 w-9 flex items-center justify-center rounded-lg text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition" aria-label="Cerrar"><i class="fas fa-times" aria-hidden="true"></i></button>
         </div>
-        <form id="form-trasladar-equipo" class="p-6 space-y-5">
+        <form id="form-trasladar-equipo" class="p-4 space-y-5">
             <div class="rounded-xl border border-slate-200 bg-slate-50 px-4 py-3">
-                <p class="text-[10px] font-black uppercase tracking-widest text-slate-500">Activo</p>
+                <p class="text-[11px] font-semibold uppercase tracking-wider text-slate-500">Activo</p>
                 <p id="traslado-equipo-codigo" class="text-sm font-bold text-uccDark mt-1">---</p>
                 <p id="traslado-origen" class="text-xs text-slate-500 mt-0.5">---</p>
             </div>
             <div>
-                <label for="select-espacio-destino" class="block text-xs font-black uppercase tracking-widest text-slate-600 mb-2">Espacio de destino</label>
-                <select id="select-espacio-destino" required class="w-full bg-white border border-slate-300 rounded-xl px-4 py-3 text-sm text-slate-700 font-medium focus:outline-none focus:ring-2 focus:ring-[#00acc9] transition-all shadow-sm">
+                <label for="select-espacio-destino" class="field-label">Espacio de destino</label>
+                <select id="select-espacio-destino" required class="field">
                     <option value="">Cargando espacios...</option>
                 </select>
             </div>
             <p id="traslado-error" class="hidden text-xs font-semibold text-red-600"></p>
             <div class="flex justify-end gap-3 pt-2 border-t border-slate-200">
                 <button type="button" onclick="cerrarModalTraslado()" class="bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold px-5 py-2.5 rounded-xl transition">Cancelar</button>
-                <button type="submit" id="btn-confirmar-traslado" class="bg-uccLight hover:bg-[#00b8d4] text-white font-bold px-5 py-2.5 rounded-xl shadow-lg transition disabled:opacity-50 disabled:cursor-not-allowed">Trasladar</button>
+                <button type="submit" id="btn-confirmar-traslado" class="btn-primary text-sm px-4 py-2">Trasladar</button>
             </div>
         </form>
     </div>

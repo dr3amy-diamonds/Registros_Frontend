@@ -17,14 +17,23 @@
             return;
         }
 
+        function sincronizarEstadoMenu() {
+            const abierto = !sidebar.classList.contains("-translate-x-full");
+            document.querySelectorAll('#btn-menu-toggle, [id*="btn-menu"], .toggle-sidebar').forEach((boton) => {
+                boton.setAttribute('aria-expanded', String(abierto));
+            });
+        }
+
         function toggleSidebar() {
             sidebar.classList.toggle("-translate-x-full");
             overlay.classList.toggle("hidden");
+            sincronizarEstadoMenu();
         }
 
         function cerrarSidebar() {
             sidebar.classList.add("-translate-x-full");
             overlay.classList.add("hidden");
+            sincronizarEstadoMenu();
         }
 
         function obtenerNavContainer() {
@@ -69,12 +78,10 @@
                     navContainer.insertAdjacentHTML(
                         "beforeend",
                         `
-                                <a href="${boton.href}" id="${boton.id}" class="flex items-center gap-3 px-4 py-3 text-slate-600 hover:bg-slate-700/50 hover:text-white rounded-xl transition-all text-sm font-medium group">
-                                    <div class="text-slate-500 group-hover:text-uccLight transition-colors">
-                                    <i class="${boton.icono} text-base"></i>
-                                </div>
-                                <span>${boton.label}</span>
-                            </a>
+                                <a href="${boton.href}" id="${boton.id}" class="flex items-center gap-3 px-3 py-2.5 text-slate-700 hover:bg-slate-100 rounded-lg transition text-sm font-medium">
+                                    <i class="${boton.icono} w-5" aria-hidden="true"></i>
+                                    <span>${boton.label}</span>
+                                </a>
                         `
                     );
                 }
@@ -84,19 +91,9 @@
                 const enlace = document.getElementById(navId);
                 if (!enlace) return;
 
-                enlace.classList.remove("text-slate-300", "hover:bg-slate-700/50", "hover:text-white");
-                enlace.classList.add("bg-uccLight", "text-uccDark", "font-bold");
-
-                const iconoContenedor = enlace.querySelector("div");
-                const texto = enlace.querySelector("span");
-
-                if (iconoContenedor) {
-                    iconoContenedor.className = "text-uccDark";
-                }
-
-                if (texto) {
-                    texto.className = "text-uccDark";
-                }
+                enlace.classList.remove("text-slate-600", "text-slate-700", "hover:bg-slate-100");
+                enlace.classList.add("bg-cyan-50", "text-uccDark", "border", "border-cyan-200", "font-semibold");
+                enlace.setAttribute("aria-current", "page");
             }
 
             if (currentPath.includes("mis-ordenes") || currentPath.includes("mis_ordenes")) {
@@ -132,8 +129,29 @@
             if (enlace && !enlace.id) enlace.id = "nav-calendario";
             if (enlace && (currentPath.includes("calendario") || currentPath.includes("calendar"))) {
                 enlace.classList.remove("text-slate-600", "text-slate-700", "hover:bg-slate-100");
-                enlace.classList.add("bg-uccLight", "text-uccDark", "font-bold");
+                enlace.classList.add("bg-cyan-50", "text-uccDark", "border", "border-cyan-200", "font-semibold");
+                enlace.setAttribute("aria-current", "page");
             }
+        }
+
+        function marcarEnlaceActivoGenerico() {
+            if (esTecnico()) return;
+            const mapa = [
+                { ruta: "dashboard", href: "/dashboard" },
+                { ruta: "inventario", href: "/inventario" },
+                { ruta: "programacion", href: "/programacion" },
+                { ruta: "auditoria", href: "/auditoria" },
+                { ruta: "exportar", href: "/exportar" },
+                { ruta: "usuarios", href: "/usuarios" }
+            ];
+            const coincidencia = mapa.find((item) => currentPath.includes(item.ruta));
+            if (!coincidencia) return;
+            const enlace = Array.from(document.querySelectorAll("#sidebar nav a, aside nav a"))
+                .find((nodo) => nodo.getAttribute("href") === coincidencia.href);
+            if (!enlace) return;
+            enlace.classList.remove("text-slate-700", "hover:bg-slate-100");
+            enlace.classList.add("bg-cyan-50", "text-uccDark", "border", "border-cyan-200", "font-semibold");
+            enlace.setAttribute("aria-current", "page");
         }
 
         function accionInventario(nombre) {
@@ -172,8 +190,8 @@
             box.id = 'sidebar-acciones-secundarias';
             box.className = 'px-4 pb-2 mt-auto';
             box.setAttribute('aria-label', 'Acciones');
-            box.innerHTML = '<p class="px-4 text-[10px] font-black uppercase tracking-widest text-slate-500 mb-1">Acciones</p>' +
-                acciones.map((a) => '<button type="button" onclick="accionInventario(\'' + a.fn + '\')" class="w-full flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-bold text-[#132740] bg-slate-100 hover:bg-[#00acc9]/15 border border-slate-200 transition min-h-[36px] mt-1"><i class="' + a.icon + ' text-[#00acc9]"></i><span>' + a.label + '</span></button>').join('');
+            box.innerHTML = '<p class="px-4 text-[10px] font-semibold uppercase tracking-wider text-slate-500 mb-1">Acciones</p>' +
+                acciones.map((a) => '<button type="button" onclick="accionInventario(\'' + a.fn + '\')" class="w-full flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-medium text-[#132740] bg-slate-100 hover:bg-[#00acc9]/15 border border-slate-200 transition min-h-[36px] mt-1"><i class="' + a.icon + ' text-[#00acc9]"></i><span>' + a.label + '</span></button>').join('');
             nav.insertAdjacentElement('afterend', box);
         }
 
@@ -252,6 +270,7 @@
 
         limpiarEInyectarNavTecnico();
         asegurarEnlaceCalendario();
+        marcarEnlaceActivoGenerico();
         inyectarAccionesSecundarias();
         vincularBotonCerrarSesion();
         vincularControlesMoviles();

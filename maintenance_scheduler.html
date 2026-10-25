@@ -72,22 +72,25 @@
                     </div>
                 </div>
 
-                <!-- Barra de filtros ultra-compacta: 1 sola línea -->
-                <div class="flex flex-wrap items-center gap-3 bg-white p-3 rounded-xl border border-slate-100 shadow-sm mb-4">
-                        <div class="relative flex-1 min-w-[180px]">
-                                <i class="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-slate-500 text-xs"></i>
-                                <input id="input-busqueda-mantenimiento" type="search" placeholder="Aula o técnico…" autocomplete="off" aria-label="Buscar por aula o técnico" class="w-full border border-slate-200 rounded-lg pl-8 pr-3 py-1.5 text-xs bg-slate-50/50 min-h-[36px]">
+                <!-- Barra de filtros: una fila, controles integrados -->
+                <div class="flex flex-wrap items-center gap-2 bg-white p-2.5 rounded-xl border border-slate-200 mb-4">
+                        <div class="relative flex-1 min-w-[200px]">
+                                <i class="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-xs" aria-hidden="true"></i>
+                                <input id="input-busqueda-mantenimiento" type="search" placeholder="Buscar aula o técnico" autocomplete="off" aria-label="Buscar por aula o técnico" class="w-full border border-slate-200 focus:outline-none focus:border-sky-500 focus:ring-2 focus:ring-sky-500 rounded-lg pl-8 pr-3 py-1.5 text-xs bg-white min-h-[36px] transition">
                         </div>
-                            <select id="filterEstado" aria-label="Estado" class="border border-slate-200 rounded-lg px-3 py-1.5 text-xs bg-slate-50/50 min-h-[36px] cursor-pointer">
+                            <select id="filterEstado" aria-label="Estado" class="border border-slate-200 focus:outline-none focus:border-sky-500 focus:ring-2 focus:ring-sky-500 rounded-lg px-3 py-1.5 text-xs bg-white min-h-[36px] cursor-pointer transition">
                                 <option value="">Estado: Todos</option>
                                 <option value="Pendiente">Pendiente</option>
                                 <option value="Completado">Completado</option>
                                 <option value="Cancelado">Cancelado</option>
                                 <option value="Vencido">Vencido</option>
                             </select>
-                            <input id="filterFechaDesde" type="date" aria-label="Fecha desde" class="border border-slate-200 rounded-lg px-3 py-1.5 text-xs bg-slate-50/50 min-h-[36px]">
-                            <input id="filterFechaHasta" type="date" aria-label="Fecha hasta" class="border border-slate-200 rounded-lg px-3 py-1.5 text-xs bg-slate-50/50 min-h-[36px]">
-                        <button type="button" onclick="limpiarFiltrosProgramacion()" class="text-xs font-semibold text-slate-500 hover:text-[#00acc9] px-2 min-h-[36px]" aria-label="Limpiar filtros">Limpiar ✕</button>
+                            <input id="filterFechaDesde" type="date" aria-label="Fecha desde" class="border border-slate-200 focus:outline-none focus:border-sky-500 focus:ring-2 focus:ring-sky-500 rounded-lg px-2.5 py-1.5 text-xs bg-white min-h-[36px] transition">
+                            <input id="filterFechaHasta" type="date" aria-label="Fecha hasta" class="border border-slate-200 focus:outline-none focus:border-sky-500 focus:ring-2 focus:ring-sky-500 rounded-lg px-2.5 py-1.5 text-xs bg-white min-h-[36px] transition">
+                        <button type="button" onclick="limpiarFiltrosProgramacion()" aria-label="Limpiar filtros" class="inline-flex items-center gap-1.5 border border-slate-200 bg-white hover:bg-slate-50 text-slate-600 font-semibold text-xs px-3 py-1.5 rounded-lg min-h-[36px] transition">
+                            <i class="fas fa-xmark text-[11px]" aria-hidden="true"></i>
+                            Limpiar
+                        </button>
                 </div>
 
                 <!-- Tabla de órdenes -->
@@ -117,13 +120,13 @@
                     </div>
 
                     <!-- Paginación -->
-                    <div class="px-8 py-5 border-t border-slate-100 flex flex-col sm:flex-row items-center justify-between gap-4 bg-slate-50/50">
-                        <p id="paginacion-texto" class="text-sm text-slate-600 font-medium">Mostrando 0 a 0 de 0 órdenes en total</p>
-                        <div class="flex gap-2">
-                            <button type="button" id="btn-pagina-anterior" disabled aria-label="Ir a la página anterior de órdenes" class="rounded-xl text-sm font-semibold px-5 py-2.5 bg-white border border-slate-200 text-slate-700 transition-all disabled:opacity-40 disabled:cursor-not-allowed hover:bg-slate-50 min-h-[44px]">
+                    <div class="flex items-center justify-between py-3 px-4 border-t border-slate-100">
+                        <p id="paginacion-texto" class="text-xs text-slate-500 font-medium">Mostrando 0 a 0 de 0 órdenes en total</p>
+                        <div class="flex items-center gap-2">
+                            <button type="button" id="btn-pagina-anterior" disabled aria-label="Ir a la página anterior de órdenes" class="inline-flex items-center justify-center rounded-lg text-xs font-semibold px-3 py-1.5 bg-white border border-slate-200 text-slate-700 transition-colors hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed min-h-[34px]">
                                 <i class="fas fa-chevron-left mr-1" aria-hidden="true"></i> Anterior
                             </button>
-                            <button type="button" id="btn-pagina-siguiente" disabled aria-label="Ir a la página siguiente de órdenes" class="rounded-xl text-sm font-semibold px-5 py-2.5 bg-white border border-slate-200 text-slate-700 transition-all disabled:opacity-40 disabled:cursor-not-allowed hover:bg-slate-50 min-h-[44px]">
+                            <button type="button" id="btn-pagina-siguiente" disabled aria-label="Ir a la página siguiente de órdenes" class="inline-flex items-center justify-center rounded-lg text-xs font-semibold px-3 py-1.5 bg-white border border-slate-200 text-slate-700 transition-colors hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed min-h-[34px]">
                                 Siguiente <i class="fas fa-chevron-right ml-1" aria-hidden="true"></i>
                             </button>
                         </div>

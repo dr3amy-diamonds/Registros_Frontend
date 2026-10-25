@@ -1,7 +1,13 @@
 /**
  * AiresFlow — audit-logs-loader.js
- * Bitácora de Gestión: consume GET /auditoria/ con filtros server-side.
+ * Bitácora de Gestión: consume GET /auditoria/ con filtros y paginación server-side.
  */
+
+const REGISTROS_POR_PAGINA_BITACORA = 10;
+
+let paginaBitacora = 1;
+let solicitudBitacora = null;
+let totalBitacora = 0;
 
 let filtrosBitacora = {
     fecha_desde: "",
@@ -26,8 +32,15 @@ function extraerMensajeError(error) {
     return error?.message || String(error) || 'Error desconocido';
 }
 
+function totalPaginasBitacora() {
+    return Math.max(1, Math.ceil(totalBitacora / REGISTROS_POR_PAGINA_BITACORA));
+}
+
 function construirQueryBitacora() {
-    const params = new URLSearchParams({ limit: "200" });
+    const params = new URLSearchParams({
+        skip: String((paginaBitacora - 1) * REGISTROS_POR_PAGINA_BITACORA),
+        limit: String(REGISTROS_POR_PAGINA_BITACORA),
+    });
     Object.entries(filtrosBitacora).forEach(([clave, valor]) => {
         if (valor !== "" && valor !== null && valor !== undefined) {
             params.set(clave, valor);
@@ -36,70 +49,141 @@ function construirQueryBitacora() {
     return params.toString();
 }
 
+function actualizarPaginacionBitacora() {
+    const resumen = document.getElementById('bitacora-resumen');
+    const indicador = document.getElementById('indicador-pagina-bitacora');
+    const btnAnterior = document.getElementById('btn-bitacora-anterior');
+    const btnSiguiente = document.getElementById('btn-bitacora-siguiente');
+
+    const paginas = totalPaginasBitacora();
+    if (paginaBitacora > paginas) paginaBitacora = paginas;
+    if (paginaBitacora < 1) paginaBitacora = 1;
+
+    const desde = totalBitacora === 0 ? 0 : (paginaBitacora - 1) * REGISTROS_POR_PAGINA_BITACORA + 1;
+    const hasta = totalBitacora === 0 ? 0 : Math.min(paginaBitacora * REGISTROS_POR_PAGINA_BITACORA, totalBitacora);
+
+    if (resumen) {
+        resumen.textContent = totalBitacora === 0
+            ? 'Sin eventos para mostrar'
+            : `Mostrando ${desde}–${hasta} de ${totalBitacora} eventos`;
+    }
+    if (indicador) {
+        indicador.textContent = `Página ${paginaBitacora} de ${paginas}`;
+    }
+    if (btnAnterior) {
+        btnAnterior.disabled = paginaBitacora <= 1 || totalBitacora === 0;
+    }
+    if (btnSiguiente) {
+        btnSiguiente.disabled = paginaBitacora >= paginas || totalBitacora === 0;
+    }
+}
+
 function renderizarBitacora(items, total) {
     const tbody = document.getElementById('tabla-bitacora-body');
     if (!tbody) return;
 
+    totalBitacora = Number(total) || 0;
     tbody.innerHTML = '';
 
     if (!items.length) {
         tbody.innerHTML = `
             <tr>
-                <td colspan="5" class="px-8 py-12 text-center text-slate-500">
-                    <i class="fas fa-inbox text-3xl mb-3 text-slate-300"></i>
-                    <p class="font-medium">No hay eventos de gestión para mostrar con los filtros actuales.</p>
+                <td colspan="5" class="px-4 py-10 text-center text-slate-500">
+                    <i class="fas fa-inbox text-2xl mb-2 text-slate-300" aria-hidden="true"></i>
+                    <p class="text-sm font-medium">No hay eventos de gestión para mostrar con los filtros actuales.</p>
+                    <p class="text-xs text-slate-400 mt-1">Prueba limpiar los filtros para ampliar la búsqueda.</p>
                 </td>
             </tr>`;
-    } else {
-        items.forEach((evento) => {
-            const tr = document.createElement('tr');
-            tr.className = 'hover:bg-slate-50/50 transition align-top';
-            tr.innerHTML = `
-                <td class="px-6 py-5 text-sm font-semibold text-slate-700 whitespace-nowrap">${escaparHtml(evento.fecha_hora)}</td>
-                <td class="px-6 py-5 whitespace-nowrap">
-                    <p class="text-sm font-bold text-uccDark">${escaparHtml(evento.actor_nombre)}</p>
-                    <p class="text-xs text-slate-500 font-medium mt-0.5">${escaparHtml(evento.actor_rol_etiqueta)}</p>
-                </td>
-                <td class="px-6 py-5 text-sm text-slate-600">${escaparHtml(evento.ubicacion)}</td>
-                <td class="px-6 py-5">
-                    <span class="inline-block bg-slate-100 text-slate-600 font-bold text-xs rounded-full px-2.5 py-1">${escaparHtml(evento.tipo_evento_etiqueta)}</span>
-                </td>
-                <td class="px-6 py-5 text-sm text-slate-700 leading-relaxed">${escaparHtml(evento.narrativa)}</td>`;
-            tbody.appendChild(tr);
-        });
+        actualizarPaginacionBitacora();
+        return;
     }
 
-    const resumen = document.getElementById('bitacora-resumen');
-    if (resumen) {
-        resumen.textContent = `${items.length} evento(s) visibles de ${total} que coinciden con los filtros`;
-    }
+    items.forEach((evento) => {
+        const tr = document.createElement('tr');
+        tr.className = 'hover:bg-slate-50 transition align-top';
+        tr.innerHTML = `
+            <td class="text-sm font-medium text-slate-700 whitespace-nowrap">${escaparHtml(evento.fecha_hora)}</td>
+            <td class="whitespace-nowrap">
+                <p class="text-sm font-medium text-slate-900">${escaparHtml(evento.actor_nombre)}</p>
+                <p class="text-xs text-slate-500 mt-0.5">${escaparHtml(evento.actor_rol_etiqueta)}</p>
+            </td>
+            <td class="text-sm text-slate-600">${escaparHtml(evento.ubicacion)}</td>
+            <td>
+                <span class="status-pill status-neutral text-[11px] px-2 py-0.5 whitespace-nowrap">${escaparHtml(evento.tipo_evento_etiqueta)}</span>
+            </td>
+            <td class="text-sm text-slate-700">
+                <p data-detalle class="line-clamp-2 max-w-[460px] leading-snug"></p>
+            </td>`;
+        const detalle = tr.querySelector('[data-detalle]');
+        if (detalle) {
+            detalle.textContent = evento.narrativa || '—';
+            detalle.title = evento.narrativa || '';
+        }
+        tbody.appendChild(tr);
+    });
+
+    actualizarPaginacionBitacora();
 }
 
 async function cargarBitacora() {
     const tbody = document.getElementById('tabla-bitacora-body');
+
+    if (solicitudBitacora) {
+        solicitudBitacora.abort();
+    }
+    const controlador = new AbortController();
+    solicitudBitacora = controlador;
+
     if (tbody) {
         tbody.innerHTML = `
             <tr>
-                <td colspan="5" class="px-8 py-12 text-center text-slate-500">
-                    <i class="fas fa-spinner fa-spin text-uccLight text-2xl mb-3"></i>
-                    <p class="font-medium">Cargando bitácora de gestión…</p>
+                <td colspan="5" class="px-4 py-10 text-center text-slate-500">
+                    <i class="fas fa-spinner fa-spin text-uccLight text-xl mb-2" aria-hidden="true"></i>
+                    <p class="text-sm">Cargando bitácora de gestión…</p>
                 </td>
             </tr>`;
     }
 
     try {
-        const respuesta = await API.get(`/auditoria/?${construirQueryBitacora()}`);
-        renderizarBitacora(respuesta?.items || [], respuesta?.total ?? 0);
+        const respuesta = await API.peticion(`/auditoria/?${construirQueryBitacora()}`, {
+            method: 'GET',
+            signal: controlador.signal,
+        });
+        if (controlador.signal.aborted) return;
+
+        const items = respuesta?.items || [];
+        const total = respuesta?.total ?? 0;
+        totalBitacora = Number(total) || 0;
+
+        const paginas = totalPaginasBitacora();
+        if (items.length === 0 && totalBitacora > 0 && paginaBitacora > paginas) {
+            paginaBitacora = paginas;
+            return cargarBitacora();
+        }
+
+        renderizarBitacora(items, totalBitacora);
     } catch (error) {
+        if (error?.name === 'AbortError' || controlador.signal.aborted) return;
         if (tbody) {
             tbody.innerHTML = `
                 <tr>
-                    <td colspan="5" class="px-8 py-12 text-center text-red-600">
-                        <i class="fas fa-exclamation-circle text-2xl mb-3"></i>
-                        <p class="font-semibold">No se pudo cargar la bitácora.</p>
-                        <p class="text-sm mt-1 text-slate-500">${escaparHtml(extraerMensajeError(error))}</p>
+                    <td colspan="5" class="px-4 py-6">
+                        <div class="rounded-lg border border-rose-200 bg-rose-50 px-4 py-3">
+                            <p class="text-sm font-medium text-rose-700">No se pudo cargar la bitácora.</p>
+                            <p class="text-xs text-rose-600 mt-1">${escaparHtml(extraerMensajeError(error))}</p>
+                            <p class="text-xs text-slate-500 mt-1">Verifica la conexión con el servidor e inténtalo de nuevo.</p>
+                            <button type="button" onclick="cargarBitacora()" class="btn-secondary text-xs min-h-[32px] px-3 py-1.5 mt-3">
+                                <i class="fas fa-redo text-[10px]" aria-hidden="true"></i>
+                                Reintentar
+                            </button>
+                        </div>
                     </td>
                 </tr>`;
+        }
+        actualizarPaginacionBitacora();
+    } finally {
+        if (solicitudBitacora === controlador) {
+            solicitudBitacora = null;
         }
     }
 }
@@ -111,7 +195,7 @@ async function cargarTiposEventoFiltro() {
     try {
         const tipos = await API.get('/auditoria/tipos-evento');
         const valorActual = select.value;
-        select.innerHTML = '<option value="">Tipo de evento</option>';
+        select.innerHTML = '<option value="">Todos</option>';
         (tipos || []).forEach((tipo) => {
             const opt = document.createElement('option');
             opt.value = tipo;
@@ -131,7 +215,7 @@ async function cargarBloquesFiltro() {
     try {
         const data = await API.get('/bloques/?limit=100');
         catalogoBloques = Array.isArray(data) ? data : (data.items || []);
-        select.innerHTML = '<option value="">Bloque</option>';
+        select.innerHTML = '<option value="">Todos</option>';
         catalogoBloques.forEach((bloque) => {
             const opt = document.createElement('option');
             opt.value = String(bloque.id);
@@ -148,9 +232,9 @@ async function cargarEspaciosPorBloque(bloqueId) {
     const selectEspacio = document.getElementById('filterEspacio');
     if (!selectPiso || !selectEspacio) return;
 
-    selectPiso.innerHTML = '<option value="">Piso</option>';
+    selectPiso.innerHTML = '<option value="">Todos</option>';
     selectPiso.disabled = true;
-    selectEspacio.innerHTML = '<option value="">Espacio / Aula</option>';
+    selectEspacio.innerHTML = '<option value="">Todos</option>';
     selectEspacio.disabled = true;
     filtrosBitacora.piso = "";
     filtrosBitacora.espacio_id = "";
@@ -192,7 +276,7 @@ function filtrarEspaciosPorPiso(piso) {
     if (!selectEspacio) return;
 
     const valorPrevio = selectEspacio.value;
-    selectEspacio.innerHTML = '<option value="">Espacio / Aula</option>';
+    selectEspacio.innerHTML = '<option value="">Todos</option>';
 
     const lista = piso === ""
         ? catalogoEspacios
@@ -221,15 +305,21 @@ function sincronizarFiltrosDesdeFormulario() {
     filtrosBitacora.espacio_id = document.getElementById('filterEspacio')?.value || "";
 }
 
+function aplicarFiltrosBitacora() {
+    sincronizarFiltrosDesdeFormulario();
+    paginaBitacora = 1;
+    cargarBitacora();
+}
+
 function limpiarFiltrosBitacora() {
     document.getElementById('filterFechaDesde').value = "";
     document.getElementById('filterFechaHasta').value = "";
     document.getElementById('filterTipo').value = "";
     document.getElementById('filterActor').value = "";
     document.getElementById('filterBloque').value = "";
-    document.getElementById('filterPiso').innerHTML = '<option value="">Piso</option>';
+    document.getElementById('filterPiso').innerHTML = '<option value="">Todos</option>';
     document.getElementById('filterPiso').disabled = true;
-    document.getElementById('filterEspacio').innerHTML = '<option value="">Espacio / Aula</option>';
+    document.getElementById('filterEspacio').innerHTML = '<option value="">Todos</option>';
     document.getElementById('filterEspacio').disabled = true;
 
     filtrosBitacora = {
@@ -242,16 +332,22 @@ function limpiarFiltrosBitacora() {
         espacio_id: "",
     };
 
+    paginaBitacora = 1;
+    cargarBitacora();
+}
+
+function irPaginaBitacora(delta) {
+    const destino = paginaBitacora + delta;
+    if (destino < 1 || destino > totalPaginasBitacora()) return;
+    paginaBitacora = destino;
     cargarBitacora();
 }
 
 function inicializarEventosBitacora() {
-    document.getElementById('btnAplicarFiltros')?.addEventListener('click', () => {
-        sincronizarFiltrosDesdeFormulario();
-        cargarBitacora();
-    });
-
+    document.getElementById('btnAplicarFiltros')?.addEventListener('click', aplicarFiltrosBitacora);
     document.getElementById('btnLimpiarFiltros')?.addEventListener('click', limpiarFiltrosBitacora);
+    document.getElementById('btn-bitacora-anterior')?.addEventListener('click', () => irPaginaBitacora(-1));
+    document.getElementById('btn-bitacora-siguiente')?.addEventListener('click', () => irPaginaBitacora(1));
 
     document.getElementById('filterBloque')?.addEventListener('change', async (e) => {
         filtrosBitacora.bloque_id = e.target.value;
@@ -266,8 +362,7 @@ function inicializarEventosBitacora() {
     document.getElementById('filterActor')?.addEventListener('keydown', (e) => {
         if (e.key === 'Enter') {
             e.preventDefault();
-            sincronizarFiltrosDesdeFormulario();
-            cargarBitacora();
+            aplicarFiltrosBitacora();
         }
     });
 }

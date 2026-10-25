@@ -15,310 +15,263 @@
 
 <body class="bg-slate-50 flex h-screen overflow-hidden font-sans">
 
-    <!-- Overlay para cerrar sidebar en móvil -->
+    <a href="#contenido" class="skip-link">Saltar al contenido</a>
+
     <div id="sidebar-overlay" class="fixed inset-0 bg-slate-900/50 z-40 hidden backdrop-blur-sm transition-opacity"></div>
 
-    <!-- Sidebar -->
-    <aside id="main-sidebar" class="w-64 bg-white flex flex-col shadow-2xl overflow-y-auto fixed inset-y-0 left-0 z-50 transform -translate-x-full transition-transform duration-300 ease-in-out">
-        <!-- Cabecera Blanca con Logo -->
-        <div class="p-6 relative flex flex-col items-center justify-center border-b border-slate-200 min-h-40">
-            <button id="btn-close-sidebar" class="absolute top-4 right-4 text-slate-400 hover:text-red-500 transition"><i class="fas fa-times text-xl"></i></button>
-            <img src="img/ucc.png" alt="UCC Logo" class="h-24 object-contain mb-2">
-            <h2 class="text-center text-sm font-black text-uccDark tracking-tighter">Sistema de Gestión de Aires</h2>
+    <aside id="main-sidebar" class="w-64 bg-white flex flex-col border-r border-slate-200 overflow-y-auto fixed inset-y-0 left-0 z-50 transform -translate-x-full transition-transform duration-300 ease-in-out">
+        <div class="p-5 relative flex flex-col items-center justify-center border-b border-slate-200 min-h-40">
+            <button id="btn-close-sidebar" type="button" aria-label="Cerrar menú de navegación" class="absolute top-3 right-3 text-slate-400 hover:text-slate-700 transition"><i class="fas fa-times text-lg" aria-hidden="true"></i></button>
+            <img src="img/ucc.png" alt="Universidad Cooperativa de Colombia" class="h-20 object-contain mb-2">
+            <h2 class="text-center text-sm font-semibold text-uccDark">Sistema de Gestión de Aires</h2>
         </div>
-        <nav class="flex-1 px-4 py-8 space-y-1">
-            <a href="/dashboard" class="flex items-center gap-3 px-4 py-3 text-slate-700 hover:bg-slate-100 rounded-xl transition font-medium text-sm"><i class="fas fa-chart-line w-5"></i><span>Dashboard</span></a>
-            <a href="/inventario" class="flex items-center gap-3 px-4 py-3 text-slate-700 hover:bg-slate-100 rounded-xl transition font-medium text-sm"><i class="fas fa-snowflake w-5"></i><span>Inventario</span></a>
-            <a href="/programacion" class="flex items-center gap-3 px-4 py-3 text-slate-700 hover:bg-slate-100 rounded-xl transition font-medium text-sm"><i class="fas fa-calendar-check w-5"></i><span>Programación</span></a>
-            <a href="/auditoria" class="flex items-center gap-3 px-4 py-3 text-slate-700 hover:bg-slate-100 rounded-xl transition font-medium text-sm"><i class="fas fa-history w-5"></i><span>Auditoría</span></a>
-            <a href="/reporte-tecnico" class="flex items-center gap-3 px-4 py-3 text-slate-700 hover:bg-slate-100 rounded-xl transition font-medium text-sm"><i class="fas fa-clipboard-list w-5"></i><span>Reporte Servicio</span></a>
-            <a href="/exportar" class="flex items-center gap-3 px-4 py-3 text-slate-700 hover:bg-slate-100 rounded-xl transition font-medium text-sm"><i class="fas fa-download w-5"></i><span>Exportar Datos</span></a>
-            <a href="/usuarios" class="flex items-center gap-3 px-4 py-3 bg-uccLight text-uccDark rounded-xl shadow-lg font-bold text-sm"><i class="fas fa-shield-alt w-5"></i><span>Control de Acceso</span></a>
+
+        <nav class="flex-1 px-3 py-5 space-y-1" aria-label="Navegación principal">
+            <a href="/dashboard" class="flex items-center gap-3 px-3 py-2.5 text-slate-700 hover:bg-slate-100 rounded-lg transition font-medium text-sm">
+                <i class="fas fa-chart-line w-5" aria-hidden="true"></i>
+                <span>Dashboard</span>
+            </a>
+            <a href="/inventario" class="flex items-center gap-3 px-3 py-2.5 text-slate-700 hover:bg-slate-100 rounded-lg transition font-medium text-sm">
+                <i class="fas fa-snowflake w-5" aria-hidden="true"></i>
+                <span>Inventario</span>
+            </a>
+            <a href="/programacion" class="flex items-center gap-3 px-3 py-2.5 text-slate-700 hover:bg-slate-100 rounded-lg transition font-medium text-sm">
+                <i class="fas fa-calendar-check w-5" aria-hidden="true"></i>
+                <span>Programación</span>
+            </a>
+            <a href="/auditoria" class="flex items-center gap-3 px-3 py-2.5 text-slate-700 hover:bg-slate-100 rounded-lg transition font-medium text-sm">
+                <i class="fas fa-history w-5" aria-hidden="true"></i>
+                <span>Auditoría</span>
+            </a>
+            <a href="/reporte-tecnico" class="flex items-center gap-3 px-3 py-2.5 text-slate-700 hover:bg-slate-100 rounded-lg transition font-medium text-sm">
+                <i class="fas fa-clipboard-list w-5" aria-hidden="true"></i>
+                <span>Reporte Servicio</span>
+            </a>
+            <a href="/exportar" class="flex items-center gap-3 px-3 py-2.5 text-slate-700 hover:bg-slate-100 rounded-lg transition font-medium text-sm">
+                <i class="fas fa-download w-5" aria-hidden="true"></i>
+                <span>Exportar Datos</span>
+            </a>
+            <a href="/usuarios" aria-current="page" class="flex items-center gap-3 px-3 py-2.5 bg-cyan-50 text-uccDark border border-cyan-200 rounded-lg font-semibold text-sm">
+                <i class="fas fa-shield-alt w-5" aria-hidden="true"></i>
+                <span>Control de Acceso</span>
+            </a>
         </nav>
-        <div class="p-4 border-t border-slate-200">
-            <button onclick="logout()" class="w-full flex items-center gap-3 px-4 py-3 text-slate-700 hover:bg-slate-100 rounded-xl transition font-medium text-sm justify-center"><i class="fas fa-sign-out-alt w-5"></i><span>Cerrar Sesión</span></button>
+
+        <div class="p-3 border-t border-slate-200">
+            <button onclick="logout()" class="w-full flex items-center gap-3 px-3 py-2.5 text-slate-700 hover:bg-slate-100 rounded-lg transition font-medium text-sm justify-center">
+                <i class="fas fa-sign-out-alt w-5" aria-hidden="true"></i>
+                <span>Cerrar Sesión</span>
+            </button>
         </div>
     </aside>
 
-    <main class="flex-1 flex flex-col h-screen overflow-hidden">
-        <header class="bg-white border-b border-slate-200 px-10 py-5 flex items-center justify-between shadow-sm">
-            <div class="flex items-center gap-4">
-                <button id="btn-menu-toggle" type="button" class="text-slate-500 hover:text-[#00acc9] transition focus:outline-none bg-slate-100 hover:bg-slate-200 p-2 rounded-lg">
-                    <i class="fas fa-bars text-2xl"></i>
+    <main id="contenido" class="flex-1 flex flex-col h-screen overflow-hidden">
+
+        <header class="bg-white border-b border-slate-200 px-4 sm:px-6 lg:px-8 py-3 flex items-center justify-between sticky top-0 z-30 shrink-0">
+            <div class="flex items-center gap-3">
+                <button id="btn-menu-toggle" type="button" aria-label="Abrir menú de navegación" aria-expanded="false" aria-controls="main-sidebar" class="text-slate-500 hover:text-uccTeal transition bg-slate-100 hover:bg-slate-200 p-2 rounded-lg">
+                    <i class="fas fa-bars text-lg" aria-hidden="true"></i>
                 </button>
-                <img src="img/ucc.png" alt="UCC Logo" class="h-10 md:h-12 object-contain hidden sm:block">
+                <img src="img/ucc.png" alt="Universidad Cooperativa de Colombia" class="h-8 object-contain hidden sm:block">
             </div>
-            <p class="text-xs font-black uppercase tracking-widest text-slate-500">GESTIÓN DE PERMISOS Y SEGURIDAD</p>
+            <p class="text-[11px] font-semibold uppercase tracking-wider text-slate-500">Gestión de permisos y seguridad</p>
         </header>
 
         <div class="flex-1 overflow-y-auto">
-            <div class="p-10">
-                <div class="mb-10">
-                    <h1 class="text-4xl font-black text-uccDark tracking-tighter mb-2">Control de Acceso</h1>
-                    <p class="text-slate-600 font-medium">Gestión de roles, permisos y auditoría de acceso al sistema</p>
+            <div class="px-4 sm:px-6 lg:px-8 py-5 w-full max-w-7xl mx-auto">
+                <div class="mb-4">
+                    <h1 class="text-xl sm:text-2xl font-semibold text-slate-900">Control de Acceso</h1>
+                    <p class="text-sm text-slate-500 mt-1">Consulta y administra los usuarios del sistema.</p>
                 </div>
 
-                <!-- Tabs de Gestión -->
-                <div class="mb-8 flex gap-2 border-b border-slate-200">
-                    <button class="px-6 py-3 font-bold text-sm border-b-2 border-b-uccLight text-uccDark">Usuarios</button>
-                    <button class="px-6 py-3 font-bold text-sm text-slate-600 hover:text-uccDark transition">Roles</button>
-                    <button class="px-6 py-3 font-bold text-sm text-slate-600 hover:text-uccDark transition">Auditoría de Acceso</button>
-                    <button class="px-6 py-3 font-bold text-sm text-slate-600 hover:text-uccDark transition">Configuración de Seguridad</button>
-                </div>
-
-                <!-- Panel de Usuarios -->
-                <div class="grid grid-cols-4 gap-4 mb-8">
-                    <div>
-                        <label for="userSearchFilter" class="block text-xs font-black uppercase tracking-widest text-slate-600 mb-2">Búsqueda</label>
-                        <input id="userSearchFilter" type="text" placeholder="Por nombre o correo..." class="w-full px-4 py-3 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-uccLight">
-                    </div>
-                    <div>
-                        <label for="userRoleFilter" class="block text-xs font-black uppercase tracking-widest text-slate-600 mb-2">Rol</label>
-                        <select id="userRoleFilter" class="w-full px-4 py-3 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-uccLight bg-white">
-                            <option>Todos</option>
-                            <option>Administrador</option>
-                            <option>Técnico</option>
-                            <option>Supervisor</option>
-                            <option>Usuario</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label for="userStatusFilter" class="block text-xs font-black uppercase tracking-widest text-slate-600 mb-2">Estado</label>
-                        <select id="userStatusFilter" class="w-full px-4 py-3 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-uccLight bg-white">
-                            <option>Todos</option>
-                            <option>Activo</option>
-                            <option>Inactivo</option>
-                            <option>Suspendido</option>
-                        </select>
-                    </div>
-                    <div class="flex items-end">
-                        <button onclick="openCreateUserModal()" class="w-full bg-uccDark hover:bg-slate-800 text-white font-bold px-6 py-3 rounded-lg transition-all flex items-center justify-center gap-2">
-                            <i class="fas fa-user-plus"></i> + Añadir Nuevo Usuario
-                        </button>
+                <div class="panel p-3 mb-4">
+                    <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-3 items-end">
+                        <div>
+                            <label for="userSearchFilter" class="field-label">Búsqueda</label>
+                            <input id="userSearchFilter" type="search" placeholder="Nombre o correo" class="field">
+                        </div>
+                        <div>
+                            <label for="userRoleFilter" class="field-label">Rol</label>
+                            <select id="userRoleFilter" class="field-select cursor-pointer">
+                                <option>Todos</option>
+                                <option>Administrador</option>
+                                <option>Técnico</option>
+                                <option>Supervisor</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label for="userStatusFilter" class="field-label">Estado</label>
+                            <select id="userStatusFilter" class="field-select cursor-pointer">
+                                <option>Todos</option>
+                                <option>Activo</option>
+                                <option>Inactivo</option>
+                                <option>Suspendido</option>
+                            </select>
+                        </div>
+                        <div>
+                            <button type="button" onclick="openCreateUserModal()" class="btn-primary w-full">
+                                <i class="fas fa-user-plus" aria-hidden="true"></i>
+                                Añadir usuario
+                            </button>
+                        </div>
                     </div>
                 </div>
 
-                <!-- Tabla de Usuarios -->
-                <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-visible">
-                    <table class="w-full text-sm">
-                        <thead class="bg-slate-50 border-b border-slate-200">
-                            <tr class="text-xs font-black uppercase tracking-widest text-slate-500">
-                                <th class="px-8 py-5 text-left rounded-tl-2xl">Usuario</th>
-                                <th class="px-8 py-5 text-left">Correo</th>
-                                <th class="px-8 py-5 text-left">Rol</th>
-                                <th class="px-8 py-5 text-left">Estado</th>
-                                <th class="px-8 py-5 text-left">Último Acceso</th>
-                                <th class="px-8 py-5 text-center rounded-tr-2xl">Acciones</th>
-                            </tr>
-                        </thead>
-                        <tbody class="divide-y divide-slate-100">
-                            <tr class="hover:bg-slate-50/50 transition">
-                                <td id="userName-1" class="px-8 py-5 font-bold text-uccDark">Juan Carlos Martínez</td>
-                                <td id="userEmail-1" class="px-8 py-5 text-slate-600">j.martinez@ucc.edu.co</td>
-                                <td class="px-8 py-5"><span id="userRoleBadge-1" class="bg-purple-100 text-purple-700 px-3 py-1 rounded-full text-xs font-bold">Administrador</span></td>
-                                <td class="px-8 py-5"><span class="inline-flex items-center gap-1 bg-green-100 text-green-700 px-3 py-1 rounded-full text-xs font-bold"><i class="fas fa-check-circle w-3"></i> Activo</span></td>
-                                <td class="px-8 py-5 text-slate-600">Hoy, 14:32</td>
-                                <td class="py-4 px-6 text-center relative overflow-visible z-30">
-                                    <div class="relative inline-block text-left">
-                                        <button onclick="toggleUserMenu(event, 'user-1')" class="p-2 rounded-lg hover:bg-slate-100 transition" aria-label="Acciones de usuario">
-                                            <i class="fas fa-ellipsis-v text-slate-400"></i>
+                <div class="panel overflow-hidden">
+                    <div class="overflow-x-auto">
+                        <table class="w-full min-w-[760px] text-sm">
+                            <thead class="bg-slate-50 border-b border-slate-200">
+                                <tr class="text-[11px] font-semibold uppercase tracking-wider text-slate-500">
+                                    <th scope="col" class="px-3 py-2.5 text-left">Usuario</th>
+                                    <th scope="col" class="px-3 py-2.5 text-left">Correo</th>
+                                    <th scope="col" class="px-3 py-2.5 text-left">Rol</th>
+                                    <th scope="col" class="px-3 py-2.5 text-left">Estado</th>
+                                    <th scope="col" class="px-3 py-2.5 text-left">Último acceso</th>
+                                    <th scope="col" class="px-3 py-2.5 text-center">Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-slate-100">
+                                <tr data-fila-usuario data-nombre="Juan Carlos Martínez" data-correo="j.martinez@ucc.edu.co" data-rol="Administrador" data-estado="Activo" class="hover:bg-slate-50 transition">
+                                    <td id="userName-1" class="px-3 py-2.5 font-medium text-slate-800 max-w-[240px] truncate">Juan Carlos Martínez</td>
+                                    <td id="userEmail-1" class="px-3 py-2.5 text-slate-600 max-w-[240px] truncate">j.martinez@ucc.edu.co</td>
+                                    <td class="px-3 py-2.5">
+                                        <span id="userRoleBadge-1" class="status-pill status-neutral"><i class="fas fa-user-shield" aria-hidden="true"></i> Administrador</span>
+                                    </td>
+                                    <td class="px-3 py-2.5">
+                                        <span class="status-pill status-success"><i class="fas fa-check" aria-hidden="true"></i> Activo</span>
+                                    </td>
+                                    <td class="px-3 py-2.5 text-slate-600">Hoy, 14:32</td>
+                                    <td class="px-3 py-2.5 text-center">
+                                        <button type="button" onclick="toggleUserMenu(event, 'user-1')" class="btn-secondary btn-xs px-2" aria-label="Acciones para Juan Carlos Martínez" aria-haspopup="menu" aria-expanded="false">
+                                            <i class="fas fa-ellipsis" aria-hidden="true"></i>
                                         </button>
-                                        <div id="userMenu-user-1" class="hidden absolute right-4 top-full mt-1 bg-white border border-slate-200 rounded-xl shadow-xl w-44 py-2 z-50 text-left animate-fade-in">
-                                            <button onclick="openProfileModal('user-1')" class="w-full text-left px-4 py-3 text-sm font-bold text-slate-700 hover:bg-slate-50 transition">Ver Perfil / Editar</button>
-                                            <button onclick="assignUserRole('user-1', 'Técnico')" class="w-full text-left px-4 py-3 text-sm font-bold text-slate-700 hover:bg-slate-50 transition">Asignar Rol de Técnico</button>
-                                            <button onclick="assignUserRole('user-1', 'Auxiliar')" class="w-full text-left px-4 py-3 text-sm font-bold text-slate-700 hover:bg-slate-50 transition">Asignar Rol de Auxiliar</button>
-                                        </div>
-                                    </div>
-                                </td>
-                            </tr>
-                            <tr class="hover:bg-slate-50/50 transition">
-                                <td id="userName-2" class="px-8 py-5 font-bold text-uccDark">Carlos Peña Ruiz</td>
-                                <td id="userEmail-2" class="px-8 py-5 text-slate-600">c.pena@ucc.edu.co</td>
-                                <td class="px-8 py-5"><span id="userRoleBadge-2" class="bg-blue-100 text-blue-700 px-3 py-1 rounded-full text-xs font-bold">Técnico</span></td>
-                                <td class="px-8 py-5"><span class="inline-flex items-center gap-1 bg-green-100 text-green-700 px-3 py-1 rounded-full text-xs font-bold"><i class="fas fa-check-circle w-3"></i> Activo</span></td>
-                                <td class="px-8 py-5 text-slate-600">Ayer, 16:15</td>
-                                <td class="py-4 px-6 text-center relative overflow-visible z-30">
-                                    <div class="relative inline-block text-left">
-                                        <button onclick="toggleUserMenu(event, 'user-2')" class="p-2 rounded-lg hover:bg-slate-100 transition" aria-label="Acciones de usuario">
-                                            <i class="fas fa-ellipsis-v text-slate-400"></i>
+                                    </td>
+                                </tr>
+                                <tr data-fila-usuario data-nombre="Carlos Peña Ruiz" data-correo="c.pena@ucc.edu.co" data-rol="Técnico" data-estado="Activo" class="hover:bg-slate-50 transition">
+                                    <td id="userName-2" class="px-3 py-2.5 font-medium text-slate-800 max-w-[240px] truncate">Carlos Peña Ruiz</td>
+                                    <td id="userEmail-2" class="px-3 py-2.5 text-slate-600 max-w-[240px] truncate">c.pena@ucc.edu.co</td>
+                                    <td class="px-3 py-2.5">
+                                        <span id="userRoleBadge-2" class="status-pill status-info"><i class="fas fa-screwdriver-wrench" aria-hidden="true"></i> Técnico</span>
+                                    </td>
+                                    <td class="px-3 py-2.5">
+                                        <span class="status-pill status-success"><i class="fas fa-check" aria-hidden="true"></i> Activo</span>
+                                    </td>
+                                    <td class="px-3 py-2.5 text-slate-600">Ayer, 16:15</td>
+                                    <td class="px-3 py-2.5 text-center">
+                                        <button type="button" onclick="toggleUserMenu(event, 'user-2')" class="btn-secondary btn-xs px-2" aria-label="Acciones para Carlos Peña Ruiz" aria-haspopup="menu" aria-expanded="false">
+                                            <i class="fas fa-ellipsis" aria-hidden="true"></i>
                                         </button>
-                                        <div id="userMenu-user-2" class="hidden absolute right-4 top-full mt-1 bg-white border border-slate-200 rounded-xl shadow-xl w-44 py-2 z-50 text-left animate-fade-in">
-                                            <button onclick="openProfileModal('user-2')" class="w-full text-left px-4 py-3 text-sm font-bold text-slate-700 hover:bg-slate-50 transition">Ver Perfil / Editar</button>
-                                            <button onclick="assignUserRole('user-2', 'Técnico')" class="w-full text-left px-4 py-3 text-sm font-bold text-slate-700 hover:bg-slate-50 transition">Asignar Rol de Técnico</button>
-                                            <button onclick="assignUserRole('user-2', 'Auxiliar')" class="w-full text-left px-4 py-3 text-sm font-bold text-slate-700 hover:bg-slate-50 transition">Asignar Rol de Auxiliar</button>
-                                        </div>
-                                    </div>
-                                </td>
-                            </tr>
-                            <tr class="hover:bg-slate-50/50 transition">
-                                <td id="userName-3" class="px-8 py-5 font-bold text-uccDark rounded-bl-2xl">Andrea López Cervantes</td>
-                                <td id="userEmail-3" class="px-8 py-5 text-slate-600">a.lopez@ucc.edu.co</td>
-                                <td class="px-8 py-5"><span id="userRoleBadge-3" class="bg-green-100 text-green-700 px-3 py-1 rounded-full text-xs font-bold">Supervisor</span></td>
-                                <td class="px-8 py-5"><span class="inline-flex items-center gap-1 bg-green-100 text-green-700 px-3 py-1 rounded-full text-xs font-bold"><i class="fas fa-check-circle w-3"></i> Activo</span></td>
-                                <td class="px-8 py-5 text-slate-600">Hace 5 días</td>
-                                <td class="py-4 px-6 text-center relative overflow-visible z-30 rounded-br-2xl">
-                                    <div class="relative inline-block text-left">
-                                        <button onclick="toggleUserMenu(event, 'user-3')" class="p-2 rounded-lg hover:bg-slate-100 transition" aria-label="Acciones de usuario">
-                                            <i class="fas fa-ellipsis-v text-slate-400"></i>
+                                    </td>
+                                </tr>
+                                <tr data-fila-usuario data-nombre="Andrea López Cervantes" data-correo="a.lopez@ucc.edu.co" data-rol="Supervisor" data-estado="Activo" class="hover:bg-slate-50 transition">
+                                    <td id="userName-3" class="px-3 py-2.5 font-medium text-slate-800 max-w-[240px] truncate">Andrea López Cervantes</td>
+                                    <td id="userEmail-3" class="px-3 py-2.5 text-slate-600 max-w-[240px] truncate">a.lopez@ucc.edu.co</td>
+                                    <td class="px-3 py-2.5">
+                                        <span id="userRoleBadge-3" class="status-pill status-success"><i class="fas fa-user-check" aria-hidden="true"></i> Supervisor</span>
+                                    </td>
+                                    <td class="px-3 py-2.5">
+                                        <span class="status-pill status-success"><i class="fas fa-check" aria-hidden="true"></i> Activo</span>
+                                    </td>
+                                    <td class="px-3 py-2.5 text-slate-600">Hace 5 días</td>
+                                    <td class="px-3 py-2.5 text-center">
+                                        <button type="button" onclick="toggleUserMenu(event, 'user-3')" class="btn-secondary btn-xs px-2" aria-label="Acciones para Andrea López Cervantes" aria-haspopup="menu" aria-expanded="false">
+                                            <i class="fas fa-ellipsis" aria-hidden="true"></i>
                                         </button>
-                                        <div id="userMenu-user-3" class="hidden absolute right-4 top-full mt-1 bg-white border border-slate-200 rounded-xl shadow-xl w-44 py-2 z-50 text-left animate-fade-in">
-                                            <button onclick="openProfileModal('user-3')" class="w-full text-left px-4 py-3 text-sm font-bold text-slate-700 hover:bg-slate-50 transition">Ver Perfil / Editar</button>
-                                            <button onclick="assignUserRole('user-3', 'Técnico')" class="w-full text-left px-4 py-3 text-sm font-bold text-slate-700 hover:bg-slate-50 transition">Asignar Rol de Técnico</button>
-                                            <button onclick="assignUserRole('user-3', 'Auxiliar')" class="w-full text-left px-4 py-3 text-sm font-bold text-slate-700 hover:bg-slate-50 transition">Asignar Rol de Auxiliar</button>
-                                        </div>
-                                    </div>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-
-                <!-- Estadísticas de Seguridad -->
-                <div class="grid grid-cols-4 gap-6 mt-10">
-                    <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-8">
-                        <p class="text-xs font-black uppercase tracking-widest text-slate-500 mb-4">Usuarios Totales</p>
-                        <h3 class="text-4xl font-black text-uccDark">18</h3>
-                        <p class="text-xs text-slate-500 mt-2"><span class="text-green-600 font-bold">16 Activos</span></p>
-                    </div>
-                    <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-8 border-l-4 border-l-purple-500">
-                        <p class="text-xs font-black uppercase tracking-widest text-slate-500 mb-4">Intentos Fallidos</p>
-                        <h3 class="text-4xl font-black text-purple-600">2</h3>
-                        <p class="text-xs text-slate-500 mt-2">En las últimas 24h</p>
-                    </div>
-                    <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-8">
-                        <p class="text-xs font-black uppercase tracking-widest text-slate-500 mb-4">Permisos Activos</p>
-                        <h3 class="text-4xl font-black text-uccLight">52</h3>
-                        <p class="text-xs text-slate-500 mt-2">Asignaciones de rol</p>
-                    </div>
-                    <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-8 border-l-4 border-l-green-500">
-                        <p class="text-xs font-black uppercase tracking-widest text-slate-500 mb-4">Seguridad</p>
-                        <h3 class="text-4xl font-black text-green-600">✓</h3>
-                        <p class="text-xs text-slate-500 mt-2">Sin alertas críticas</p>
+                                    </td>
+                                </tr>
+                                <tr id="sin-resultados-usuarios" class="hidden">
+                                    <td colspan="6" class="px-3 py-10 text-center text-sm text-slate-500">
+                                        No hay usuarios que coincidan con los filtros.
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
                     </div>
                 </div>
             </div>
         </div>
     </main>
 
+    <div id="menu-acciones-usuario" class="hidden fixed z-[60] bg-white border border-slate-200 rounded-lg shadow-lg w-48 py-1 text-left" role="menu">
+        <button type="button" data-accion="perfil" class="w-full text-left px-3 py-2 text-sm text-slate-700 hover:bg-slate-50 transition" role="menuitem">Ver perfil / Editar</button>
+        <button type="button" data-accion="rol-tecnico" class="w-full text-left px-3 py-2 text-sm text-slate-700 hover:bg-slate-50 transition" role="menuitem">Asignar rol de Técnico</button>
+        <button type="button" data-accion="rol-auxiliar" class="w-full text-left px-3 py-2 text-sm text-slate-700 hover:bg-slate-50 transition" role="menuitem">Asignar rol de Auxiliar</button>
+    </div>
+
     <div id="profileModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm hidden flex items-center justify-center z-50 p-4">
-        <div class="bg-slate-50 w-full max-w-5xl rounded-2xl shadow-2xl overflow-hidden max-h-[85vh] overflow-y-auto">
-            <div class="bg-white border-b border-slate-200 px-10 py-5 flex items-center justify-between shadow-sm sticky top-0 z-10">
-                <div class="flex items-center gap-4">
-                    <img src="img/ucc.png" alt="UCC" class="h-12 object-contain">
-                    <div class="h-8 w-px bg-slate-200"></div>
+        <div class="bg-slate-50 w-full max-w-3xl max-h-[90dvh] flex flex-col rounded-xl overflow-hidden border border-slate-200">
+            <div class="bg-white border-b border-slate-200 px-5 py-4 flex items-center justify-between shrink-0">
+                <div class="flex items-center gap-3">
+                    <img src="img/ucc.png" alt="Universidad Cooperativa de Colombia" class="h-9 object-contain">
+                    <div class="h-7 w-px bg-slate-200"></div>
                     <div>
-                        <p class="text-xs font-black uppercase tracking-widest text-slate-500">CONFIGURACIÓN DE USUARIO</p>
-                        <h2 id="profileModalTitle" class="text-lg font-black text-uccDark">Juan Carlos Martínez</h2>
+                        <p class="text-[11px] font-semibold uppercase tracking-wider text-slate-500">Configuración de usuario</p>
+                        <h2 id="profileModalTitle" class="text-base font-semibold text-slate-900">Usuario</h2>
                     </div>
                 </div>
-                <button onclick="closeProfileModal()" class="text-slate-500 hover:text-uccDark text-2xl font-black leading-none">×</button>
+                <button type="button" onclick="closeProfileModal()" aria-label="Cerrar" class="shrink-0 h-9 w-9 flex items-center justify-center rounded-lg text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition">
+                    <i class="fas fa-times" aria-hidden="true"></i>
+                </button>
             </div>
 
-            <div class="p-6 md:p-10">
-                <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-10 mb-8">
-                    <div class="flex items-start justify-between mb-8 gap-6">
-                        <div class="flex items-center gap-6">
-                            <div class="w-24 h-24 bg-uccLight/10 rounded-2xl flex items-center justify-center">
-                                <i class="fas fa-user text-uccLight text-4xl"></i>
-                            </div>
-                            <div>
-                                <h1 id="profileName" class="text-2xl font-black text-uccDark">Juan Carlos Martínez</h1>
-                                <p id="profileEmail" class="text-sm text-slate-600 font-medium">j.martinez@ucc.edu.co</p>
-                                <span id="profileRoleBadge" class="inline-flex items-center gap-2 bg-purple-100 text-purple-700 px-3 py-1 rounded-full text-xs font-bold mt-2">
-                                    <i class="fas fa-crown w-3"></i> Administrador
-                                </span>
-                            </div>
-                        </div>
-                        <button class="bg-slate-100 hover:bg-slate-200 text-slate-700 px-4 py-2 rounded-lg font-bold text-sm transition">
-                            <i class="fas fa-image mr-2"></i> Cambiar Avatar
-                        </button>
+            <div class="p-5 sm:p-6 overflow-y-auto flex-1 overscroll-contain">
+                <div class="panel p-4 mb-4 flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-full bg-cyan-50 text-cyan-700 flex items-center justify-center shrink-0">
+                        <i class="fas fa-user" aria-hidden="true"></i>
                     </div>
+                    <div class="min-w-0">
+                        <h3 id="profileName" class="text-base font-semibold text-slate-900 truncate">Usuario</h3>
+                        <p id="profileEmail" class="text-sm text-slate-500 truncate">correo@ucc.edu.co</p>
+                    </div>
+                    <span id="profileRoleBadge" class="status-pill status-neutral ml-auto">Rol</span>
                 </div>
 
-                <div class="mb-8 flex gap-2 border-b border-slate-200 bg-white rounded-t-2xl p-4">
-                    <button class="px-6 py-3 font-bold text-sm border-b-2 border-b-uccLight text-uccDark">Información</button>
-                    <button class="px-6 py-3 font-bold text-sm text-slate-600 hover:text-uccDark transition">Seguridad</button>
-                    <button class="px-6 py-3 font-bold text-sm text-slate-600 hover:text-uccDark transition">Notificaciones</button>
-                </div>
-
-                <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-10 mb-8">
-                    <h2 class="text-lg font-black text-uccDark uppercase tracking-widest mb-6 pb-4 border-b border-slate-200">Información Personal</h2>
-
-                    <form class="space-y-6" onsubmit="saveProfileChanges(event)">
-                        <div class="grid grid-cols-2 gap-6">
-                            <div>
-                                <label for="profileFullName" class="block text-xs font-black uppercase tracking-widest text-slate-600 mb-2">Nombre Completo</label>
-                                <input id="profileFullName" type="text" class="w-full border border-slate-300 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#00acc9]">
-                            </div>
-                            <div>
-                                <label for="profileDocument" class="block text-xs font-black uppercase tracking-widest text-slate-600 mb-2">Cédula</label>
-                                <input id="profileDocument" type="text" class="w-full border border-slate-300 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#00acc9]">
-                            </div>
-                        </div>
-
-                        <div class="grid grid-cols-2 gap-6">
-                            <div>
-                                <label for="profileInstitutionalEmail" class="block text-xs font-black uppercase tracking-widest text-slate-600 mb-2">Correo Institucional</label>
-                                <input id="profileInstitutionalEmail" type="email" class="w-full border border-slate-300 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#00acc9]">
-                            </div>
-                            <div>
-                                <label for="profilePhone" class="block text-xs font-black uppercase tracking-widest text-slate-600 mb-2">Teléfono</label>
-                                <input id="profilePhone" type="tel" class="w-full border border-slate-300 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#00acc9]">
-                            </div>
-                        </div>
-
+                <form id="form-perfil" class="panel p-4" onsubmit="saveProfileChanges(event)">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
-                            <label for="profileDepartment" class="block text-xs font-black uppercase tracking-widest text-slate-600 mb-2">Departamento</label>
-                            <input id="profileDepartment" type="text" class="w-full border border-slate-300 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#00acc9]">
+                            <label for="profileFullName" class="field-label">Nombre completo</label>
+                            <input id="profileFullName" type="text" class="field">
                         </div>
-
                         <div>
-                            <label for="profileSpecialization" class="block text-xs font-black uppercase tracking-widest text-slate-600 mb-2">Especialización</label>
-                            <select id="profileSpecialization" class="w-full border border-slate-300 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#00acc9] bg-white">
+                            <label for="profileDocument" class="field-label">Cédula</label>
+                            <input id="profileDocument" type="text" class="field">
+                        </div>
+                        <div>
+                            <label for="profileInstitutionalEmail" class="field-label">Correo institucional</label>
+                            <input id="profileInstitutionalEmail" type="email" class="field">
+                        </div>
+                        <div>
+                            <label for="profilePhone" class="field-label">Teléfono</label>
+                            <input id="profilePhone" type="tel" class="field">
+                        </div>
+                        <div>
+                            <label for="profileDepartment" class="field-label">Departamento</label>
+                            <input id="profileDepartment" type="text" class="field">
+                        </div>
+                        <div>
+                            <label for="profileSpecialization" class="field-label">Especialización</label>
+                            <select id="profileSpecialization" class="field-select cursor-pointer">
                                 <option>Sistemas de Climatización</option>
                                 <option>Electricidad</option>
                                 <option>Mecánica</option>
                                 <option>General</option>
                             </select>
                         </div>
+                    </div>
 
-                        <div class="flex gap-4 pt-4 border-t border-slate-200">
-                            <button type="submit" class="flex-1 bg-uccDark hover:bg-slate-800 text-white font-bold px-6 py-3 rounded-xl shadow-lg transition-all flex items-center justify-center gap-2">
-                                <i class="fas fa-save"></i>
-                                <span>Guardar Cambios</span>
-                            </button>
-                            <button type="button" onclick="closeProfileModal()" class="bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold px-6 py-3 rounded-xl transition">Cancelar</button>
-                        </div>
-                    </form>
-                </div>
+                    <div class="flex flex-col sm:flex-row gap-3 pt-4 mt-4 border-t border-slate-200">
+                        <button type="submit" class="btn-primary flex-1">
+                            <i class="fas fa-save" aria-hidden="true"></i>
+                            Guardar cambios
+                        </button>
+                        <button type="button" onclick="closeProfileModal()" class="btn-secondary">Cancelar</button>
+                    </div>
+                </form>
 
-                <div class="grid grid-cols-4 gap-6">
-                    <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-8">
-                        <p class="text-xs font-black uppercase tracking-widest text-slate-500 mb-4">Acceso a Sistema</p>
-                        <h3 id="profileAccessStatus" class="text-2xl font-black text-uccDark mb-2">Activo</h3>
-                        <p id="profileAccessSince" class="text-xs text-slate-500">Desde el 01/03/2024</p>
-                    </div>
-                    <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-8">
-                        <p class="text-xs font-black uppercase tracking-widest text-slate-500 mb-4">Último Acceso</p>
-                        <h3 id="profileLastLogin" class="text-base font-black text-slate-700 mb-2">Hoy, 14:32</h3>
-                        <p id="profileLastLoginIp" class="text-xs text-slate-500">Desde IP: 192.168.1.10</p>
-                    </div>
-                    <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-8">
-                        <p class="text-xs font-black uppercase tracking-widest text-slate-500 mb-4">Reportes Generados</p>
-                        <h3 id="profileReportsCount" class="text-2xl font-black text-uccLight">24</h3>
-                        <p class="text-xs text-slate-500">Este año</p>
-                    </div>
-                    <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-8">
-                        <p class="text-xs font-black uppercase tracking-widest text-slate-500 mb-4">Permisos Activos</p>
-                        <h3 id="profilePermissionsCount" class="text-2xl font-black text-green-600">8</h3>
-                        <p class="text-xs text-slate-500">Todos validados</p>
-                    </div>
-                </div>
-
-                <div class="mt-8 flex justify-end">
-                    <button onclick="deactivateUser()" class="bg-red-600 hover:bg-red-700 text-white font-bold px-6 py-3 rounded-xl shadow-lg transition-all flex items-center gap-2">
-                        <i class="fas fa-user-slash"></i>
-                        <span>Dar de Baja Personal</span>
+                <div class="mt-4 pt-4 border-t border-slate-200 flex justify-end">
+                    <button type="button" onclick="deactivateUser()" class="btn-danger">
+                        <i class="fas fa-user-slash" aria-hidden="true"></i>
+                        Dar de baja
                     </button>
                 </div>
             </div>
@@ -326,59 +279,57 @@
     </div>
 
     <div id="modal-crear-usuario" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-        <div class="bg-slate-50 w-full max-w-3xl rounded-2xl shadow-2xl overflow-hidden max-h-[85vh] overflow-y-auto">
-            <div class="bg-white border-b border-slate-200 px-10 py-5 flex items-center justify-between shadow-sm sticky top-0 z-10">
-                <div class="flex items-center gap-4">
-                    <img src="img/ucc.png" alt="UCC" class="h-12 object-contain">
-                    <div class="h-8 w-px bg-slate-200"></div>
+        <div class="bg-slate-50 w-full max-w-2xl max-h-[90dvh] flex flex-col rounded-xl overflow-hidden border border-slate-200">
+            <div class="bg-white border-b border-slate-200 px-5 py-4 flex items-center justify-between shrink-0">
+                <div class="flex items-center gap-3">
+                    <img src="img/ucc.png" alt="Universidad Cooperativa de Colombia" class="h-9 object-contain">
+                    <div class="h-7 w-px bg-slate-200"></div>
                     <div>
-                        <p class="text-xs font-black uppercase tracking-widest text-slate-500">REGISTRO DE PERSONAL</p>
-                        <h2 class="text-lg font-black text-uccDark">Añadir Nuevo Usuario</h2>
+                        <p class="text-[11px] font-semibold uppercase tracking-wider text-slate-500">Registro de personal</p>
+                        <h2 class="text-base font-semibold text-slate-900">Añadir usuario</h2>
                     </div>
                 </div>
-                <button onclick="closeCreateUserModal()" class="text-slate-500 hover:text-uccDark text-2xl font-black leading-none">×</button>
+                <button type="button" onclick="closeCreateUserModal()" aria-label="Cerrar" class="shrink-0 h-9 w-9 flex items-center justify-center rounded-lg text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition">
+                    <i class="fas fa-times" aria-hidden="true"></i>
+                </button>
             </div>
 
-            <div class="p-6 md:p-10">
-                <form class="space-y-6" onsubmit="saveNewUser(event)">
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div class="p-5 sm:p-6 overflow-y-auto flex-1 overscroll-contain">
+                <form class="space-y-4" onsubmit="saveNewUser(event)">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
-                            <label for="newUserName" class="block text-xs font-black uppercase tracking-widest text-slate-600 mb-2">Nombre</label>
-                            <input id="newUserName" type="text" class="w-full border border-slate-300 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#00acc9]" placeholder="Nombre completo">
+                            <label for="newUserName" class="field-label">Nombre</label>
+                            <input id="newUserName" type="text" class="field" placeholder="Nombre completo">
                         </div>
                         <div>
-                            <label for="newUserEmail" class="block text-xs font-black uppercase tracking-widest text-slate-600 mb-2">Correo</label>
-                            <input id="newUserEmail" type="email" class="w-full border border-slate-300 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#00acc9]" placeholder="correo@ucc.edu.co">
+                            <label for="newUserEmail" class="field-label">Correo</label>
+                            <input id="newUserEmail" type="email" class="field" placeholder="correo@ucc.edu.co">
+                        </div>
+                        <div>
+                            <label for="newUserDocument" class="field-label">Cédula</label>
+                            <input id="newUserDocument" type="text" class="field" placeholder="Número de documento">
+                        </div>
+                        <div>
+                            <label for="newUserPhone" class="field-label">Teléfono</label>
+                            <input id="newUserPhone" type="tel" class="field" placeholder="+57 ...">
+                        </div>
+                        <div class="md:col-span-2">
+                            <label for="newUserRole" class="field-label">Rol</label>
+                            <select id="newUserRole" class="field-select cursor-pointer">
+                                <option>Administrador</option>
+                                <option>Técnico</option>
+                                <option>Auxiliar</option>
+                                <option>Supervisor</option>
+                            </select>
                         </div>
                     </div>
 
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div>
-                            <label for="newUserDocument" class="block text-xs font-black uppercase tracking-widest text-slate-600 mb-2">Cédula</label>
-                            <input id="newUserDocument" type="text" class="w-full border border-slate-300 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#00acc9]" placeholder="Número de documento">
-                        </div>
-                        <div>
-                            <label for="newUserPhone" class="block text-xs font-black uppercase tracking-widest text-slate-600 mb-2">Teléfono</label>
-                            <input id="newUserPhone" type="tel" class="w-full border border-slate-300 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#00acc9]" placeholder="+57 ...">
-                        </div>
-                    </div>
-
-                    <div>
-                        <label for="newUserRole" class="block text-xs font-black uppercase tracking-widest text-slate-600 mb-2">Selector de Rol</label>
-                        <select id="newUserRole" class="w-full border border-slate-300 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#00acc9] bg-white">
-                            <option>Administrador</option>
-                            <option>Técnico</option>
-                            <option>Auxiliar</option>
-                            <option>Supervisor</option>
-                        </select>
-                    </div>
-
-                    <div class="flex gap-4 pt-4 border-t border-slate-200">
-                        <button type="submit" class="flex-1 bg-uccDark hover:bg-slate-800 text-white font-bold px-6 py-3 rounded-xl shadow-lg transition-all flex items-center justify-center gap-2">
-                            <i class="fas fa-save"></i>
-                            <span>Guardar Usuario</span>
+                    <div class="flex flex-col sm:flex-row gap-3 pt-4 border-t border-slate-200">
+                        <button type="submit" class="btn-primary flex-1">
+                            <i class="fas fa-save" aria-hidden="true"></i>
+                            Guardar usuario
                         </button>
-                        <button type="button" onclick="closeCreateUserModal()" class="bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold px-6 py-3 rounded-xl transition">Cancelar</button>
+                        <button type="button" onclick="closeCreateUserModal()" class="btn-secondary">Cancelar</button>
                     </div>
                 </form>
             </div>
@@ -386,6 +337,8 @@
     </div>
 
     <script src="js/confirmation-modal.js"></script>
+    <script src="js/api.js"></script>
+    <script src="js/sidebar.js"></script>
     <script>
         function mostrarNotificacion(tipo, mensaje) {
             let contenedor = document.getElementById('toast-container');
@@ -399,13 +352,13 @@
 
             const esExito = tipo === 'exito' || tipo === 'success';
             const clases = esExito
-                ? 'bg-uccLight text-slate-900 border border-cyan-300/50'
-                : 'bg-red-500 text-white border border-red-400/40';
+                ? 'bg-emerald-50 text-emerald-800 border border-emerald-200'
+                : 'bg-rose-50 text-rose-800 border border-rose-200';
             const icono = esExito ? 'fa-circle-check' : 'fa-circle-exclamation';
 
             const toast = document.createElement('div');
-            toast.className = `${clases} pointer-events-auto flex items-center gap-3 px-5 py-4 rounded-2xl shadow-2xl text-sm font-semibold max-w-sm transform transition-all duration-300 translate-x-6 opacity-0`;
-            toast.innerHTML = `<i class="fas ${icono}"></i><span></span>`;
+            toast.className = `${clases} pointer-events-auto flex items-center gap-3 px-4 py-3 rounded-lg shadow-lg text-sm font-medium max-w-sm transform transition-all duration-300 translate-x-6 opacity-0`;
+            toast.innerHTML = `<i class="fas ${icono}" aria-hidden="true"></i><span></span>`;
             toast.querySelector('span').textContent = mensaje;
             contenedor.appendChild(toast);
 
@@ -424,15 +377,7 @@
                 phone: '+57 300 123 4567',
                 department: 'Infraestructura Técnica',
                 specialization: 'Sistemas de Climatización',
-                role: 'Administrador',
-                roleClass: 'bg-purple-100 text-purple-700',
-                roleIcon: 'fa-crown',
-                accessStatus: 'Activo',
-                accessSince: 'Desde el 01/03/2024',
-                lastLogin: 'Hoy, 14:32',
-                lastLoginIp: 'Desde IP: 192.168.1.10',
-                reportsCount: '24',
-                permissionsCount: '8'
+                role: 'Administrador'
             },
             'user-2': {
                 name: 'Carlos Peña Ruiz',
@@ -441,15 +386,7 @@
                 phone: '+57 301 555 8821',
                 department: 'Operaciones Técnicas',
                 specialization: 'General',
-                role: 'Técnico',
-                roleClass: 'bg-blue-100 text-blue-700',
-                roleIcon: 'fa-screwdriver-wrench',
-                accessStatus: 'Activo',
-                accessSince: 'Desde el 12/06/2024',
-                lastLogin: 'Ayer, 16:15',
-                lastLoginIp: 'Desde IP: 192.168.1.14',
-                reportsCount: '18',
-                permissionsCount: '5'
+                role: 'Técnico'
             },
             'user-3': {
                 name: 'Andrea López Cervantes',
@@ -458,59 +395,83 @@
                 phone: '+57 302 888 0044',
                 department: 'Coordinación de Mantenimiento',
                 specialization: 'Mecánica',
-                role: 'Supervisor',
-                roleClass: 'bg-green-100 text-green-700',
-                roleIcon: 'fa-user-check',
-                accessStatus: 'Activo',
-                accessSince: 'Desde el 05/08/2023',
-                lastLogin: 'Hace 5 días',
-                lastLoginIp: 'Desde IP: 192.168.1.22',
-                reportsCount: '31',
-                permissionsCount: '9'
+                role: 'Supervisor'
             }
         };
 
+        const configuracionRoles = {
+            Administrador: { clase: 'status-pill status-neutral', icono: 'fa-user-shield' },
+            Tecnico: { clase: 'status-pill status-info', icono: 'fa-screwdriver-wrench' },
+            Auxiliar: { clase: 'status-pill status-warning', icono: 'fa-clipboard-list' },
+            Supervisor: { clase: 'status-pill status-success', icono: 'fa-user-check' }
+        };
+
+        const menuAcciones = document.getElementById('menu-acciones-usuario');
         let currentUserId = 'user-1';
 
+        function normalizarTexto(valor) {
+            return (valor || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
+        }
+
         function closeAllMenus() {
-            Object.keys(userProfiles).forEach((id) => {
-                const menu = document.getElementById(`userMenu-${id}`);
-                if (menu) menu.classList.add('hidden');
+            menuAcciones.classList.add('hidden');
+            delete menuAcciones.dataset.usuario;
+            document.querySelectorAll('[aria-haspopup="menu"]').forEach((boton) => {
+                boton.setAttribute('aria-expanded', 'false');
             });
         }
 
         function toggleUserMenu(event, userId) {
             event.stopPropagation();
-            const menu = document.getElementById(`userMenu-${userId}`);
-            const isHidden = menu.classList.contains('hidden');
+            const boton = event.currentTarget;
+            const yaAbierto = menuAcciones.dataset.usuario === userId && !menuAcciones.classList.contains('hidden');
             closeAllMenus();
-            if (isHidden) {
-                menu.classList.remove('hidden');
+            if (yaAbierto) return;
+
+            menuAcciones.dataset.usuario = userId;
+            menuAcciones.classList.remove('hidden');
+
+            const rectBoton = boton.getBoundingClientRect();
+            const rectMenu = menuAcciones.getBoundingClientRect();
+            let izquierda = rectBoton.right - rectMenu.width;
+            let arriba = rectBoton.bottom + 6;
+
+            if (arriba + rectMenu.height > window.innerHeight - 8) {
+                arriba = rectBoton.top - rectMenu.height - 6;
             }
+
+            izquierda = Math.max(8, Math.min(izquierda, window.innerWidth - rectMenu.width - 8));
+            arriba = Math.max(8, Math.min(arriba, window.innerHeight - rectMenu.height - 8));
+
+            menuAcciones.style.left = `${izquierda}px`;
+            menuAcciones.style.top = `${arriba}px`;
+            boton.setAttribute('aria-expanded', 'true');
+        }
+
+        function actualizarBadgeRol(elemento, rol) {
+            if (!elemento) return;
+            const rolNormalizado = rol.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+            const configuracion = configuracionRoles[rolNormalizado] || configuracionRoles.Auxiliar;
+            elemento.className = configuracion.clase;
+            elemento.innerHTML = `<i class="fas ${configuracion.icono}" aria-hidden="true"></i> ${rol}`;
         }
 
         function openProfileModal(userId) {
             closeAllMenus();
             currentUserId = userId;
-            const user = userProfiles[userId];
+            const usuario = userProfiles[userId];
+            if (!usuario) return;
 
-            document.getElementById('profileModalTitle').textContent = user.name;
-            document.getElementById('profileName').textContent = user.name;
-            document.getElementById('profileEmail').textContent = user.email;
-            document.getElementById('profileRoleBadge').className = `inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-bold mt-2 ${user.roleClass}`;
-            document.getElementById('profileRoleBadge').innerHTML = `<i class="fas ${user.roleIcon} w-3"></i> ${user.role}`;
-            document.getElementById('profileFullName').value = user.name;
-            document.getElementById('profileDocument').value = user.document;
-            document.getElementById('profileInstitutionalEmail').value = user.email;
-            document.getElementById('profilePhone').value = user.phone;
-            document.getElementById('profileDepartment').value = user.department;
-            document.getElementById('profileSpecialization').value = user.specialization;
-            document.getElementById('profileAccessStatus').textContent = user.accessStatus;
-            document.getElementById('profileAccessSince').textContent = user.accessSince;
-            document.getElementById('profileLastLogin').textContent = user.lastLogin;
-            document.getElementById('profileLastLoginIp').textContent = user.lastLoginIp;
-            document.getElementById('profileReportsCount').textContent = user.reportsCount;
-            document.getElementById('profilePermissionsCount').textContent = user.permissionsCount;
+            document.getElementById('profileModalTitle').textContent = usuario.name;
+            document.getElementById('profileName').textContent = usuario.name;
+            document.getElementById('profileEmail').textContent = usuario.email;
+            actualizarBadgeRol(document.getElementById('profileRoleBadge'), usuario.role);
+            document.getElementById('profileFullName').value = usuario.name;
+            document.getElementById('profileDocument').value = usuario.document;
+            document.getElementById('profileInstitutionalEmail').value = usuario.email;
+            document.getElementById('profilePhone').value = usuario.phone;
+            document.getElementById('profileDepartment').value = usuario.department;
+            document.getElementById('profileSpecialization').value = usuario.specialization;
 
             document.getElementById('profileModal').classList.remove('hidden');
         }
@@ -534,12 +495,8 @@
             Auxiliar: 'Auxiliar de Infraestructura'
         };
 
-        function normalizarTexto(valor) {
-            return (valor || '').normalize('NFD').replaceAll(/[\u0300-\u036f]/g, '');
-        }
-
         function generarPasswordTemporal(correo, documento, telefono) {
-            const semilla = `${correo || ''}${documento || ''}${telefono || ''}`.replaceAll(/[^a-zA-Z0-9]/g, '');
+            const semilla = `${correo || ''}${documento || ''}${telefono || ''}`.replace(/[^a-zA-Z0-9]/g, '');
             return (semilla.length >= 8 ? semilla : `${semilla}Ucc2026!`).slice(0, 255);
         }
 
@@ -551,12 +508,11 @@
             const documento = document.getElementById('newUserDocument').value.trim();
             const telefono = document.getElementById('newUserPhone').value.trim();
             const rolFrontend = document.getElementById('newUserRole').value.trim();
-            const rolFrontendNormalizado = normalizarTexto(rolFrontend);
-            const rolFrontendCanonico = rolFrontendNormalizado === 'Supervisor' ? 'Administrador' : rolFrontendNormalizado;
+            const rolFrontendCanonico = normalizarTexto(rolFrontend) === 'supervisor' ? 'Administrador' : rolFrontend;
             const partesNombre = nombreCompleto.split(/\s+/).filter(Boolean);
             const nombre = partesNombre.shift() || nombreCompleto;
             const apellido = partesNombre.join(' ') || nombre;
-            const codigoUniversitario = documento ? Number(documento.replaceAll(/\D/g, '')) || null : null;
+            const codigoUniversitario = documento ? Number(documento.replace(/\D/g, '')) || null : null;
 
             const objetoDatos = {
                 nombre,
@@ -579,64 +535,60 @@
             }
         }
 
-        function updateRoleBadge(userId, role) {
-            const badge = document.getElementById(`userRoleBadge-${userId.split('-')[1]}`);
-            const profileBadge = document.getElementById('profileRoleBadge');
-            const roleConfig = {
-                Administrador: { className: 'bg-purple-100 text-purple-700', icon: 'fa-crown' },
-                Tecnico: { className: 'bg-blue-100 text-blue-700', icon: 'fa-screwdriver-wrench' },
-                Auxiliar: { className: 'bg-emerald-100 text-emerald-700', icon: 'fa-clipboard-list' },
-                Supervisor: { className: 'bg-green-100 text-green-700', icon: 'fa-user-check' }
-            };
-            const normalizedRole = role.normalize('NFD').replaceAll(/[\u0300-\u036f]/g, '');
-            const config = roleConfig[normalizedRole] || roleConfig.Auxiliar;
-
-            if (badge) {
-                badge.className = `px-3 py-1 rounded-full text-xs font-bold ${config.className}`;
-                badge.textContent = role;
-            }
-
-            if (currentUserId === userId && profileBadge) {
-                profileBadge.className = `inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-bold mt-2 ${config.className}`;
-                profileBadge.innerHTML = `<i class="fas ${config.icon} w-3"></i> ${role}`;
-            }
-
-            userProfiles[userId].role = role;
-            userProfiles[userId].roleClass = config.className;
-            userProfiles[userId].roleIcon = config.icon;
-        }
-
-        function assignUserRole(userId, role) {
+        function assignUserRole(userId, rol) {
             closeAllMenus();
-            updateRoleBadge(userId, role);
+            const usuario = userProfiles[userId];
+            if (!usuario) return;
+
+            usuario.role = rol;
+            const sufijo = userId.split('-')[1];
+            const fila = document.querySelector(`[data-fila-usuario] #userName-${sufijo}`)?.closest('[data-fila-usuario]');
+            if (fila) fila.dataset.rol = rol;
+
+            actualizarBadgeRol(document.getElementById(`userRoleBadge-${sufijo}`), rol);
             if (currentUserId === userId) {
-                document.getElementById('profileModal').classList.remove('hidden');
+                actualizarBadgeRol(document.getElementById('profileRoleBadge'), rol);
             }
+
+            aplicarFiltrosUsuarios();
+            mostrarNotificacion('exito', `Rol de ${usuario.name} actualizado a ${rol}.`);
         }
 
         function saveProfileChanges(event) {
             event.preventDefault();
-            const user = userProfiles[currentUserId];
+            const usuario = userProfiles[currentUserId];
+            if (!usuario) return;
 
-            user.name = document.getElementById('profileFullName').value;
-            user.email = document.getElementById('profileInstitutionalEmail').value;
-            user.document = document.getElementById('profileDocument').value;
-            user.phone = document.getElementById('profilePhone').value;
-            user.department = document.getElementById('profileDepartment').value;
-            user.specialization = document.getElementById('profileSpecialization').value;
+            usuario.name = document.getElementById('profileFullName').value.trim();
+            usuario.email = document.getElementById('profileInstitutionalEmail').value.trim();
+            usuario.document = document.getElementById('profileDocument').value.trim();
+            usuario.phone = document.getElementById('profilePhone').value.trim();
+            usuario.department = document.getElementById('profileDepartment').value.trim();
+            usuario.specialization = document.getElementById('profileSpecialization').value;
 
-            document.getElementById(`userName-${currentUserId.split('-')[1]}`).textContent = user.name;
-            document.getElementById(`userEmail-${currentUserId.split('-')[1]}`).textContent = user.email;
-            document.getElementById('profileModalTitle').textContent = user.name;
-            document.getElementById('profileName').textContent = user.name;
-            document.getElementById('profileEmail').textContent = user.email;
+            const sufijo = currentUserId.split('-')[1];
+            const celdaNombre = document.getElementById(`userName-${sufijo}`);
+            const celdaCorreo = document.getElementById(`userEmail-${sufijo}`);
+            if (celdaNombre) celdaNombre.textContent = usuario.name;
+            if (celdaCorreo) celdaCorreo.textContent = usuario.email;
 
-            mostrarNotificacion('exito', 'Cambios guardados para ' + user.name);
+            const fila = celdaNombre?.closest('[data-fila-usuario]');
+            if (fila) {
+                fila.dataset.nombre = usuario.name;
+                fila.dataset.correo = usuario.email;
+            }
+
+            document.getElementById('profileModalTitle').textContent = usuario.name;
+            document.getElementById('profileName').textContent = usuario.name;
+            document.getElementById('profileEmail').textContent = usuario.email;
+
+            aplicarFiltrosUsuarios();
+            mostrarNotificacion('exito', `Cambios guardados para ${usuario.name}`);
         }
 
         async function deactivateUser() {
-            const user = userProfiles[currentUserId];
-            const nombreUsuario = user ? user.name : 'este usuario';
+            const usuario = userProfiles[currentUserId];
+            const nombreUsuario = usuario ? usuario.name : 'este usuario';
 
             const confirmar = await solicitarConfirmacion({
                 titulo: 'Dar de baja personal',
@@ -646,22 +598,62 @@
             });
 
             if (!confirmar) return;
-
             mostrarNotificacion('exito', `Solicitud de baja registrada para ${nombreUsuario}.`);
         }
 
+        function aplicarFiltrosUsuarios() {
+            const texto = normalizarTexto(document.getElementById('userSearchFilter').value.trim());
+            const rol = document.getElementById('userRoleFilter').value;
+            const estado = document.getElementById('userStatusFilter').value;
+            let visibles = 0;
+
+            document.querySelectorAll('[data-fila-usuario]').forEach((fila) => {
+                const coincideTexto = !texto
+                    || normalizarTexto(fila.dataset.nombre).includes(texto)
+                    || normalizarTexto(fila.dataset.correo).includes(texto);
+                const coincideRol = rol === 'Todos' || fila.dataset.rol === rol;
+                const coincideEstado = estado === 'Todos' || fila.dataset.estado === estado;
+                const visible = coincideTexto && coincideRol && coincideEstado;
+                fila.classList.toggle('hidden', !visible);
+                if (visible) visibles += 1;
+            });
+
+            document.getElementById('sin-resultados-usuarios').classList.toggle('hidden', visibles > 0);
+        }
+
+        document.querySelectorAll('#menu-acciones-usuario [data-accion]').forEach((boton) => {
+            boton.addEventListener('click', () => {
+                const userId = menuAcciones.dataset.usuario;
+                const accion = boton.dataset.accion;
+                closeAllMenus();
+                if (accion === 'perfil') openProfileModal(userId);
+                if (accion === 'rol-tecnico') assignUserRole(userId, 'Técnico');
+                if (accion === 'rol-auxiliar') assignUserRole(userId, 'Auxiliar');
+            });
+        });
+
+        menuAcciones.addEventListener('click', (event) => event.stopPropagation());
         document.addEventListener('click', closeAllMenus);
+        window.addEventListener('scroll', closeAllMenus, true);
+        window.addEventListener('resize', closeAllMenus);
+        document.addEventListener('keydown', (event) => {
+            if (event.key !== 'Escape') return;
+            closeAllMenus();
+            closeProfileModal();
+            closeCreateUserModal();
+        });
+
         document.getElementById('profileModal').addEventListener('click', function (event) {
             if (event.target === this) closeProfileModal();
         });
         document.getElementById('modal-crear-usuario').addEventListener('click', function (event) {
             if (event.target === this) closeCreateUserModal();
         });
-    </script>
 
-    <script src="js/api.js"></script>
-    <script src="js/sidebar.js"></script>
+        document.getElementById('userSearchFilter').addEventListener('input', aplicarFiltrosUsuarios);
+        document.getElementById('userRoleFilter').addEventListener('change', aplicarFiltrosUsuarios);
+        document.getElementById('userStatusFilter').addEventListener('change', aplicarFiltrosUsuarios);
+    </script>
 
 </body>
 </html>
-
