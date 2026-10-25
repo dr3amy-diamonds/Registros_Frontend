@@ -456,12 +456,12 @@ function renderizarTablaYPaginacion() {
             tr.innerHTML = `
                 <td class="px-8 py-5 font-bold text-uccDark">${escaparHtml(orden.codigo_activo)}</td>
                 <td class="px-8 py-5 text-slate-600">${escaparHtml(orden.aula)}</td>
-                <td class="px-8 py-5"><span class="inline-flex items-center bg-slate-100 text-slate-700 font-medium text-xs px-2.5 py-0.5 rounded-md whitespace-nowrap">${escaparHtml(orden.tipo_nombre)}</span></td>
+                <td class="px-8 py-5"><span class="inline-flex items-center px-2 py-0.5 rounded text-[11px] font-medium bg-slate-100 text-slate-600 border border-slate-200 whitespace-nowrap">${escaparHtml(orden.tipo_nombre)}</span></td>
                 <td class="px-8 py-5 font-semibold text-slate-700 tabular-nums">${formatearFechaDisplay(orden.fecha)}</td>
                 <td class="px-8 py-5 text-slate-600">${escaparHtml(orden.tecnico_nombre)}</td>
                 <td class="px-8 py-5"><span class="inline-flex items-center gap-1 ${badge} text-xs font-semibold px-2.5 py-0.5 rounded-full whitespace-nowrap"><i class="fas ${icono} w-3" aria-hidden="true"></i> ${escaparHtml(orden.estado)}</span></td>
                 <td class="px-8 py-5 text-center">
-                    <button type="button" data-orden-id="${idModal}" aria-label="Ver ficha de la orden ${idModal}" class="btn-ver-ficha inline-flex items-center justify-center bg-slate-100 hover:bg-slate-200 px-4 py-2 rounded-lg text-xs font-bold transition min-h-[44px]">
+                    <button type="button" data-orden-id="${idModal}" aria-label="Ver ficha de la orden ${idModal}" class="btn-ver-ficha inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-medium text-slate-600 bg-slate-100 hover:bg-slate-200 hover:text-slate-900 rounded-md transition-colors">
                         <i class="fas fa-eye text-uccTeal" aria-hidden="true"></i>
                         <span class="ml-2">Ver Ficha</span>
                     </button>

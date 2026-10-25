@@ -84,7 +84,7 @@
                     <p class="text-sm text-slate-500 mt-1">Consulta y administra los usuarios del sistema.</p>
                 </div>
 
-                <div class="panel p-3 mb-4">
+                <div class="bg-white border border-slate-200/80 rounded-xl p-3 mb-4">
                     <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-3 items-end">
                         <div>
                             <label for="userSearchFilter" class="field-label">Búsqueda</label>
@@ -96,6 +96,7 @@
                                 <option>Todos</option>
                                 <option>Administrador</option>
                                 <option>Técnico</option>
+                                <option>Auxiliar</option>
                                 <option>Supervisor</option>
                             </select>
                         </div>
@@ -117,89 +118,62 @@
                     </div>
                 </div>
 
-                <div class="panel overflow-hidden">
+                <div class="bg-white border border-slate-200/80 rounded-xl overflow-hidden">
                     <div class="overflow-x-auto">
                         <table class="w-full min-w-[760px] text-sm">
-                            <thead class="bg-slate-50 border-b border-slate-200">
+                            <thead class="bg-slate-50 border-b border-slate-200/80">
                                 <tr class="text-[11px] font-semibold uppercase tracking-wider text-slate-500">
-                                    <th scope="col" class="px-3 py-2.5 text-left">Usuario</th>
-                                    <th scope="col" class="px-3 py-2.5 text-left">Correo</th>
-                                    <th scope="col" class="px-3 py-2.5 text-left">Rol</th>
-                                    <th scope="col" class="px-3 py-2.5 text-left">Estado</th>
-                                    <th scope="col" class="px-3 py-2.5 text-left">Último acceso</th>
-                                    <th scope="col" class="px-3 py-2.5 text-center">Acciones</th>
+                                    <th scope="col" class="px-3 py-2 text-left">Usuario</th>
+                                    <th scope="col" class="px-3 py-2 text-left">Correo</th>
+                                    <th scope="col" class="px-3 py-2 text-left">Rol</th>
+                                    <th scope="col" class="px-3 py-2 text-left">Estado</th>
+                                    <th scope="col" class="px-3 py-2 text-left">Último acceso</th>
+                                    <th scope="col" class="px-3 py-2 text-center">Acciones</th>
                                 </tr>
                             </thead>
-                            <tbody class="divide-y divide-slate-100">
-                                <tr data-fila-usuario data-nombre="Juan Carlos Martínez" data-correo="j.martinez@ucc.edu.co" data-rol="Administrador" data-estado="Activo" class="hover:bg-slate-50 transition">
-                                    <td id="userName-1" class="px-3 py-2.5 font-medium text-slate-800 max-w-[240px] truncate">Juan Carlos Martínez</td>
-                                    <td id="userEmail-1" class="px-3 py-2.5 text-slate-600 max-w-[240px] truncate">j.martinez@ucc.edu.co</td>
-                                    <td class="px-3 py-2.5">
-                                        <span id="userRoleBadge-1" class="status-pill status-neutral"><i class="fas fa-user-shield" aria-hidden="true"></i> Administrador</span>
-                                    </td>
-                                    <td class="px-3 py-2.5">
-                                        <span class="status-pill status-success"><i class="fas fa-check" aria-hidden="true"></i> Activo</span>
-                                    </td>
-                                    <td class="px-3 py-2.5 text-slate-600">Hoy, 14:32</td>
-                                    <td class="px-3 py-2.5 text-center">
-                                        <button type="button" onclick="toggleUserMenu(event, 'user-1')" class="btn-secondary btn-xs px-2" aria-label="Acciones para Juan Carlos Martínez" aria-haspopup="menu" aria-expanded="false">
-                                            <i class="fas fa-ellipsis" aria-hidden="true"></i>
-                                        </button>
-                                    </td>
-                                </tr>
-                                <tr data-fila-usuario data-nombre="Carlos Peña Ruiz" data-correo="c.pena@ucc.edu.co" data-rol="Técnico" data-estado="Activo" class="hover:bg-slate-50 transition">
-                                    <td id="userName-2" class="px-3 py-2.5 font-medium text-slate-800 max-w-[240px] truncate">Carlos Peña Ruiz</td>
-                                    <td id="userEmail-2" class="px-3 py-2.5 text-slate-600 max-w-[240px] truncate">c.pena@ucc.edu.co</td>
-                                    <td class="px-3 py-2.5">
-                                        <span id="userRoleBadge-2" class="status-pill status-info"><i class="fas fa-screwdriver-wrench" aria-hidden="true"></i> Técnico</span>
-                                    </td>
-                                    <td class="px-3 py-2.5">
-                                        <span class="status-pill status-success"><i class="fas fa-check" aria-hidden="true"></i> Activo</span>
-                                    </td>
-                                    <td class="px-3 py-2.5 text-slate-600">Ayer, 16:15</td>
-                                    <td class="px-3 py-2.5 text-center">
-                                        <button type="button" onclick="toggleUserMenu(event, 'user-2')" class="btn-secondary btn-xs px-2" aria-label="Acciones para Carlos Peña Ruiz" aria-haspopup="menu" aria-expanded="false">
-                                            <i class="fas fa-ellipsis" aria-hidden="true"></i>
-                                        </button>
-                                    </td>
-                                </tr>
-                                <tr data-fila-usuario data-nombre="Andrea López Cervantes" data-correo="a.lopez@ucc.edu.co" data-rol="Supervisor" data-estado="Activo" class="hover:bg-slate-50 transition">
-                                    <td id="userName-3" class="px-3 py-2.5 font-medium text-slate-800 max-w-[240px] truncate">Andrea López Cervantes</td>
-                                    <td id="userEmail-3" class="px-3 py-2.5 text-slate-600 max-w-[240px] truncate">a.lopez@ucc.edu.co</td>
-                                    <td class="px-3 py-2.5">
-                                        <span id="userRoleBadge-3" class="status-pill status-success"><i class="fas fa-user-check" aria-hidden="true"></i> Supervisor</span>
-                                    </td>
-                                    <td class="px-3 py-2.5">
-                                        <span class="status-pill status-success"><i class="fas fa-check" aria-hidden="true"></i> Activo</span>
-                                    </td>
-                                    <td class="px-3 py-2.5 text-slate-600">Hace 5 días</td>
-                                    <td class="px-3 py-2.5 text-center">
-                                        <button type="button" onclick="toggleUserMenu(event, 'user-3')" class="btn-secondary btn-xs px-2" aria-label="Acciones para Andrea López Cervantes" aria-haspopup="menu" aria-expanded="false">
-                                            <i class="fas fa-ellipsis" aria-hidden="true"></i>
-                                        </button>
-                                    </td>
-                                </tr>
-                                <tr id="sin-resultados-usuarios" class="hidden">
-                                    <td colspan="6" class="px-3 py-10 text-center text-sm text-slate-500">
-                                        No hay usuarios que coincidan con los filtros.
+                            <tbody id="tabla-usuarios-body" class="divide-y divide-slate-100">
+                                <tr id="fila-cargando-usuarios">
+                                    <td colspan="6" class="px-3 py-8 text-center text-sm text-slate-500">
+                                        <i class="fas fa-spinner fa-spin text-uccTeal mr-2" aria-hidden="true"></i>
+                                        Cargando usuarios…
                                     </td>
                                 </tr>
                             </tbody>
                         </table>
+                    </div>
+
+                    <div class="flex items-center justify-between gap-2 px-3 py-2 border-t border-slate-200/80 bg-slate-50/50">
+                        <p id="paginacion-texto" class="text-xs text-slate-500">10 registros por página</p>
+                        <div class="flex items-center gap-1.5">
+                            <button type="button" id="btn-pagina-anterior" disabled class="inline-flex items-center gap-1 px-2.5 py-1.5 text-xs font-medium text-slate-700 bg-white border border-slate-200 rounded-md hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed">
+                                <i class="fas fa-chevron-left text-[10px]" aria-hidden="true"></i>
+                                Anterior
+                            </button>
+                            <span id="paginacion-pagina" class="px-1 text-xs font-semibold text-slate-700">Página 1 de 1</span>
+                            <button type="button" id="btn-pagina-siguiente" disabled class="inline-flex items-center gap-1 px-2.5 py-1.5 text-xs font-medium text-slate-700 bg-white border border-slate-200 rounded-md hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed">
+                                Siguiente
+                                <i class="fas fa-chevron-right text-[10px]" aria-hidden="true"></i>
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
     </main>
 
-    <div id="menu-acciones-usuario" class="hidden fixed z-[60] bg-white border border-slate-200 rounded-lg shadow-lg w-48 py-1 text-left" role="menu">
+    <div id="menu-acciones-usuario" class="hidden fixed z-[60] bg-white border border-slate-200/80 rounded-lg w-52 py-1 text-left" role="menu">
         <button type="button" data-accion="perfil" class="w-full text-left px-3 py-2 text-sm text-slate-700 hover:bg-slate-50 transition" role="menuitem">Ver perfil / Editar</button>
-        <button type="button" data-accion="rol-tecnico" class="w-full text-left px-3 py-2 text-sm text-slate-700 hover:bg-slate-50 transition" role="menuitem">Asignar rol de Técnico</button>
-        <button type="button" data-accion="rol-auxiliar" class="w-full text-left px-3 py-2 text-sm text-slate-700 hover:bg-slate-50 transition" role="menuitem">Asignar rol de Auxiliar</button>
+        <div class="my-1 border-t border-slate-100"></div>
+        <button type="button" data-accion="rol-admin" class="w-full text-left px-3 py-2 text-sm text-slate-700 hover:bg-slate-50 transition" role="menuitem">Asignar Administrador</button>
+        <button type="button" data-accion="rol-tecnico" class="w-full text-left px-3 py-2 text-sm text-slate-700 hover:bg-slate-50 transition" role="menuitem">Asignar Técnico</button>
+        <button type="button" data-accion="rol-auxiliar" class="w-full text-left px-3 py-2 text-sm text-slate-700 hover:bg-slate-50 transition" role="menuitem">Asignar Auxiliar</button>
+        <div class="my-1 border-t border-slate-100"></div>
+        <button type="button" data-accion="activar" class="w-full text-left px-3 py-2 text-sm text-slate-700 hover:bg-slate-50 transition" role="menuitem">Activar usuario</button>
+        <button type="button" data-accion="desactivar" class="w-full text-left px-3 py-2 text-sm text-slate-700 hover:bg-slate-50 transition" role="menuitem">Desactivar usuario</button>
     </div>
 
     <div id="profileModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm hidden flex items-center justify-center z-50 p-4">
-        <div class="bg-slate-50 w-full max-w-3xl max-h-[90dvh] flex flex-col rounded-xl overflow-hidden border border-slate-200">
+        <div class="bg-slate-50 w-full max-w-3xl max-h-[90dvh] flex flex-col rounded-xl overflow-hidden border border-slate-200/80">
             <div class="bg-white border-b border-slate-200 px-5 py-4 flex items-center justify-between shrink-0">
                 <div class="flex items-center gap-3">
                     <img src="img/ucc.png" alt="Universidad Cooperativa de Colombia" class="h-9 object-contain">
@@ -215,7 +189,7 @@
             </div>
 
             <div class="p-5 sm:p-6 overflow-y-auto flex-1 overscroll-contain">
-                <div class="panel p-4 mb-4 flex items-center gap-3">
+                <div class="bg-white border border-slate-200/80 rounded-lg p-4 mb-4 flex items-center gap-3">
                     <div class="w-10 h-10 rounded-full bg-cyan-50 text-cyan-700 flex items-center justify-center shrink-0">
                         <i class="fas fa-user" aria-hidden="true"></i>
                     </div>
@@ -223,17 +197,17 @@
                         <h3 id="profileName" class="text-base font-semibold text-slate-900 truncate">Usuario</h3>
                         <p id="profileEmail" class="text-sm text-slate-500 truncate">correo@ucc.edu.co</p>
                     </div>
-                    <span id="profileRoleBadge" class="status-pill status-neutral ml-auto">Rol</span>
+                    <span id="profileRoleBadge" class="ml-auto inline-flex items-center gap-1 px-2 py-0.5 rounded-md border text-[11px] font-semibold bg-slate-100 text-slate-600 border-slate-200">Rol</span>
                 </div>
 
-                <form id="form-perfil" class="panel p-4" onsubmit="saveProfileChanges(event)">
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <form id="form-perfil" class="bg-white border border-slate-200/80 rounded-lg p-4" onsubmit="saveProfileChanges(event)">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
                         <div>
                             <label for="profileFullName" class="field-label">Nombre completo</label>
                             <input id="profileFullName" type="text" class="field">
                         </div>
                         <div>
-                            <label for="profileDocument" class="field-label">Cédula</label>
+                            <label for="profileDocument" class="field-label">Código universitario</label>
                             <input id="profileDocument" type="text" class="field">
                         </div>
                         <div>
@@ -243,19 +217,6 @@
                         <div>
                             <label for="profilePhone" class="field-label">Teléfono</label>
                             <input id="profilePhone" type="tel" class="field">
-                        </div>
-                        <div>
-                            <label for="profileDepartment" class="field-label">Departamento</label>
-                            <input id="profileDepartment" type="text" class="field">
-                        </div>
-                        <div>
-                            <label for="profileSpecialization" class="field-label">Especialización</label>
-                            <select id="profileSpecialization" class="field-select cursor-pointer">
-                                <option>Sistemas de Climatización</option>
-                                <option>Electricidad</option>
-                                <option>Mecánica</option>
-                                <option>General</option>
-                            </select>
                         </div>
                     </div>
 
@@ -279,7 +240,7 @@
     </div>
 
     <div id="modal-crear-usuario" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-        <div class="bg-slate-50 w-full max-w-2xl max-h-[90dvh] flex flex-col rounded-xl overflow-hidden border border-slate-200">
+        <div class="bg-slate-50 w-full max-w-2xl max-h-[90dvh] flex flex-col rounded-xl overflow-hidden border border-slate-200/80">
             <div class="bg-white border-b border-slate-200 px-5 py-4 flex items-center justify-between shrink-0">
                 <div class="flex items-center gap-3">
                     <img src="img/ucc.png" alt="Universidad Cooperativa de Colombia" class="h-9 object-contain">
@@ -296,24 +257,28 @@
 
             <div class="p-5 sm:p-6 overflow-y-auto flex-1 overscroll-contain">
                 <form class="space-y-4" onsubmit="saveNewUser(event)">
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
                         <div>
-                            <label for="newUserName" class="field-label">Nombre</label>
-                            <input id="newUserName" type="text" class="field" placeholder="Nombre completo">
+                            <label for="newUserName" class="field-label">Nombre completo</label>
+                            <input id="newUserName" type="text" class="field" placeholder="Nombre y apellido" required>
                         </div>
                         <div>
-                            <label for="newUserEmail" class="field-label">Correo</label>
-                            <input id="newUserEmail" type="email" class="field" placeholder="correo@ucc.edu.co">
+                            <label for="newUserEmail" class="field-label">Correo institucional</label>
+                            <input id="newUserEmail" type="email" class="field" placeholder="correo@ucc.edu.co" required>
                         </div>
                         <div>
-                            <label for="newUserDocument" class="field-label">Cédula</label>
+                            <label for="newUserDocument" class="field-label">Código universitario</label>
                             <input id="newUserDocument" type="text" class="field" placeholder="Número de documento">
                         </div>
                         <div>
                             <label for="newUserPhone" class="field-label">Teléfono</label>
                             <input id="newUserPhone" type="tel" class="field" placeholder="+57 ...">
                         </div>
-                        <div class="md:col-span-2">
+                        <div>
+                            <label for="newUserPassword" class="field-label">Contraseña</label>
+                            <input id="newUserPassword" type="password" class="field" placeholder="Se genera automáticamente si se deja vacía" autocomplete="new-password">
+                        </div>
+                        <div>
                             <label for="newUserRole" class="field-label">Rol</label>
                             <select id="newUserRole" class="field-select cursor-pointer">
                                 <option>Administrador</option>
@@ -340,6 +305,18 @@
     <script src="js/api.js"></script>
     <script src="js/sidebar.js"></script>
     <script>
+        const API_USUARIOS = '/api/v1/usuarios';
+        const LIMITE_USUARIOS = 10;
+
+        let paginaActual = 0;
+        let totalPaginas = 1;
+        let totalRegistrosConocido = false;
+        let busquedaTotalEnCurso = false;
+        let usuariosPorId = new Map();
+        let currentUserId = null;
+
+        const menuAcciones = document.getElementById('menu-acciones-usuario');
+
         function mostrarNotificacion(tipo, mensaje) {
             let contenedor = document.getElementById('toast-container');
             if (!contenedor) {
@@ -357,7 +334,7 @@
             const icono = esExito ? 'fa-circle-check' : 'fa-circle-exclamation';
 
             const toast = document.createElement('div');
-            toast.className = `${clases} pointer-events-auto flex items-center gap-3 px-4 py-3 rounded-lg shadow-lg text-sm font-medium max-w-sm transform transition-all duration-300 translate-x-6 opacity-0`;
+            toast.className = `${clases} pointer-events-auto flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium max-w-sm transform transition-all duration-300 translate-x-6 opacity-0`;
             toast.innerHTML = `<i class="fas ${icono}" aria-hidden="true"></i><span></span>`;
             toast.querySelector('span').textContent = mensaje;
             contenedor.appendChild(toast);
@@ -369,48 +346,137 @@
             }, 4200);
         }
 
-        const userProfiles = {
-            'user-1': {
-                name: 'Juan Carlos Martínez',
-                email: 'j.martinez@ucc.edu.co',
-                document: '1234567890',
-                phone: '+57 300 123 4567',
-                department: 'Infraestructura Técnica',
-                specialization: 'Sistemas de Climatización',
-                role: 'Administrador'
-            },
-            'user-2': {
-                name: 'Carlos Peña Ruiz',
-                email: 'c.pena@ucc.edu.co',
-                document: '1098765432',
-                phone: '+57 301 555 8821',
-                department: 'Operaciones Técnicas',
-                specialization: 'General',
-                role: 'Técnico'
-            },
-            'user-3': {
-                name: 'Andrea López Cervantes',
-                email: 'a.lopez@ucc.edu.co',
-                document: '1122334455',
-                phone: '+57 302 888 0044',
-                department: 'Coordinación de Mantenimiento',
-                specialization: 'Mecánica',
-                role: 'Supervisor'
-            }
-        };
-
-        const configuracionRoles = {
-            Administrador: { clase: 'status-pill status-neutral', icono: 'fa-user-shield' },
-            Tecnico: { clase: 'status-pill status-info', icono: 'fa-screwdriver-wrench' },
-            Auxiliar: { clase: 'status-pill status-warning', icono: 'fa-clipboard-list' },
-            Supervisor: { clase: 'status-pill status-success', icono: 'fa-user-check' }
-        };
-
-        const menuAcciones = document.getElementById('menu-acciones-usuario');
-        let currentUserId = 'user-1';
-
         function normalizarTexto(valor) {
-            return (valor || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
+            return String(valor ?? '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
+        }
+
+        function escaparHtml(valor) {
+            return String(valor ?? '').replace(/[&<>"']/g, (caracter) => ({
+                '&': '&amp;',
+                '<': '&lt;',
+                '>': '&gt;',
+                '"': '&quot;',
+                "'": '&#39;'
+            }[caracter]));
+        }
+
+        function tokenActual() {
+            return localStorage.getItem('access_token')
+                || localStorage.getItem('token')
+                || localStorage.getItem('airesflow_token')
+                || sessionStorage.getItem('access_token')
+                || sessionStorage.getItem('token')
+                || '';
+        }
+
+        function cabecerasJson() {
+            const headers = { 'Content-Type': 'application/json' };
+            const token = tokenActual();
+            if (token) headers.Authorization = `Bearer ${token}`;
+            return headers;
+        }
+
+        async function pedirJson(url, opciones = {}) {
+            const respuesta = await fetch(url, {
+                credentials: 'include',
+                ...opciones,
+                headers: { ...cabecerasJson(), ...(opciones.headers || {}) }
+            });
+            let cuerpo = null;
+            try {
+                cuerpo = await respuesta.json();
+            } catch (_) {
+                cuerpo = null;
+            }
+            if (!respuesta.ok) {
+                const detalle = cuerpo && (cuerpo.detail || cuerpo.message || cuerpo.error);
+                throw new Error(typeof detalle === 'string' ? detalle : `Error HTTP ${respuesta.status}`);
+            }
+            return { datos: cuerpo, respuesta };
+        }
+
+        function normalizarRol(valor) {
+            const texto = normalizarTexto(valor);
+            if (texto.includes('jefe') || texto.includes('admin')) return 'Administrador';
+            if (texto.includes('supervisor')) return 'Supervisor';
+            if (texto.includes('auxiliar')) return 'Auxiliar';
+            if (texto.includes('tecnic')) return 'Técnico';
+            return valor || 'Auxiliar';
+        }
+
+        function rolParaBackend(rol) {
+            const canonico = normalizarRol(rol);
+            if (canonico === 'Administrador' || canonico === 'Supervisor') return 'Jefe de Infraestructura';
+            if (canonico === 'Auxiliar') return 'Auxiliar de Infraestructura';
+            return 'Tecnico';
+        }
+
+        function normalizarUsuario(usuario) {
+            const id = usuario.id ?? usuario.usuario_id ?? usuario.pk;
+            const nombre = (usuario.nombre || '').trim();
+            const apellido = (usuario.apellido || '').trim();
+            const nombreCompleto = `${nombre} ${apellido}`.trim() || usuario.correo_institucional || `Usuario ${id}`;
+            const activo = usuario.activo ?? (usuario.estado ? normalizarTexto(usuario.estado) === 'activo' : true);
+            return {
+                id,
+                nombre,
+                apellido,
+                nombreCompleto,
+                correo: usuario.correo_institucional || usuario.correo || usuario.email || '',
+                telefono: usuario.telefono || usuario.phone || '',
+                documento: usuario.codigo_universitario ?? usuario.documento ?? usuario.document ?? '',
+                rol: normalizarRol(usuario.tipo_rol || usuario.rol || usuario.role),
+                activo,
+                estado: usuario.estado || (activo ? 'Activo' : 'Inactivo'),
+                ultimoAcceso: usuario.ultimo_acceso || usuario.last_login || usuario.fecha_ultimo_acceso || null
+            };
+        }
+
+        function extraerLista(datos) {
+            if (Array.isArray(datos)) return { lista: datos, total: null };
+            if (!datos || typeof datos !== 'object') return { lista: [], total: null };
+            const lista = datos.items || datos.usuarios || datos.results || datos.data || [];
+            const total = Number.isFinite(Number(datos.total)) ? Number(datos.total) : null;
+            return { lista: Array.isArray(lista) ? lista : [], total };
+        }
+
+        function formatearFecha(valor) {
+            if (!valor) return '—';
+            const fecha = new Date(valor);
+            if (Number.isNaN(fecha.getTime())) return '—';
+            return new Intl.DateTimeFormat('es-CO', { dateStyle: 'medium', timeStyle: 'short' }).format(fecha);
+        }
+
+        function clasesBadgeRol(rol) {
+            const base = 'inline-flex items-center gap-1 px-2 py-0.5 rounded-md border text-[11px] font-semibold';
+            if (rol === 'Administrador') return `${base} bg-[#00acc9]/10 text-[#007a8f] border-[#00acc9]/30`;
+            if (rol === 'Supervisor') return `${base} bg-[#10b981]/10 text-[#047857] border-[#10b981]/30`;
+            return `${base} bg-[#f59e0b]/10 text-[#b45309] border-[#f59e0b]/30`;
+        }
+
+        function iconoRol(rol) {
+            if (rol === 'Administrador') return 'fa-user-shield';
+            if (rol === 'Supervisor') return 'fa-user-check';
+            if (rol === 'Técnico') return 'fa-screwdriver-wrench';
+            return 'fa-clipboard-list';
+        }
+
+        function badgeRol(rol) {
+            return `<span class="${clasesBadgeRol(rol)}"><i class="fas ${iconoRol(rol)}" aria-hidden="true"></i>${escaparHtml(rol)}</span>`;
+        }
+
+        function badgeEstado(usuario) {
+            const base = 'inline-flex items-center gap-1 px-2 py-0.5 rounded-md border text-[11px] font-semibold';
+            if (usuario.activo) {
+                return `<span class="${base} bg-[#10b981]/10 text-[#047857] border-[#10b981]/30"><i class="fas fa-check" aria-hidden="true"></i>${escaparHtml(usuario.estado || 'Activo')}</span>`;
+            }
+            return `<span class="${base} bg-rose-50 text-rose-700 border-rose-200"><i class="fas fa-user-slash" aria-hidden="true"></i>${escaparHtml(usuario.estado || 'Inactivo')}</span>`;
+        }
+
+        function actualizarBadgeRol(elemento, rol) {
+            if (!elemento) return;
+            elemento.className = clasesBadgeRol(rol);
+            elemento.innerHTML = `<i class="fas ${iconoRol(rol)}" aria-hidden="true"></i>${escaparHtml(rol)}`;
         }
 
         function closeAllMenus() {
@@ -421,12 +487,13 @@
             });
         }
 
-        function toggleUserMenu(event, userId) {
+        function toggleUserMenu(event) {
             event.stopPropagation();
             const boton = event.currentTarget;
+            const userId = String(boton.dataset.userId || '');
             const yaAbierto = menuAcciones.dataset.usuario === userId && !menuAcciones.classList.contains('hidden');
             closeAllMenus();
-            if (yaAbierto) return;
+            if (yaAbierto || !userId) return;
 
             menuAcciones.dataset.usuario = userId;
             menuAcciones.classList.remove('hidden');
@@ -448,30 +515,20 @@
             boton.setAttribute('aria-expanded', 'true');
         }
 
-        function actualizarBadgeRol(elemento, rol) {
-            if (!elemento) return;
-            const rolNormalizado = rol.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
-            const configuracion = configuracionRoles[rolNormalizado] || configuracionRoles.Auxiliar;
-            elemento.className = configuracion.clase;
-            elemento.innerHTML = `<i class="fas ${configuracion.icono}" aria-hidden="true"></i> ${rol}`;
-        }
-
         function openProfileModal(userId) {
             closeAllMenus();
-            currentUserId = userId;
-            const usuario = userProfiles[userId];
+            currentUserId = String(userId);
+            const usuario = usuariosPorId.get(currentUserId);
             if (!usuario) return;
 
-            document.getElementById('profileModalTitle').textContent = usuario.name;
-            document.getElementById('profileName').textContent = usuario.name;
-            document.getElementById('profileEmail').textContent = usuario.email;
-            actualizarBadgeRol(document.getElementById('profileRoleBadge'), usuario.role);
-            document.getElementById('profileFullName').value = usuario.name;
-            document.getElementById('profileDocument').value = usuario.document;
-            document.getElementById('profileInstitutionalEmail').value = usuario.email;
-            document.getElementById('profilePhone').value = usuario.phone;
-            document.getElementById('profileDepartment').value = usuario.department;
-            document.getElementById('profileSpecialization').value = usuario.specialization;
+            document.getElementById('profileModalTitle').textContent = usuario.nombreCompleto;
+            document.getElementById('profileName').textContent = usuario.nombreCompleto;
+            document.getElementById('profileEmail').textContent = usuario.correo || '—';
+            actualizarBadgeRol(document.getElementById('profileRoleBadge'), usuario.rol);
+            document.getElementById('profileFullName').value = usuario.nombreCompleto;
+            document.getElementById('profileDocument').value = usuario.documento ?? '';
+            document.getElementById('profileInstitutionalEmail').value = usuario.correo || '';
+            document.getElementById('profilePhone').value = usuario.telefono || '';
 
             document.getElementById('profileModal').classList.remove('hidden');
         }
@@ -489,116 +546,229 @@
             document.getElementById('modal-crear-usuario').classList.add('hidden');
         }
 
-        const rolesBackend = {
-            Administrador: 'Jefe de Infraestructura',
-            Tecnico: 'Tecnico',
-            Auxiliar: 'Auxiliar de Infraestructura'
-        };
-
         function generarPasswordTemporal(correo, documento, telefono) {
             const semilla = `${correo || ''}${documento || ''}${telefono || ''}`.replace(/[^a-zA-Z0-9]/g, '');
             return (semilla.length >= 8 ? semilla : `${semilla}Ucc2026!`).slice(0, 255);
+        }
+
+        function estadoCarga() {
+            document.getElementById('tabla-usuarios-body').innerHTML = `
+                <tr id="fila-cargando-usuarios">
+                    <td colspan="6" class="px-3 py-8 text-center text-sm text-slate-500">
+                        <i class="fas fa-spinner fa-spin text-uccTeal mr-2" aria-hidden="true"></i>
+                        Cargando usuarios…
+                    </td>
+                </tr>`;
+        }
+
+        function renderizarUsuarios(lista) {
+            const cuerpo = document.getElementById('tabla-usuarios-body');
+            usuariosPorId = new Map(lista.map((usuario) => [String(usuario.id), usuario]));
+
+            const filas = lista.map((usuario) => `
+                <tr data-fila-usuario data-id="${escaparHtml(usuario.id)}" data-nombre="${escaparHtml(usuario.nombreCompleto)}" data-correo="${escaparHtml(usuario.correo)}" data-rol="${escaparHtml(usuario.rol)}" data-estado="${escaparHtml(usuario.estado)}" class="hover:bg-slate-50 transition">
+                    <td id="userName-${escaparHtml(usuario.id)}" class="px-3 py-2.5 font-medium text-slate-800 max-w-[240px] truncate">${escaparHtml(usuario.nombreCompleto)}</td>
+                    <td id="userEmail-${escaparHtml(usuario.id)}" class="px-3 py-2.5 text-slate-600 max-w-[240px] truncate">${escaparHtml(usuario.correo || '—')}</td>
+                    <td class="px-3 py-2.5">${badgeRol(usuario.rol)}</td>
+                    <td class="px-3 py-2.5">${badgeEstado(usuario)}</td>
+                    <td class="px-3 py-2.5 text-slate-600 whitespace-nowrap">${escaparHtml(formatearFecha(usuario.ultimoAcceso))}</td>
+                    <td class="px-3 py-2.5 text-center">
+                        <button type="button" data-user-id="${escaparHtml(usuario.id)}" onclick="toggleUserMenu(event)" class="inline-flex items-center justify-center h-7 w-7 text-slate-600 bg-slate-100 hover:bg-slate-200 border border-slate-200 rounded-md" aria-label="Acciones para ${escaparHtml(usuario.nombreCompleto)}" aria-haspopup="menu" aria-expanded="false">
+                            <i class="fas fa-ellipsis" aria-hidden="true"></i>
+                        </button>
+                    </td>
+                </tr>`).join('');
+
+            const vacio = `
+                <tr id="sin-resultados-usuarios" class="${lista.length ? 'hidden' : ''}">
+                    <td colspan="6" class="px-3 py-8 text-center text-sm text-slate-500">${lista.length ? 'No hay usuarios que coincidan con los filtros.' : 'No hay usuarios registrados.'}</td>
+                </tr>`;
+
+            cuerpo.innerHTML = filas + vacio;
+            aplicarFiltrosUsuarios();
+        }
+
+        function actualizarPaginacion() {
+            const texto = `Página ${paginaActual + 1} de ${totalPaginas}`;
+            document.getElementById('paginacion-pagina').textContent = texto;
+            document.getElementById('btn-pagina-anterior').disabled = paginaActual <= 0;
+            document.getElementById('btn-pagina-siguiente').disabled = paginaActual + 1 >= totalPaginas;
+        }
+
+        async function solicitarPagina(pagina) {
+            const { datos } = await pedirJson(`${API_USUARIOS}/?skip=${pagina * LIMITE_USUARIOS}&limit=${LIMITE_USUARIOS}`);
+            const { lista, total } = extraerLista(datos);
+            return { lista: lista.map(normalizarUsuario), total };
+        }
+
+        async function descubrirTotalPaginas() {
+            if (busquedaTotalEnCurso || totalRegistrosConocido) return;
+            busquedaTotalEnCurso = true;
+            try {
+                let pagina = 0;
+                let ultimaPagina = 1;
+                while (pagina < 100) {
+                    const { lista } = await solicitarPagina(pagina);
+                    if (lista.length === 0) {
+                        ultimaPagina = Math.max(1, pagina);
+                        break;
+                    }
+                    ultimaPagina = pagina + 1;
+                    if (lista.length < LIMITE_USUARIOS) break;
+                    pagina += 1;
+                }
+                totalPaginas = Math.max(1, ultimaPagina);
+                totalRegistrosConocido = true;
+                actualizarPaginacion();
+            } catch (_) {
+                // Si falla el conteo, se conserva la paginación estimada.
+            } finally {
+                busquedaTotalEnCurso = false;
+            }
+        }
+
+        async function cargarUsuarios(pagina = 0) {
+            paginaActual = Math.max(0, pagina);
+            estadoCarga();
+            try {
+                const { lista, total } = await solicitarPagina(paginaActual);
+                if (Number.isFinite(total)) {
+                    totalPaginas = Math.max(1, Math.ceil(total / LIMITE_USUARIOS));
+                    totalRegistrosConocido = true;
+                } else if (!totalRegistrosConocido) {
+                    totalPaginas = Math.max(1, paginaActual + 1 + (lista.length === LIMITE_USUARIOS ? 1 : 0));
+                }
+                renderizarUsuarios(lista);
+                actualizarPaginacion();
+                if (!Number.isFinite(total) && !totalRegistrosConocido && lista.length === LIMITE_USUARIOS) {
+                    descubrirTotalPaginas();
+                }
+            } catch (error) {
+                document.getElementById('tabla-usuarios-body').innerHTML = `
+                    <tr>
+                        <td colspan="6" class="px-3 py-8 text-center text-sm text-rose-600">
+                            <i class="fas fa-circle-exclamation mr-2" aria-hidden="true"></i>
+                            No se pudo cargar la lista de usuarios. ${escaparHtml(error.message || error)}
+                        </td>
+                    </tr>`;
+                mostrarNotificacion('error', `Error al cargar usuarios: ${error.message || error}`);
+            }
         }
 
         async function saveNewUser(event) {
             event.preventDefault();
             const form = event.currentTarget;
             const nombreCompleto = document.getElementById('newUserName').value.trim();
-            const correoInstitucional = document.getElementById('newUserEmail').value.trim();
+            const correo = document.getElementById('newUserEmail').value.trim();
             const documento = document.getElementById('newUserDocument').value.trim();
             const telefono = document.getElementById('newUserPhone').value.trim();
-            const rolFrontend = document.getElementById('newUserRole').value.trim();
-            const rolFrontendCanonico = normalizarTexto(rolFrontend) === 'supervisor' ? 'Administrador' : rolFrontend;
+            const rol = document.getElementById('newUserRole').value;
+            const passwordManual = document.getElementById('newUserPassword').value.trim();
             const partesNombre = nombreCompleto.split(/\s+/).filter(Boolean);
             const nombre = partesNombre.shift() || nombreCompleto;
             const apellido = partesNombre.join(' ') || nombre;
-            const codigoUniversitario = documento ? Number(documento.replace(/\D/g, '')) || null : null;
 
             const objetoDatos = {
                 nombre,
                 apellido,
-                correo_institucional: correoInstitucional,
+                correo_institucional: correo,
                 telefono,
-                codigo_universitario: codigoUniversitario,
-                password: generarPasswordTemporal(correoInstitucional, documento, telefono),
-                tipo_rol: rolesBackend[rolFrontendCanonico] || 'Tecnico',
-                activo: true
+                codigo_universitario: documento ? Number(documento.replace(/\D/g, '')) || null : null,
+                password: passwordManual || generarPasswordTemporal(correo, documento, telefono),
+                tipo_rol: rolParaBackend(rol)
             };
 
             try {
-                await API.post('/usuarios/', objetoDatos);
+                await pedirJson(`${API_USUARIOS}/`, { method: 'POST', body: JSON.stringify(objetoDatos) });
                 mostrarNotificacion('exito', 'Usuario registrado correctamente');
                 form.reset();
                 closeCreateUserModal();
+                await cargarUsuarios(0);
             } catch (error) {
                 mostrarNotificacion('error', `Error al registrar el usuario: ${error.message || error}`);
             }
         }
 
-        function assignUserRole(userId, rol) {
+        async function assignUserRole(userId, rol) {
             closeAllMenus();
-            const usuario = userProfiles[userId];
-            if (!usuario) return;
+            const usuario = usuariosPorId.get(String(userId));
+            if (!usuario || usuario.id == null) return;
 
-            usuario.role = rol;
-            const sufijo = userId.split('-')[1];
-            const fila = document.querySelector(`[data-fila-usuario] #userName-${sufijo}`)?.closest('[data-fila-usuario]');
-            if (fila) fila.dataset.rol = rol;
-
-            actualizarBadgeRol(document.getElementById(`userRoleBadge-${sufijo}`), rol);
-            if (currentUserId === userId) {
-                actualizarBadgeRol(document.getElementById('profileRoleBadge'), rol);
+            try {
+                await pedirJson(`${API_USUARIOS}/${usuario.id}`, {
+                    method: 'PUT',
+                    body: JSON.stringify({ tipo_rol: rolParaBackend(rol) })
+                });
+                mostrarNotificacion('exito', `Rol de ${usuario.nombreCompleto} actualizado a ${rol}.`);
+                await cargarUsuarios(paginaActual);
+            } catch (error) {
+                mostrarNotificacion('error', `Error al actualizar el rol: ${error.message || error}`);
             }
-
-            aplicarFiltrosUsuarios();
-            mostrarNotificacion('exito', `Rol de ${usuario.name} actualizado a ${rol}.`);
         }
 
-        function saveProfileChanges(event) {
-            event.preventDefault();
-            const usuario = userProfiles[currentUserId];
-            if (!usuario) return;
+        async function changeUserStatus(userId, activo) {
+            closeAllMenus();
+            const usuario = usuariosPorId.get(String(userId));
+            if (!usuario || usuario.id == null) return;
 
-            usuario.name = document.getElementById('profileFullName').value.trim();
-            usuario.email = document.getElementById('profileInstitutionalEmail').value.trim();
-            usuario.document = document.getElementById('profileDocument').value.trim();
-            usuario.phone = document.getElementById('profilePhone').value.trim();
-            usuario.department = document.getElementById('profileDepartment').value.trim();
-            usuario.specialization = document.getElementById('profileSpecialization').value;
-
-            const sufijo = currentUserId.split('-')[1];
-            const celdaNombre = document.getElementById(`userName-${sufijo}`);
-            const celdaCorreo = document.getElementById(`userEmail-${sufijo}`);
-            if (celdaNombre) celdaNombre.textContent = usuario.name;
-            if (celdaCorreo) celdaCorreo.textContent = usuario.email;
-
-            const fila = celdaNombre?.closest('[data-fila-usuario]');
-            if (fila) {
-                fila.dataset.nombre = usuario.name;
-                fila.dataset.correo = usuario.email;
+            try {
+                await pedirJson(`${API_USUARIOS}/${usuario.id}`, {
+                    method: 'PUT',
+                    body: JSON.stringify({ activo })
+                });
+                mostrarNotificacion('exito', `${usuario.nombreCompleto} ${activo ? 'activado' : 'desactivado'} correctamente.`);
+                await cargarUsuarios(paginaActual);
+            } catch (error) {
+                mostrarNotificacion('error', `Error al cambiar el estado: ${error.message || error}`);
             }
+        }
 
-            document.getElementById('profileModalTitle').textContent = usuario.name;
-            document.getElementById('profileName').textContent = usuario.name;
-            document.getElementById('profileEmail').textContent = usuario.email;
+        async function saveProfileChanges(event) {
+            event.preventDefault();
+            const usuario = usuariosPorId.get(currentUserId);
+            if (!usuario || usuario.id == null) return;
 
-            aplicarFiltrosUsuarios();
-            mostrarNotificacion('exito', `Cambios guardados para ${usuario.name}`);
+            const nombreCompleto = document.getElementById('profileFullName').value.trim();
+            const documento = document.getElementById('profileDocument').value.trim();
+            const partesNombre = nombreCompleto.split(/\s+/).filter(Boolean);
+            const nombre = partesNombre.shift() || nombreCompleto;
+            const apellido = partesNombre.join(' ') || nombre;
+
+            const objetoDatos = {
+                nombre,
+                apellido,
+                correo_institucional: document.getElementById('profileInstitutionalEmail').value.trim(),
+                telefono: document.getElementById('profilePhone').value.trim(),
+                codigo_universitario: documento ? Number(documento.replace(/\D/g, '')) || null : null
+            };
+
+            try {
+                await pedirJson(`${API_USUARIOS}/${usuario.id}`, {
+                    method: 'PUT',
+                    body: JSON.stringify(objetoDatos)
+                });
+                mostrarNotificacion('exito', `Cambios guardados para ${usuario.nombreCompleto}`);
+                closeProfileModal();
+                await cargarUsuarios(paginaActual);
+            } catch (error) {
+                mostrarNotificacion('error', `Error al guardar cambios: ${error.message || error}`);
+            }
         }
 
         async function deactivateUser() {
-            const usuario = userProfiles[currentUserId];
-            const nombreUsuario = usuario ? usuario.name : 'este usuario';
+            const usuario = usuariosPorId.get(currentUserId);
+            if (!usuario || usuario.id == null) return;
 
             const confirmar = await solicitarConfirmacion({
                 titulo: 'Dar de baja personal',
-                mensaje: `¿Está seguro de dar de baja a ${nombreUsuario}? El acceso al sistema será revocado.`,
+                mensaje: `¿Está seguro de dar de baja a ${usuario.nombreCompleto}? El acceso al sistema será revocado.`,
                 textoAceptar: 'Sí, dar de baja',
                 esPeligroso: true
             });
 
             if (!confirmar) return;
-            mostrarNotificacion('exito', `Solicitud de baja registrada para ${nombreUsuario}.`);
+            await changeUserStatus(usuario.id, false);
+            closeProfileModal();
         }
 
         function aplicarFiltrosUsuarios() {
@@ -618,7 +788,14 @@
                 if (visible) visibles += 1;
             });
 
-            document.getElementById('sin-resultados-usuarios').classList.toggle('hidden', visibles > 0);
+            const vacio = document.getElementById('sin-resultados-usuarios');
+            if (vacio) {
+                const hayFilas = document.querySelectorAll('[data-fila-usuario]').length > 0;
+                vacio.querySelector('td').textContent = hayFilas
+                    ? 'No hay usuarios que coincidan con los filtros.'
+                    : 'No hay usuarios registrados.';
+                vacio.classList.toggle('hidden', visibles > 0);
+            }
         }
 
         document.querySelectorAll('#menu-acciones-usuario [data-accion]').forEach((boton) => {
@@ -627,8 +804,11 @@
                 const accion = boton.dataset.accion;
                 closeAllMenus();
                 if (accion === 'perfil') openProfileModal(userId);
+                if (accion === 'rol-admin') assignUserRole(userId, 'Administrador');
                 if (accion === 'rol-tecnico') assignUserRole(userId, 'Técnico');
                 if (accion === 'rol-auxiliar') assignUserRole(userId, 'Auxiliar');
+                if (accion === 'activar') changeUserStatus(userId, true);
+                if (accion === 'desactivar') changeUserStatus(userId, false);
             });
         });
 
@@ -653,6 +833,15 @@
         document.getElementById('userSearchFilter').addEventListener('input', aplicarFiltrosUsuarios);
         document.getElementById('userRoleFilter').addEventListener('change', aplicarFiltrosUsuarios);
         document.getElementById('userStatusFilter').addEventListener('change', aplicarFiltrosUsuarios);
+
+        document.getElementById('btn-pagina-anterior').addEventListener('click', () => {
+            if (paginaActual > 0) cargarUsuarios(paginaActual - 1);
+        });
+        document.getElementById('btn-pagina-siguiente').addEventListener('click', () => {
+            if (paginaActual + 1 < totalPaginas) cargarUsuarios(paginaActual + 1);
+        });
+
+        cargarUsuarios(0);
     </script>
 
 </body>
