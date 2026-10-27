@@ -5,11 +5,14 @@
 const API_BASE_URL = "http://127.0.0.1:8000/api/v1";
 
 let paginaActual = 1;
-const registrosPorPagina = 25;
-let equiposCargadosGlobal = [];
-let equiposCompletosGlobal = []; // Catálogo completo sin filtrar
+const espaciosPorPagina = 24;
+let equiposCompletosGlobal = []; // Catálogo completo de equipos sin filtrar
+let equiposPorEspacioGlobal = new Map(); // espacioId (string) -> equipos[]
+let espaciosVisiblesGlobal = []; // Espacios que cumplen los filtros activos
+let espacioSeleccionadoId = null; // Espacio abierto en el nivel 2 inline
 let espaciosCatalogGlobal = [];
 let bloquesCatalogGlobal = [];
+let temporizadorBusqueda = null;
 let modoEdicionEquipo = false;
 let equipoEnEdicionId = null;
 
@@ -227,159 +230,381 @@ async function cargarSelectoresFormularios() {
 }
 
 /**
- * Carga toda la lista de equipos desde el backend
- * y renderiza dinámicamente la tabla del inventario
+ * Obtiene el catálogo completo de equipos recorriendo la paginación del backend.
+ * @returns {Promise<Array>} Lista completa de equipos
  */
-function cargarInventarioCompleto() {
-    const tablaBody = document.getElementById("tablaEquiposBody");
+async function obtenerTodosLosEquipos() {
+    const equipos = [];
+    const limit = 100;
+    let skip = 0;
+    let total = Infinity;
 
-    if (!tablaBody) {
-        console.error("❌ No se encontró el elemento con id='tablaEquiposBody'");
-        return;
+    while (skip < total) {
+        const respuesta = await fetch(`${API_BASE_URL}/equipos/?skip=${skip}&limit=${limit}`);
+        if (!respuesta.ok) {
+            throw new Error(`Error HTTP ${respuesta.status}: ${respuesta.statusText}`);
+        }
+        const data = await respuesta.json();
+        const items = Array.isArray(data) ? data : (data.items || []);
+        total = Array.isArray(data) ? items.length : Number(data.total ?? items.length);
+        equipos.push(...items);
+        if (!items.length) break;
+        skip += limit;
     }
 
-    // Estado de carga (no bloquea: los filtros siguen opcionales)
-    tablaBody.innerHTML = `
-        <tr>
-            <td colspan="4" class="px-8 py-12 text-center text-slate-400 text-sm">
-                <i class="fas fa-spinner fa-spin mr-2 text-[#00acc9]"></i>Cargando inventario completo...
-            </td>
-        </tr>
-    `;
-
-    // GET sin parámetros de filtro: trae el inventario completo
-    fetch(`${API_BASE_URL}/equipos/?limit=100`)
-        .then(respuesta => {
-            if (!respuesta.ok) {
-                throw new Error(`Error HTTP ${respuesta.status}: ${respuesta.statusText}`);
-            }
-            return respuesta.json();
-        })
-        .then(data => {
-            const equipos = Array.isArray(data) ? data : (data.items || []);
-
-            if (!Array.isArray(equipos)) {
-                throw new Error("La respuesta del servidor no es un array válido");
-            }
-
-            equiposCompletosGlobal = equipos; // Catálogo completo sin filtrar
-            equiposCargadosGlobal = [...equipos]; // Por defecto: totalidad de activos
-            paginaActual = 1;
-
-            console.log(`✅ Cargados ${equipos.length} equipos exitosamente`);
-            renderizarTablaPaginada();
-        })
-        .catch(error => {
-            console.error("❌ Error al cargar equipos:", error);
-            tablaBody.innerHTML = `
-                <tr>
-                    <td colspan="4" class="px-8 py-8">
-                        <div class="p-4 bg-red-50 border border-red-200 rounded-lg">
-                            <p class="text-sm font-bold text-red-600">
-                                <i class="fas fa-exclamation-circle mr-2"></i>Error al conectar con el servidor
-                            </p>
-                            <p class="text-xs text-red-500 mt-2">
-                                ${error.message}
-                            </p>
-                            <p class="text-xs text-red-400 mt-2">
-                                Verifica que el backend esté corriendo en ${API_BASE_URL}
-                            </p>
-                            <button type="button" onclick="cargarInventarioCompleto()" class="mt-3 px-4 py-2 bg-red-600 text-white rounded-lg text-xs font-bold hover:bg-red-700 transition">
-                                <i class="fas fa-redo mr-1"></i>Reintentar
-                            </button>
-                        </div>
-                    </td>
-                </tr>
-            `;
-        });
+    return equipos;
 }
 
 /**
- * Crea una fila de tabla (<tr>) con los datos de un equipo
- * @param {Object} equipo - Objeto con datos del equipo desde la API
- * @returns {HTMLElement} Elemento <tr> con los datos formateados
+ * Carga el catálogo de espacios y de equipos desde el backend
+ * y renderiza la matriz de espacios del inventario.
  */
-const CHILLER_TIPOS_IDS = [1, 2, 5];
+async function cargarInventarioCompleto() {
+    const grid = document.getElementById("gridEspacios");
 
-function obtenerDependenciaEquipo(equipo) {
-    const tipoId = equipo.tipo_equipo_id != null ? Number(equipo.tipo_equipo_id) : null;
-    if (tipoId != null && CHILLER_TIPOS_IDS.includes(tipoId)) return "Chiller";
-    return "Otros";
+    if (!grid) {
+        console.error("❌ No se encontró el elemento con id='gridEspacios'");
+        return;
+    }
+
+    renderizarCargaInventario(grid);
+
+    try {
+        const [espacios, equipos] = await Promise.all([
+            obtenerTodosLosEspacios(),
+            obtenerTodosLosEquipos(),
+        ]);
+
+        espaciosCatalogGlobal = espacios;
+        equiposCompletosGlobal = equipos;
+        equiposPorEspacioGlobal = agruparEquiposPorEspacio(equipos);
+        espacioSeleccionadoId = null;
+        paginaActual = 1;
+
+        console.log(`✅ Cargados ${espacios.length} espacios y ${equipos.length} equipos`);
+        aplicarFiltrosInventario();
+    } catch (error) {
+        console.error("❌ Error al cargar el inventario:", error);
+        renderizarErrorInventario(grid, error);
+    }
 }
 
-function obtenerBadgeDependencia(dependencia) {
-    const esChiller = dependencia === "Chiller";
-    return `<span class="inline-flex items-center px-2 py-0.5 rounded-full border text-xs font-medium ${esChiller ? "bg-cyan-50 text-cyan-700 border-cyan-200" : "bg-slate-50 text-slate-600 border-slate-200"}">${dependencia}</span>`;
+/**
+ * Dibuja los doce bloques grises del estado de carga.
+ * @param {HTMLElement} grid
+ */
+function renderizarCargaInventario(grid) {
+    grid.innerHTML = Array.from(
+        { length: 12 },
+        () => '<div class="h-[104px] rounded-xl bg-slate-100 animate-pulse motion-reduce:animate-none"></div>',
+    ).join("");
+    const resumen = document.getElementById("texto-paginacion-equipos");
+    if (resumen) resumen.textContent = "Cargando espacios…";
+    actualizarBotonesPaginacion(0);
 }
 
-function crearFilaEquipo(equipo) {
-    const fila = document.createElement("tr");
-    fila.className = "hover:bg-slate-50 transition cursor-pointer";
-    fila.setAttribute("data-equipo-id", equipo.id);
-    fila.setAttribute("data-codigo-activo", equipo.codigo_activo);
-
-    const ubicacion = construirUbicacion(equipo);
-    const tipoEquipo = obtenerNombreTipoEquipo(equipo);
-    const dependencia = obtenerDependenciaEquipo(equipo);
-
-    const piso = equipo.espacio && typeof equipo.espacio === "object" ? equipo.espacio.piso : "";
-    const bloqueId = equipo.espacio && typeof equipo.espacio === "object" ? equipo.espacio.bloque_id : "";
-    const espacioId = equipo.espacio && typeof equipo.espacio === "object" ? equipo.espacio.id : equipo.espacio_id;
-
-    fila.setAttribute("data-piso", piso != null && piso !== "" ? String(piso) : "");
-    fila.setAttribute("data-bloque-id", bloqueId != null && bloqueId !== "" ? String(bloqueId) : "");
-    fila.setAttribute("data-espacio-id", espacioId != null && espacioId !== "" ? String(espacioId) : "");
-    fila.setAttribute("data-estado", normalizarEstadoEquipo(equipo.estado));
-
-    fila.innerHTML = `
-        <td class="py-2.5 px-3 col-ubicacion">
-            <span class="block font-medium text-slate-700 text-sm leading-snug truncate">${ubicacion.nombre}</span>
-            <span class="block text-slate-400 text-xs leading-snug">${ubicacion.piso}</span>
-        </td>
-        <td class="py-2.5 px-3">
-            <span class="inline-flex items-center rounded-full border border-slate-200 bg-slate-50 px-2 py-0.5 text-xs font-medium text-slate-700">
-                ${tipoEquipo}
-            </span>
-        </td>
-        <td class="py-2.5 px-3 text-sm">
-            ${obtenerBadgeDependencia(dependencia)}
-        </td>
-        <td class="py-2.5 px-3 text-center">
-            <button onclick="mostrarDetalleInline(${equipo.id})" class="btn-secondary btn-xs" title="Ver detalles técnicos" aria-label="Ver detalles del activo ${equipo.codigo_activo ?? equipo.id}">
-                <i class="fas fa-eye" aria-hidden="true"></i>
-                <span>Ver detalles</span>
+/**
+ * Dibuja el bloque de error de red con opción de reintento.
+ * @param {HTMLElement} grid
+ * @param {Error} error
+ */
+function renderizarErrorInventario(grid, error) {
+    grid.innerHTML = `
+        <div class="col-span-full bg-red-50 border border-red-200 rounded-md p-4">
+            <p class="text-sm font-semibold text-red-700">
+                <i class="fas fa-exclamation-circle mr-2" aria-hidden="true"></i>Error al conectar con el servidor
+            </p>
+            <p class="text-xs text-red-600 mt-1">${escaparHtmlInline(error.message)}</p>
+            <p class="text-xs text-red-500 mt-1">Verifica que el backend esté corriendo en ${escaparHtmlInline(API_BASE_URL)}</p>
+            <button type="button" onclick="cargarInventarioCompleto()" class="mt-3 px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-md text-xs font-semibold transition">
+                <i class="fas fa-redo mr-1" aria-hidden="true"></i>Reintentar
             </button>
-        </td>
+        </div>
+    `;
+    const resumen = document.getElementById("texto-paginacion-equipos");
+    if (resumen) resumen.textContent = "No se pudo cargar el inventario";
+    actualizarBotonesPaginacion(0);
+}
+
+
+function obtenerEspacioEquipo(equipo) {
+    return equipo && equipo.espacio && typeof equipo.espacio === "object" ? equipo.espacio : null;
+}
+
+function obtenerEspacioIdEquipo(equipo) {
+    const espacio = obtenerEspacioEquipo(equipo);
+    if (espacio && espacio.id != null && espacio.id !== "") return espacio.id;
+    return equipo.espacio_id != null && equipo.espacio_id !== "" ? equipo.espacio_id : null;
+}
+
+function obtenerBloqueIdEquipo(equipo) {
+    const espacio = obtenerEspacioEquipo(equipo);
+    if (espacio) {
+        if (espacio.bloque_id != null && espacio.bloque_id !== "") return espacio.bloque_id;
+        if (espacio.bloque && typeof espacio.bloque === "object" && espacio.bloque.id != null) {
+            return espacio.bloque.id;
+        }
+    }
+    if (equipo.bloque_id != null && equipo.bloque_id !== "") return equipo.bloque_id;
+    return null;
+}
+
+/**
+ * Devuelve el espacio del catálogo por su identificador.
+ * @param {string|number} espacioId
+ * @returns {Object|null}
+ */
+function obtenerEspacioPorId(espacioId) {
+    if (espacioId == null) return null;
+    return espaciosCatalogGlobal.find((espacio) => String(espacio.id) === String(espacioId)) || null;
+}
+
+/**
+ * Agrupa los equipos por espacio sobre el catálogo completo.
+ * @param {Array} equipos
+ * @returns {Map<string, Array>}
+ */
+function agruparEquiposPorEspacio(equipos) {
+    const agrupados = new Map();
+    (equipos || []).forEach((equipo) => {
+        const espacioId = obtenerEspacioIdEquipo(equipo);
+        if (espacioId == null) return;
+        const clave = String(espacioId);
+        if (!agrupados.has(clave)) agrupados.set(clave, []);
+        agrupados.get(clave).push(equipo);
+    });
+    return agrupados;
+}
+
+/**
+ * Equipos asignados a un espacio, ordenados por código de activo.
+ * @param {string|number} espacioId
+ * @returns {Array}
+ */
+function obtenerEquiposDelEspacio(espacioId) {
+    if (espacioId == null) return [];
+    return ordenarEquiposPorCodigo(equiposPorEspacioGlobal.get(String(espacioId)) || []);
+}
+
+/**
+ * Normaliza texto para comparación: sin mayúsculas, sin diacríticos y con trim.
+ * @param {*} valor
+ * @returns {string}
+ */
+function normalizarTexto(valor) {
+    return String(valor ?? "")
+        .normalize("NFD")
+        .replaceAll(/\p{Diacritic}/gu, "")
+        .trim()
+        .toLowerCase();
+}
+
+function obtenerConfigEstadoEquipo(estado) {
+    const normalizado = normalizarEstadoEquipo(estado);
+    const configuracion = {
+        "Operativo": { texto: "Operativo", dot: "bg-emerald-500" },
+        "En reparacion": { texto: "En reparación", dot: "bg-amber-500" },
+        "Inactivo": { texto: "Inactivo", dot: "bg-slate-400" },
+        "Dado de baja": { texto: "Dado de baja", dot: "bg-rose-500" },
+    };
+    return configuracion[normalizado] || {
+        texto: normalizado || "Sin estado",
+        dot: "bg-slate-400",
+    };
+}
+
+/**
+ * Crea la tarjeta de un espacio (nivel 1) dentro de la matriz del inventario.
+ * Reglas: 1 equipo muestra dot + estado; 2+ equipos muestran solo el total;
+ * sin equipos muestra "Sin equipos".
+ * @param {Object} espacio
+ * @returns {HTMLButtonElement}
+ */
+function crearTarjetaEspacio(espacio) {
+    const equipos = obtenerEquiposDelEspacio(espacio.id);
+    const total = equipos.length;
+    const piso = obtenerPisoEspacio(espacio);
+    const bloqueId = espacio.bloque_id != null
+        ? espacio.bloque_id
+        : (espacio.bloque && espacio.bloque.id != null ? espacio.bloque.id : null);
+    const nombre = espacio.nombre ? String(espacio.nombre) : "Espacio sin nombre";
+    const codigo = espacio.codigo_espacio != null && espacio.codigo_espacio !== ""
+        ? String(espacio.codigo_espacio)
+        : "Sin código";
+    const tipo = espacio.tipo_espacio && espacio.tipo_espacio.nombre
+        ? String(espacio.tipo_espacio.nombre)
+        : "";
+    const etiquetaPiso = piso == null ? "SIN PISO" : `PISO ${piso}`;
+    const estadoUnico = total === 1 ? obtenerConfigEstadoEquipo(equipos[0].estado) : null;
+
+    const tarjeta = document.createElement("button");
+    tarjeta.type = "button";
+    tarjeta.className = `group w-full text-left rounded-xl border p-3 min-h-[104px] flex flex-col gap-2 transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-uccTeal focus-visible:ring-offset-2 ${
+        total === 0
+            ? "bg-slate-50/70 border-dashed border-slate-300 hover:border-uccTeal hover:bg-white"
+            : "bg-white border-slate-200 hover:border-uccTeal hover:shadow-sm"
+    }`;
+
+    tarjeta.setAttribute("data-espacio-id", espacio.id);
+    tarjeta.setAttribute("data-codigo-espacio", codigo);
+    tarjeta.setAttribute("data-piso", piso == null ? "" : String(piso));
+    tarjeta.setAttribute("data-bloque-id", bloqueId == null ? "" : String(bloqueId));
+    tarjeta.setAttribute("data-total-equipos", String(total));
+
+    const ariaTotal = total === 0
+        ? "sin equipos"
+        : total === 1
+            ? `1 equipo, ${estadoUnico.texto}`
+            : `${total} equipos`;
+    tarjeta.setAttribute("aria-label", `Ver equipos de ${nombre}, ${ariaTotal}`);
+    tarjeta.title = `${nombre} · ${codigo} · ${ariaTotal}`;
+
+    let pie;
+    if (total === 0) {
+        pie = `
+            <span class="h-1.5 w-1.5 rounded-full bg-slate-300 shrink-0" aria-hidden="true"></span>
+            <span class="text-[11px] font-medium text-slate-400 truncate">Sin equipos</span>
+        `;
+    } else if (total === 1) {
+        pie = `
+            <span class="h-2 w-2 rounded-full shrink-0 ${estadoUnico.dot}" aria-hidden="true"></span>
+            <span class="text-[11px] font-semibold text-slate-600 truncate">${escaparHtmlInline(estadoUnico.texto)}</span>
+        `;
+    } else {
+        pie = `
+            <i class="fas fa-snowflake text-[11px] text-uccTeal shrink-0" aria-hidden="true"></i>
+            <span class="text-[11px] font-bold text-slate-700 truncate">${total} Equipos</span>
+        `;
+    }
+
+    tarjeta.innerHTML = `
+        <span class="flex items-center justify-between gap-2 min-w-0">
+            <span class="text-[10px] font-semibold uppercase tracking-wider text-slate-400 truncate min-w-0">${escaparHtmlInline(etiquetaPiso)}</span>
+            ${tipo ? `<span class="text-[9px] font-semibold uppercase tracking-wide text-slate-500 bg-slate-100 rounded px-1.5 py-0.5 shrink-0 max-w-[55%] truncate">${escaparHtmlInline(tipo)}</span>` : ""}
+        </span>
+        <span class="block min-w-0">
+            <span class="block text-[13px] font-bold uppercase leading-tight text-slate-800 truncate">${escaparHtmlInline(nombre)}</span>
+            <span class="block text-[11px] leading-tight text-slate-500 font-mono truncate">${escaparHtmlInline(codigo)}</span>
+        </span>
+        <span class="mt-auto pt-2 border-t border-slate-100 flex items-center gap-1.5 min-w-0">
+            ${pie}
+            <i class="fas fa-chevron-right ml-auto text-[9px] text-slate-300 group-hover:text-uccTeal transition-colors shrink-0" aria-hidden="true"></i>
+        </span>
     `;
 
-    return fila;
+    tarjeta.addEventListener("click", () => abrirEspacioInline(espacio.id));
+    return tarjeta;
 }
 
-function obtenerPisoEquipo(equipo) {
-    const piso = equipo.espacio && typeof equipo.espacio === "object" ? equipo.espacio.piso : null;
+/**
+ * Crea la tarjeta de un equipo (nivel 2) con Código ID, Tipo, Serie y Estado.
+ * @param {Object} equipo
+ * @returns {HTMLButtonElement}
+ */
+function crearTarjetaEquipoEspacio(equipo) {
+    const estado = obtenerConfigEstadoEquipo(equipo.estado);
+    const codigoActivo = equipo.codigo_activo != null && equipo.codigo_activo !== ""
+        ? String(equipo.codigo_activo)
+        : "Sin código";
+    const tipoEquipo = obtenerNombreTipoEquipo(equipo);
+    const serie = equipo.numero_serie != null && equipo.numero_serie !== ""
+        ? String(equipo.numero_serie)
+        : "Sin serie";
+
+    const tarjeta = document.createElement("button");
+    tarjeta.type = "button";
+    tarjeta.className = "group w-full text-left bg-white border border-slate-200 rounded-xl p-3.5 min-h-[132px] flex flex-col gap-2.5 hover:border-uccTeal hover:shadow-sm transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-uccTeal focus-visible:ring-offset-2";
+    tarjeta.setAttribute("data-equipo-id", equipo.id);
+    tarjeta.setAttribute("data-codigo-activo", codigoActivo);
+    tarjeta.setAttribute("data-espacio-id", String(obtenerEspacioIdEquipo(equipo) ?? ""));
+    tarjeta.setAttribute("data-estado", normalizarEstadoEquipo(equipo.estado));
+    tarjeta.setAttribute("aria-label", `Abrir ficha técnica del activo ${codigoActivo}, ${estado.texto}`);
+    tarjeta.title = `${codigoActivo} · ${tipoEquipo} · ${serie}`;
+
+    tarjeta.innerHTML = `
+        <span class="flex items-start justify-between gap-2 min-w-0">
+            <span class="min-w-0">
+                <span class="block text-[10px] font-bold uppercase tracking-wider text-slate-400">Código ID</span>
+                <span class="block text-[15px] font-extrabold font-mono text-uccDark leading-tight break-all">${escaparHtmlInline(codigoActivo)}</span>
+            </span>
+            <span class="h-2 w-2 mt-1 rounded-full shrink-0 ${estado.dot}" aria-hidden="true"></span>
+        </span>
+        <span class="block space-y-1 text-[11px]">
+            <span class="flex items-baseline justify-between gap-2 min-w-0">
+                <span class="text-[9px] font-bold uppercase tracking-wide text-slate-400 shrink-0">Tipo</span>
+                <span class="font-semibold text-slate-700 truncate">${escaparHtmlInline(tipoEquipo)}</span>
+            </span>
+            <span class="flex items-baseline justify-between gap-2 min-w-0">
+                <span class="text-[9px] font-bold uppercase tracking-wide text-slate-400 shrink-0">Serie</span>
+                <span class="font-mono text-slate-700 truncate">${escaparHtmlInline(serie)}</span>
+            </span>
+        </span>
+        <span class="mt-auto pt-2 border-t border-slate-100 flex items-center gap-1.5 min-w-0">
+            <span class="h-1.5 w-1.5 rounded-full shrink-0 ${estado.dot}" aria-hidden="true"></span>
+            <span class="text-[11px] font-semibold text-slate-600 truncate">${escaparHtmlInline(estado.texto)}</span>
+            <i class="fas fa-chevron-right ml-auto text-[9px] text-slate-300 group-hover:text-uccTeal transition-colors shrink-0" aria-hidden="true"></i>
+        </span>
+    `;
+
+    tarjeta.addEventListener("click", () => mostrarDetalleInline(equipo.id));
+    return tarjeta;
+}
+
+/**
+ * Piso numérico de un espacio, o null si no está definido.
+ * @param {Object} espacio
+ * @returns {number|string|null}
+ */
+function obtenerPisoEspacio(espacio) {
+    const piso = espacio ? espacio.piso : null;
     if (piso == null || piso === "") return null;
     const num = Number(piso);
     return Number.isNaN(num) ? String(piso) : num;
 }
 
-function ordenarPorPiso(equipos) {
-    return [...equipos].sort((a, b) => {
-        const pa = obtenerPisoEquipo(a);
-        const pb = obtenerPisoEquipo(b);
+/**
+ * Ordena espacios por piso y luego por nombre.
+ * @param {Array} espacios
+ * @returns {Array}
+ */
+function ordenarEspaciosPorPiso(espacios) {
+    return [...espacios].sort((a, b) => {
+        const pa = obtenerPisoEspacio(a);
+        const pb = obtenerPisoEspacio(b);
         if (pa == null && pb == null) return 0;
         if (pa == null) return 1;
         if (pb == null) return -1;
-        if (pa === pb) return String(a.codigo_activo || "").localeCompare(String(b.codigo_activo || ""));
-        return pa > pb ? 1 : -1;
+        if (pa !== pb) return pa > pb ? 1 : -1;
+        return String(a.nombre || "").localeCompare(String(b.nombre || ""), "es", { numeric: true });
     });
 }
 
-function crearFilaDivisoraPiso(piso) {
-    const fila = document.createElement("tr");
-    fila.className = "bg-slate-100/80";
-    const etiqueta = piso == null ? "Piso sin asignar" : `Piso ${piso}`;
-    fila.innerHTML = `<td colspan="4" class="py-1.5 px-3 text-[11px] font-bold uppercase tracking-widest text-slate-500">${etiqueta}</td>`;
-    return fila;
+/**
+ * Ordena equipos por código de activo.
+ * @param {Array} equipos
+ * @returns {Array}
+ */
+function ordenarEquiposPorCodigo(equipos) {
+    return [...(equipos || [])].sort((a, b) => String(a.codigo_activo || "")
+        .localeCompare(String(b.codigo_activo || ""), "es", { numeric: true }));
+}
+
+/**
+ * Crea el separador de piso de ancho completo dentro de la matriz.
+ * @param {number|string|null} piso
+ * @returns {HTMLDivElement}
+ */
+function crearSeparadorPiso(piso) {
+    const separador = document.createElement("div");
+    separador.className = "col-span-full sticky top-0 z-10 flex items-center gap-2 bg-slate-50/95 backdrop-blur-sm border-b border-slate-200 py-1";
+    separador.setAttribute("role", "heading");
+    separador.setAttribute("aria-level", "2");
+    const etiqueta = piso == null ? "SIN PISO" : `PISO ${piso}`;
+    separador.innerHTML = `
+        <span class="text-[10px] font-bold uppercase tracking-widest text-slate-500">${escaparHtmlInline(etiqueta)}</span>
+        <span class="h-px flex-1 bg-slate-200" aria-hidden="true"></span>
+    `;
+    return separador;
 }
 
 /**
@@ -446,14 +671,20 @@ function obtenerAccionEstadoEquipoHtml(estado) {
  */
 function aplicarEstadoLocalEquipo(equipoId, nuevoEstado) {
     const id = String(equipoId);
-    [equiposCompletosGlobal, equiposCargadosGlobal].forEach((lista) => {
-        lista.forEach((equipo) => {
-            if (String(equipo.id) === id) equipo.estado = nuevoEstado;
-        });
+    equiposCompletosGlobal.forEach((equipo) => {
+        if (String(equipo.id) === id) equipo.estado = nuevoEstado;
     });
+    equiposPorEspacioGlobal = agruparEquiposPorEspacio(equiposCompletosGlobal);
 
-    equiposCargadosGlobal = [...equiposCargadosGlobal];
-    renderizarTablaPaginada();
+    renderizarEspaciosPaginado();
+
+    if (espacioSeleccionadoId) {
+        const espacio = obtenerEspacioPorId(espacioSeleccionadoId);
+        if (espacio) {
+            actualizarCabeceraEspacio(espacio);
+            renderizarEquiposEspacio(espacio);
+        }
+    }
 
     const pillInline = document.getElementById("dInlineStatusPill");
     if (pillInline) pillInline.innerHTML = obtenerBadgeEstado(nuevoEstado);
@@ -470,109 +701,249 @@ function aplicarEstadoLocalEquipo(equipoId, nuevoEstado) {
     aplicarRestriccionesRol();
 }
 
-/**
- * Construye la información de ubicación del equipo
- * @param {Object} equipo - Objeto equipo
- * @returns {Object} Objeto con propiedades nombre y piso
- */
-function construirUbicacion(equipo) {
-    let ubicacion = "No especificada";
-    let piso = "";
-
-    if (equipo.espacio) {
-        if (typeof equipo.espacio === "object") {
-            const espacioNombre = equipo.espacio.nombre || "No especificado";
-            const bloqueNombre = equipo.espacio.bloque
-                ? (typeof equipo.espacio.bloque === "object" ? equipo.espacio.bloque.nombre_bloque : equipo.espacio.bloque)
-                : null;
-
-            ubicacion = bloqueNombre ? `${bloqueNombre} - ${espacioNombre}` : espacioNombre;
-            piso = equipo.espacio.piso != null ? `Piso ${equipo.espacio.piso}` : "";
-        } else {
-            ubicacion = equipo.espacio;
-        }
-    }
-
-    return { nombre: ubicacion, piso };
-}
-
 function normalizarEstadoEquipo(estado) {
     if (!estado) return "";
+    const clave = normalizarTexto(estado);
     const mapa = {
         "operativo": "Operativo",
         "en reparacion": "En reparacion",
         "inactivo": "Inactivo",
         "dado de baja": "Dado de baja",
     };
-    return mapa[estado.toLowerCase()] || estado;
+    return mapa[clave] || estado;
 }
 
 /**
- * Renderiza la tabla principal con paginación local (25 registros por página)
+ * Renderiza la matriz de espacios (nivel 1) con paginación local
+ * de 24 espacios por página.
  */
-function renderizarTablaPaginada() {
-    const tablaBody = document.getElementById("tablaEquiposBody");
-    if (!tablaBody) return;
+function renderizarEspaciosPaginado() {
+    const grid = document.getElementById("gridEspacios");
+    if (!grid) return;
 
-    const total = equiposCargadosGlobal.length;
-    const totalPaginas = Math.max(1, Math.ceil(total / registrosPorPagina));
+    const total = espaciosVisiblesGlobal.length;
+    const totalPaginas = Math.max(1, Math.ceil(total / espaciosPorPagina));
 
     if (paginaActual > totalPaginas) paginaActual = totalPaginas;
     if (paginaActual < 1) paginaActual = 1;
 
-    const inicio = (paginaActual - 1) * registrosPorPagina;
-    const fin = inicio + registrosPorPagina;
-    const equiposPagina = equiposCargadosGlobal.slice(inicio, fin);
+    const inicio = (paginaActual - 1) * espaciosPorPagina;
+    const fin = inicio + espaciosPorPagina;
+    const espaciosPagina = espaciosVisiblesGlobal.slice(inicio, fin);
 
-    tablaBody.innerHTML = "";
+    grid.innerHTML = "";
 
     if (total === 0) {
-        tablaBody.innerHTML = `
-            <tr>
-                <td colspan="4" class="text-center py-12">
-                    <p class="text-slate-400 text-sm">
-                        <i class="fas fa-inbox text-2xl block mb-2"></i>
-                        No hay equipos registrados en la base de datos
-                    </p>
-                </td>
-            </tr>
+        const hayFiltros = filtrosInventarioActivos();
+        grid.innerHTML = `
+            <div class="col-span-full py-16 text-center">
+                <i class="fas fa-door-open text-slate-300 text-2xl" aria-hidden="true"></i>
+                <p class="mt-2 text-sm text-slate-500">
+                    ${hayFiltros
+                        ? "No se encontraron espacios para el filtro seleccionado"
+                        : "No hay espacios registrados en la base de datos"}
+                </p>
+            </div>
         `;
         actualizarTextoPaginacion(0, 0, 0);
         actualizarBotonesPaginacion(0);
+        reiniciarScrollInventario();
         return;
     }
 
-    const equiposOrdenados = ordenarPorPiso(equiposPagina);
+    const espaciosOrdenados = ordenarEspaciosPorPiso(espaciosPagina);
     let pisoActual = Symbol("ninguno");
-    equiposOrdenados.forEach(equipo => {
-        const piso = obtenerPisoEquipo(equipo);
+    espaciosOrdenados.forEach((espacio) => {
+        const piso = obtenerPisoEspacio(espacio);
         const clave = piso == null ? "sin-piso" : `piso-${piso}`;
         if (clave !== pisoActual) {
             pisoActual = clave;
-            tablaBody.appendChild(crearFilaDivisoraPiso(piso));
+            grid.appendChild(crearSeparadorPiso(piso));
         }
-        tablaBody.appendChild(crearFilaEquipo(equipo));
+        grid.appendChild(crearTarjetaEspacio(espacio));
     });
 
     actualizarTextoPaginacion(inicio, fin, total);
     actualizarBotonesPaginacion(totalPaginas);
+    reiniciarScrollInventario();
+}
+
+/**
+ * Muestra la matriz de espacios y oculta las vistas inline.
+ */
+function mostrarVistaEspacios() {
+    const lista = document.getElementById("contenedor-inventario");
+    const espacioVista = document.getElementById("vista-espacio-inline");
+    const detalle = document.getElementById("vista-detalle-inline");
+
+    if (detalle) {
+        detalle.classList.add("hidden");
+        detalle.classList.remove("flex");
+    }
+    if (espacioVista) {
+        espacioVista.classList.add("hidden");
+        espacioVista.classList.remove("flex");
+    }
+    if (lista) lista.classList.remove("hidden");
+}
+
+/**
+ * Vuelve al nivel 1 conservando filtros y página.
+ */
+function volverAEspacios() {
+    espacioSeleccionadoId = null;
+    mostrarVistaEspacios();
+    reiniciarScrollInventario();
+    // Mostrar la barra de filtros al volver a la vista de espacios
+    var panelFiltros = document.querySelector('.panel');
+    if (panelFiltros) panelFiltros.classList.remove("hidden");
+}
+
+/**
+ * Abre el nivel 2 inline con los equipos del espacio seleccionado.
+ * @param {string|number} espacioId
+ */
+function abrirEspacioInline(espacioId) {
+    const espacio = obtenerEspacioPorId(espacioId);
+    if (!espacio) return;
+    espacioSeleccionadoId = String(espacio.id);
+    mostrarVistaEspacio(espacio);
+}
+
+/**
+ * Activa la vista inline del espacio y dibuja su diagrama de equipos.
+ * @param {Object} espacio
+ */
+function mostrarVistaEspacio(espacio) {
+    const lista = document.getElementById("contenedor-inventario");
+    const espacioVista = document.getElementById("vista-espacio-inline");
+    const detalle = document.getElementById("vista-detalle-inline");
+
+    if (!espacioVista) {
+        console.error("❌ No se encontró el elemento con id='vista-espacio-inline'");
+        return;
+    }
+
+    if (lista) lista.classList.add("hidden");
+    if (detalle) {
+        detalle.classList.add("hidden");
+        detalle.classList.remove("flex");
+    }
+    espacioVista.classList.remove("hidden");
+    espacioVista.classList.add("flex");
+
+    actualizarCabeceraEspacio(espacio);
+    renderizarEquiposEspacio(espacio);
+
+    const scroller = document.getElementById("scroller-equipos-espacio");
+    if (scroller) scroller.scrollTop = 0;
+
+    const titulo = document.getElementById("espacioInlineNombre");
+    if (titulo) {
+        titulo.setAttribute("tabindex", "-1");
+        titulo.focus({ preventScroll: true });
+    }
+}
+
+/**
+ * Rellena la cabecera del nivel 2 con los datos del espacio.
+ * @param {Object} espacio
+ */
+function actualizarCabeceraEspacio(espacio) {
+    const equipos = obtenerEquiposDelEspacio(espacio.id);
+    const total = equipos.length;
+    const piso = obtenerPisoEspacio(espacio);
+    const bloque = espacio.bloque && espacio.bloque.nombre_bloque
+        ? String(espacio.bloque.nombre_bloque)
+        : "No especificado";
+    const tipo = espacio.tipo_espacio && espacio.tipo_espacio.nombre
+        ? String(espacio.tipo_espacio.nombre)
+        : "No especificado";
+    const codigo = espacio.codigo_espacio != null && espacio.codigo_espacio !== ""
+        ? String(espacio.codigo_espacio)
+        : "Sin código";
+
+    const nombreEl = document.getElementById("espacioInlineNombre");
+    if (nombreEl) nombreEl.textContent = espacio.nombre || "Espacio sin nombre";
+    const codigoEl = document.getElementById("espacioInlineCodigo");
+    if (codigoEl) codigoEl.textContent = `Código ${codigo}`;
+    const pisoEl = document.getElementById("espacioInlinePiso");
+    if (pisoEl) pisoEl.textContent = `Piso ${piso == null ? "N/A" : piso}`;
+    const bloqueEl = document.getElementById("espacioInlineBloque");
+    if (bloqueEl) bloqueEl.textContent = bloque;
+    const tipoEl = document.getElementById("espacioInlineTipo");
+    if (tipoEl) tipoEl.textContent = tipo;
+    const conteoEl = document.getElementById("espacioInlineConteo");
+    if (conteoEl) {
+        conteoEl.textContent = total === 0
+            ? "Sin equipos"
+            : `${total} ${total === 1 ? "equipo" : "equipos"}`;
+    }
+}
+
+/**
+ * Dibuja el diagrama de cuadros del espacio (nivel 2).
+ * @param {Object} espacio
+ */
+function renderizarEquiposEspacio(espacio) {
+    const grid = document.getElementById("gridEquiposEspacio");
+    if (!grid) return;
+
+    const equipos = obtenerEquiposDelEspacio(espacio.id);
+    grid.innerHTML = "";
+
+    if (!equipos.length) {
+        grid.innerHTML = `
+            <div class="col-span-full py-12 text-center">
+                <i class="fas fa-snowflake text-slate-300 text-2xl" aria-hidden="true"></i>
+                <p class="mt-2 text-sm font-semibold text-slate-500">Sin equipos registrados en este espacio</p>
+                <p class="mt-1 text-xs text-slate-400">Los equipos que se asignen a este espacio aparecerán aquí.</p>
+            </div>
+        `;
+        return;
+    }
+
+    const fragmento = document.createDocumentFragment();
+    equipos.forEach((equipo) => fragmento.appendChild(crearTarjetaEquipoEspacio(equipo)));
+    grid.appendChild(fragmento);
+}
+
+/**
+ * Devuelve el área desplazable de la matriz al inicio.
+ */
+function reiniciarScrollInventario() {
+    const scroller = document.getElementById("scroller-inventario");
+    if (scroller) scroller.scrollTop = 0;
+}
+
+/**
+ * Indica si hay algún filtro activo.
+ * @returns {boolean}
+ */
+function filtrosInventarioActivos() {
+    const selectBloque = document.getElementById("assetBlockFilter");
+    const selectPiso = document.getElementById("filterPiso");
+    const inputBusqueda = document.getElementById("assetAulaFilter");
+    return Boolean(
+        (selectBloque && selectBloque.value)
+        || (selectPiso && selectPiso.value)
+        || (inputBusqueda && inputBusqueda.value.trim()),
+    );
 }
 
 /**
  * Actualiza el texto inferior de paginación
  */
 function actualizarTextoPaginacion(inicio, fin, total) {
-    const paginacion = document.getElementById("texto-paginacion-equipos")
-        || document.querySelector("p.text-xs.text-slate-600.font-medium");
-
+    const paginacion = document.getElementById("texto-paginacion-equipos");
     if (!paginacion) return;
 
     if (total === 0) {
-        paginacion.innerHTML = "No hay equipos para mostrar";
+        paginacion.textContent = "Sin resultados";
         return;
     }
 
-    paginacion.textContent = `Mostrando ${inicio + 1}–${Math.min(fin, total)} de ${total} resultados`;
+    paginacion.textContent = `Mostrando ${inicio + 1}–${Math.min(fin, total)} de ${total} espacios`;
 }
 
 /**
@@ -599,15 +970,15 @@ function actualizarBotonesPaginacion(totalPaginas) {
 function irPaginaAnterior() {
     if (paginaActual > 1) {
         paginaActual--;
-        renderizarTablaPaginada();
+        renderizarEspaciosPaginado();
     }
 }
 
 function irPaginaSiguiente() {
-    const totalPaginas = Math.ceil(equiposCargadosGlobal.length / registrosPorPagina) || 1;
+    const totalPaginas = Math.ceil(espaciosVisiblesGlobal.length / espaciosPorPagina) || 1;
     if (paginaActual < totalPaginas) {
         paginaActual++;
-        renderizarTablaPaginada();
+        renderizarEspaciosPaginado();
     }
 }
 
@@ -1082,26 +1453,60 @@ function setInlineTexto(id, valor) {
     if (el) el.textContent = valor;
 }
 
+/**
+ * Vuelve desde la ficha del activo al nivel anterior:
+ * al aula (nivel 2) si se abrió desde un espacio, o a los espacios (nivel 1).
+ */
 function volverAListaInventario() {
-    var tabla = document.getElementById("contenedor-tabla");
     var detalle = document.getElementById("vista-detalle-inline");
     if (detalle) {
         detalle.classList.add("hidden");
         detalle.classList.remove("flex");
     }
-    if (tabla) tabla.classList.remove("hidden");
+    // Mostrar nuevamente la barra de filtros al volver al inventario
+    var panelFiltros = document.querySelector('.panel');
+    if (panelFiltros) panelFiltros.classList.remove("hidden");
+    if (espacioSeleccionadoId) {
+        var espacio = obtenerEspacioPorId(espacioSeleccionadoId);
+        if (espacio) {
+            mostrarVistaEspacio(espacio);
+            return;
+        }
+    }
+    espacioSeleccionadoId = null;
+    mostrarVistaEspacios();
+    reiniciarScrollInventario();
+}
+
+/**
+ * Ajusta los botones de retorno de la ficha según el nivel de origen.
+ */
+function actualizarNavegacionDetalle() {
+    var texto = document.getElementById("texto-volver-detalle");
+    if (texto) texto.textContent = espacioSeleccionadoId ? "Volver al Aula" : "Volver a Espacios";
+    var secundario = document.getElementById("btn-volver-espacios-detalle");
+    if (secundario) secundario.classList.toggle("hidden", !espacioSeleccionadoId);
 }
 
 async function mostrarDetalleInline(equipoId) {
-    var tabla = document.getElementById("contenedor-tabla");
+    var lista = document.getElementById("contenedor-inventario");
+    var espacioVista = document.getElementById("vista-espacio-inline");
     var detalle = document.getElementById("vista-detalle-inline");
     if (!detalle) {
         openTechnicalSheet(equipoId);
         return;
     }
-    if (tabla) tabla.classList.add("hidden");
+    if (lista) lista.classList.add("hidden");
+    if (espacioVista) {
+        espacioVista.classList.add("hidden");
+        espacioVista.classList.remove("flex");
+    }
     detalle.classList.remove("hidden");
     detalle.classList.add("flex");
+    // Ocultar la barra de filtros superiores al ver el detalle
+    var panelFiltros = document.querySelector('.panel');
+    if (panelFiltros) panelFiltros.classList.add("hidden");
+    actualizarNavegacionDetalle();
     window.currentEquipoId = equipoId;
     setInlineTexto("dInlineId", "Cargando...");
     setInlineTexto("dInlineSubtitle", "Cargando ficha...");
@@ -1112,6 +1517,7 @@ async function mostrarDetalleInline(equipoId) {
         window.currentEquipoCodigoActivo = equipo.codigo_activo;
         const marca = equipo.marca ? (typeof equipo.marca === "object" ? equipo.marca.nombre : equipo.marca) : "No especificada";
         setInlineTexto("dInlineId", equipo.codigo_activo || "N/A");
+        setInlineTexto("dInlineIdHeader", equipo.codigo_activo || "N/A");
         setInlineTexto("dInlineSubtitle", equipo.numero_serie ? ("Serie " + equipo.numero_serie) : "Sin serie");
         setInlineTexto("dInlineBrand", marca);
         setInlineTexto("dInlineModel", equipo.modelo || "No especificado");
@@ -1146,10 +1552,11 @@ async function mostrarDetalleInline(equipoId) {
 async function openTechnicalSheetSilent(equipo) {
     const mapa = {
         technicalSheetId: equipo.codigo_activo || "N/A",
+        technicalSheetIdHeader: equipo.codigo_activo || "N/A",
         technicalSheetBrand: equipo.marca ? (typeof equipo.marca === "object" ? equipo.marca.nombre : equipo.marca) : "No especificada",
         technicalSheetModel: equipo.modelo || "No especificado",
         technicalSheetType: obtenerNombreTipoEquipo(equipo),
-        technicalSheetSubtitle: equipo.numero_serie || "Sin serie",
+        technicalSheetSubtitle: equipo.numero_serie ? ("Serie " + equipo.numero_serie) : "Sin serie",
         technicalSheetSerialNumber: equipo.numero_serie || "No especificado",
         technicalSheetVoltage: equipo.voltaje || "No especificado",
         technicalSheetRefrigerant: equipo.refrigerante || "No especificado"
@@ -1890,122 +2297,61 @@ async function activateTechnicalSheet() {
 }
 
 /**
- * Aplica los filtros opcionales de ubicación (Bloque, Piso, Aula).
- * Sin selección muestra el inventario completo agrupado por piso.
+ * Devuelve los espacios que cumplen de forma acumulativa los filtros activos.
+ * La búsqueda cubre nombre/código del espacio y código/serie de sus equipos.
+ * @returns {Array}
  */
-function renderizarEquiposPorUbicacion() {
+function obtenerEspaciosFiltrados() {
     const selectBloque = document.getElementById("assetBlockFilter");
     const selectPiso = document.getElementById("filterPiso");
-    const selectAula = document.getElementById("assetAulaFilter");
-    const tablaBody = document.getElementById("tablaEquiposBody");
+    const inputBusqueda = document.getElementById("assetAulaFilter");
 
-    if (!tablaBody) return;
+    const bloqueId = selectBloque && selectBloque.value ? String(selectBloque.value) : "";
+    const piso = selectPiso && selectPiso.value ? String(selectPiso.value) : "";
+    const texto = normalizarTexto(inputBusqueda ? inputBusqueda.value : "");
 
-    const bloqueId = selectBloque?.value || "";
-    const piso = selectPiso?.value || "";
-    const aulaId = selectAula?.value || "";
+    return espaciosCatalogGlobal.filter((espacio) => {
+        if (bloqueId && String(espacio.bloque_id) !== bloqueId) return false;
 
-    // Filtros 100% opcionales: sin selección = inventario completo
-    if (!bloqueId && !piso && !aulaId) {
-        equiposCargadosGlobal = [...equiposCompletosGlobal];
-        paginaActual = 1;
-        renderizarTablaPaginada();
-        return;
-    }
+        if (piso) {
+            const pisoEspacio = obtenerPisoEspacio(espacio);
+            if (pisoEspacio == null || String(pisoEspacio) !== piso) return false;
+        }
 
-    // Filtro más específico: aula/espacio puntual
-    if (aulaId) {
-        const equiposFiltrados = equiposCompletosGlobal.filter(equipo => {
-            const espacioId = equipo.espacio && typeof equipo.espacio === "object"
-                ? equipo.espacio.id
-                : equipo.espacio_id;
-            return String(espacioId) === String(aulaId);
-        });
-        mostrarEquiposFiltrados(equiposFiltrados);
-        return;
-    }
+        if (texto) {
+            const equipos = equiposPorEspacioGlobal.get(String(espacio.id)) || [];
+            const campos = [
+                espacio.nombre,
+                espacio.codigo_espacio,
+                ...equipos.flatMap((equipo) => [equipo.codigo_activo, equipo.numero_serie]),
+            ].map(normalizarTexto);
+            if (!campos.some((campo) => campo.includes(texto))) return false;
+        }
 
-    // Filtro por bloque + piso
-    if (bloqueId && piso) {
-        const idsEspacios = new Set(
-            espaciosCatalogGlobal
-                .filter(e => String(e.bloque_id) === String(bloqueId) && String(e.piso) === String(piso))
-                .map(e => String(e.id))
-        );
-        const equiposFiltrados = equiposCompletosGlobal.filter(equipo => {
-            const espacio = equipo.espacio && typeof equipo.espacio === "object" ? equipo.espacio : null;
-            if (espacio) {
-                if (espacio.id != null && idsEspacios.has(String(espacio.id))) return true;
-                return String(espacio.bloque_id || "") === String(bloqueId) && String(espacio.piso ?? "") === String(piso);
-            }
-            const espacioId = equipo.espacio_id != null ? String(equipo.espacio_id) : "";
-            return espacioId && idsEspacios.has(espacioId);
-        });
-        mostrarEquiposFiltrados(equiposFiltrados);
-        return;
-    }
-
-    // Filtro solo por bloque
-    if (bloqueId) {
-        const idsEspacios = new Set(
-            espaciosCatalogGlobal
-                .filter(e => String(e.bloque_id) === String(bloqueId))
-                .map(e => String(e.id))
-        );
-        const equiposFiltrados = equiposCompletosGlobal.filter(equipo => {
-            const espacio = equipo.espacio && typeof equipo.espacio === "object" ? equipo.espacio : null;
-            if (espacio) {
-                if (espacio.id != null && idsEspacios.has(String(espacio.id))) return true;
-                if (espacio.bloque_id != null) return String(espacio.bloque_id) === String(bloqueId);
-                if (espacio.bloque && typeof espacio.bloque === "object" && espacio.bloque.id != null)
-                    return String(espacio.bloque.id) === String(bloqueId);
-            }
-            const espacioId = equipo.espacio_id != null ? String(equipo.espacio_id) : "";
-            return espacioId && idsEspacios.has(espacioId);
-        });
-        mostrarEquiposFiltrados(equiposFiltrados);
-        return;
-    }
-
-    // Solo piso (sin bloque): agrupa por piso en todo el campus
-    if (piso) {
-        const equiposFiltrados = equiposCompletosGlobal.filter(equipo => {
-            const p = equipo.espacio && typeof equipo.espacio === "object" ? equipo.espacio.piso : null;
-            return p != null && String(p) === String(piso);
-        });
-        mostrarEquiposFiltrados(equiposFiltrados);
-        return;
-    }
+        return true;
+    });
 }
 
-function mostrarEquiposFiltrados(equiposFiltrados) {
-    const tablaBody = document.getElementById("tablaEquiposBody");
-    if (!tablaBody) return;
-
-    // Limpiar tabla
-    tablaBody.innerHTML = "";
-
-    if (equiposFiltrados.length === 0) {
-        tablaBody.innerHTML = `
-            <tr>
-                <td colspan="4" class="px-4 py-10 text-center">
-                    <div class="flex flex-col items-center justify-center">
-                        <i class="fas fa-inbox text-2xl text-slate-300 mb-2" aria-hidden="true"></i>
-                        <p class="text-sm text-slate-500">No hay equipos de climatización instalados en esta ubicación</p>
-                    </div>
-                </td>
-            </tr>
-        `;
-        actualizarTextoPaginacion(0, 0, 0);
-        actualizarBotonesPaginacion(0);
-        equiposCargadosGlobal = [];
-        return;
-    }
-
-    // Renderizar equipos filtrados con paginación (agrupados por piso)
-    equiposCargadosGlobal = equiposFiltrados;
+/**
+ * Recalcula la lista visible con los filtros activos y vuelve al nivel 1.
+ */
+function aplicarFiltrosInventario() {
+    espaciosVisiblesGlobal = obtenerEspaciosFiltrados();
+    espacioSeleccionadoId = null;
     paginaActual = 1;
-    renderizarTablaPaginada();
+    mostrarVistaEspacios();
+    renderizarEspaciosPaginado();
+}
+
+/**
+ * Programa la actualización de la matriz tras 150 ms sin tecleo.
+ */
+function programarFiltroBusqueda() {
+    if (temporizadorBusqueda) clearTimeout(temporizadorBusqueda);
+    temporizadorBusqueda = setTimeout(() => {
+        temporizadorBusqueda = null;
+        aplicarFiltrosInventario();
+    }, 150);
 }
 
 /**
@@ -2014,66 +2360,39 @@ function mostrarEquiposFiltrados(equiposFiltrados) {
 function limpiarFiltrosInventario() {
     const selectBloque = document.getElementById("assetBlockFilter");
     const selectPiso = document.getElementById("filterPiso");
-    const selectAula = document.getElementById("assetAulaFilter");
+    const inputBusqueda = document.getElementById("assetAulaFilter");
 
-    // Resetear selector de Bloque
-    if (selectBloque) {
-        selectBloque.value = "";
-    }
+    if (selectBloque) selectBloque.value = "";
 
-    // Resetear y deshabilitar selector de Piso
     if (selectPiso) {
         selectPiso.innerHTML = '<option value="">Todos los pisos</option>';
         selectPiso.disabled = true;
     }
 
-    // Resetear y deshabilitar selector de Aula
-    if (selectAula) {
-        selectAula.innerHTML = '<option value="">Todas las aulas</option>';
-        selectAula.disabled = true;
+    if (inputBusqueda) inputBusqueda.value = "";
+
+    if (temporizadorBusqueda) {
+        clearTimeout(temporizadorBusqueda);
+        temporizadorBusqueda = null;
     }
 
-    // Sin filtros = inventario completo agrupado por piso
-    equiposCargadosGlobal = [...equiposCompletosGlobal];
     paginaActual = 1;
-    if (equiposCompletosGlobal.length) {
-        renderizarTablaPaginada();
+    if (espaciosCatalogGlobal.length) {
+        aplicarFiltrosInventario();
     } else {
         cargarInventarioCompleto();
     }
 }
 
-function actualizarOpcionesPisoFiltro() {
-    const datalist = document.getElementById("lista-pisos-filtro");
-    if (!datalist) return;
-
-    const pisos = new Set();
-    equiposCargadosGlobal.forEach(equipo => {
-        const piso = equipo.espacio && typeof equipo.espacio === "object" ? equipo.espacio.piso : null;
-        const n = Number(piso);
-        if (Number.isInteger(n) && n >= PISO_MIN && n <= PISO_MAX) pisos.add(String(n));
-    });
-
-    datalist.innerHTML = "";
-    [...pisos].sort((a, b) => Number(a) - Number(b)).forEach(piso => {
-        const option = document.createElement("option");
-        option.value = piso;
-        datalist.appendChild(option);
-    });
-}
-
 async function cargarFiltrosInventario() {
     try {
-        const [bloquesRes, espaciosRes] = await Promise.all([
-            fetch(`${API_BASE_URL}/bloques/?limit=100`),
-            fetch(`${API_BASE_URL}/espacios/?limit=100`),
-        ]);
-
+        const bloquesRes = await fetch(`${API_BASE_URL}/bloques/?limit=100`);
         if (bloquesRes.ok) {
             const bloquesData = await bloquesRes.json();
             bloquesCatalogGlobal = Array.isArray(bloquesData) ? bloquesData : (bloquesData.items || []);
             const selectBloque = document.getElementById("assetBlockFilter");
             if (selectBloque) {
+                const bloqueSeleccionado = selectBloque.value;
                 selectBloque.innerHTML = '<option value="">Todos los bloques</option>';
                 bloquesCatalogGlobal.forEach(bloque => {
                     const option = document.createElement("option");
@@ -2081,103 +2400,54 @@ async function cargarFiltrosInventario() {
                     option.textContent = bloque.nombre_bloque || bloque.codigo_bloque;
                     selectBloque.appendChild(option);
                 });
+                if (bloqueSeleccionado) selectBloque.value = bloqueSeleccionado;
             }
         }
-
-        if (espaciosRes.ok) {
-            const espaciosData = await espaciosRes.json();
-            espaciosCatalogGlobal = Array.isArray(espaciosData) ? espaciosData : (espaciosData.items || []);
-        }
     } catch (err) {
-        console.error("Error al cargar filtros del inventario:", err);
+        console.error("Error al cargar bloques del inventario:", err);
+    }
+
+    if (!espaciosCatalogGlobal.length) {
+        try {
+            espaciosCatalogGlobal = await obtenerTodosLosEspacios();
+        } catch (err) {
+            console.error("Error al cargar espacios del inventario:", err);
+        }
     }
 }
 
 /**
- * Pobla el selector de pisos basándose en el bloque seleccionado
+ * Recalcula los pisos disponibles según el bloque seleccionado.
  * @param {string} bloqueId - ID del bloque seleccionado
  */
 function poblarPisosPorBloque(bloqueId) {
     const selectPiso = document.getElementById("filterPiso");
-    const selectAula = document.getElementById("assetAulaFilter");
+    const inputBusqueda = document.getElementById("assetAulaFilter");
 
     if (!selectPiso) return;
 
-    // Limpiar y deshabilitar selector de pisos
     selectPiso.innerHTML = '<option value="">Todos los pisos</option>';
     selectPiso.disabled = true;
 
-    // Limpiar y deshabilitar selector de aulas
-    if (selectAula) {
-        selectAula.innerHTML = '<option value="">Todas las aulas</option>';
-        selectAula.disabled = true;
+    if (inputBusqueda) inputBusqueda.value = "";
+
+    if (bloqueId) {
+        const espaciosDelBloque = espaciosCatalogGlobal.filter(e => String(e.bloque_id) === String(bloqueId));
+        const pisosUnicos = [...new Set(espaciosDelBloque.map(e => Number(e.piso)))]
+            .filter(n => Number.isInteger(n) && n >= PISO_MIN && n <= PISO_MAX)
+            .sort((a, b) => a - b);
+
+        pisosUnicos.forEach(piso => {
+            const option = document.createElement("option");
+            option.value = piso;
+            option.textContent = `Piso ${piso}`;
+            selectPiso.appendChild(option);
+        });
+
+        selectPiso.disabled = pisosUnicos.length === 0;
     }
 
-    if (!bloqueId) {
-        renderizarEquiposPorUbicacion();
-        return;
-    }
-
-    // Extraer pisos únicos del bloque seleccionado (restringido 1-7)
-    const espaciosDelBloque = espaciosCatalogGlobal.filter(e => String(e.bloque_id) === String(bloqueId));
-    const pisosUnicos = [...new Set(espaciosDelBloque.map(e => Number(e.piso)))]
-        .filter(n => Number.isInteger(n) && n >= PISO_MIN && n <= PISO_MAX)
-        .sort((a, b) => a - b);
-
-    if (pisosUnicos.length === 0) {
-        selectPiso.disabled = true;
-        renderizarEquiposPorUbicacion();
-        return;
-    }
-
-    // Poblar selector de pisos
-    pisosUnicos.forEach(piso => {
-        const option = document.createElement("option");
-        option.value = piso;
-        option.textContent = `Piso ${piso}`;
-        selectPiso.appendChild(option);
-    });
-
-    selectPiso.disabled = false;
-    renderizarEquiposPorUbicacion();
-}
-
-/**
- * Pobla el selector de aulas basándose en el bloque y piso seleccionados
- * @param {string} bloqueId - ID del bloque seleccionado
- * @param {string} piso - Número de piso seleccionado
- */
-function poblarAulasPorBloquePiso(bloqueId, piso) {
-    const selectAula = document.getElementById("assetAulaFilter");
-    if (!selectAula) return;
-
-    selectAula.innerHTML = '<option value="">Todas las aulas</option>';
-    selectAula.disabled = true;
-
-    if (!bloqueId || !piso) {
-        renderizarEquiposPorUbicacion();
-        return;
-    }
-
-    // Filtrar espacios por bloque Y piso
-    const espaciosFiltrados = espaciosCatalogGlobal.filter(e =>
-        String(e.bloque_id) === String(bloqueId) && String(e.piso) === String(piso)
-    );
-
-    if (espaciosFiltrados.length === 0) {
-        renderizarEquiposPorUbicacion();
-        return;
-    }
-
-    espaciosFiltrados.forEach(espacio => {
-        const option = document.createElement("option");
-        option.value = espacio.id;
-        option.textContent = espacio.nombre;
-        selectAula.appendChild(option);
-    });
-
-    selectAula.disabled = false;
-    renderizarEquiposPorUbicacion();
+    aplicarFiltrosInventario();
 }
 
 /**
@@ -3334,7 +3604,7 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
-    // Event listeners para filtros encadenados
+    // Event listeners para filtros acumulativos
     const selectBloque = document.getElementById("assetBlockFilter");
     if (selectBloque) {
         selectBloque.addEventListener("change", () => {
@@ -3345,16 +3615,13 @@ document.addEventListener("DOMContentLoaded", () => {
     const selectPiso = document.getElementById("filterPiso");
     if (selectPiso) {
         selectPiso.addEventListener("change", () => {
-            const bloqueId = selectBloque?.value || "";
-            poblarAulasPorBloquePiso(bloqueId, selectPiso.value);
+            aplicarFiltrosInventario();
         });
     }
 
-    const selectAula = document.getElementById("assetAulaFilter");
-    if (selectAula) {
-        selectAula.addEventListener("change", () => {
-            renderizarEquiposPorUbicacion();
-        });
+    const inputBusqueda = document.getElementById("assetAulaFilter");
+    if (inputBusqueda) {
+        inputBusqueda.addEventListener("input", programarFiltroBusqueda);
     }
 });
 
